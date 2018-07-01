@@ -39,21 +39,15 @@
             <version>${mockito-kotlin.version}</version>
             <scope>test</scope>
         </dependency>
-
         <!--TESTING-->
 
-        <!--GROVEPI LIBRARIES-->
-        <dependency>
-            <groupId>org.iot.raspberry</groupId>
-            <artifactId>GrovePi-pi4j</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
-        </dependency>
+        <!--GROVEPI-->
         <dependency>
             <groupId>org.iot.raspberry</groupId>
             <artifactId>GrovePi-spec</artifactId>
             <version>0.1.0-SNAPSHOT</version>
         </dependency>
-        <!--GROVEPI LIBRARIES-->
+        <!--GROVEPI-->
     </dependencies>
 
     <build>
@@ -105,5 +99,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
