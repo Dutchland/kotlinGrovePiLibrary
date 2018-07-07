@@ -11,7 +11,7 @@ class GroveLedFactory(private val grovePi : GrovePi) {
                 org.iot.raspberry.grovepi.devices.GroveLed(this.grovePi, port.getDigitalPin()))
     }
 
-    fun createAdjustableLed(port: PulseWidthModulationPort) : DimmableLed {
+    fun createDimmableLed(port: PulseWidthModulationPort) : DimmableLed {
         return GroveLed(
                 org.iot.raspberry.grovepi.devices.GroveLed(this.grovePi, port.getDigitalPin()))
     }

@@ -1,20 +1,22 @@
 package nl.dutchland.grove.grovepiports
 
 import nl.dutchland.grove.utility.FractionalPercentage
+import nl.dutchland.grove.utility.InvalidFractionException
 import org.junit.Assert.*
 import kotlin.test.Test
 
 class FractionalPercentageTest {
     @Test
     fun testValidPercentage() {
-        testValidPercentage(0.0, 0.0)
-        testValidPercentage(100.0, 100.0)
-        testValidPercentage(50.0, 50.0)
+        testValidPercentage(0.0, 0.0, 0.0)
+        testValidPercentage(100.0, 100.0, 1.0)
+        testValidPercentage(50.0, 50.0, 0.5)
     }
 
-    private fun testValidPercentage(input: Double, expectedOutput: Double) {
+    private fun testValidPercentage(input: Double, expectedPercentage: Double, expectedFraction: Double) {
         val percentage = FractionalPercentage.ofPercentage(input)
-        assertEquals(expectedOutput, percentage.percentage, input / 1000.0)
+        assertEquals(expectedPercentage, percentage.percentage, input / 1000.0)
+        assertEquals(expectedFraction, percentage.fraction, input / 1000.0)
     }
 
     @Test
@@ -40,8 +42,8 @@ class FractionalPercentageTest {
     }
 
     private fun testInvalidPercentage(input: Double, expectedErrorMessage: String) {
-        ExceptionAssert.assertThrows { FractionalPercentage.ofFraction(input) }
-//                .assertExceptionType(RuntimeException::class)
+        ExceptionAssert.assertThrows { FractionalPercentage.ofPercentage(input) }
+                .assertExactExceptionType(InvalidFractionException::class)
                 .assertExceptionMessage(expectedErrorMessage)
     }
 
@@ -56,6 +58,7 @@ class FractionalPercentageTest {
 
     private fun testInvalidFraction(input: Double, expectedErrorMessage: String) {
         ExceptionAssert.assertThrows { FractionalPercentage.ofFraction(input) }
+                .assertExactExceptionType(InvalidFractionException::class)
                 .assertExceptionMessage(expectedErrorMessage)
     }
 }
