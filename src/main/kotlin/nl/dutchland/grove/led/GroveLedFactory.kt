@@ -1,4 +1,4 @@
-package nl.dutchland.grove.grovepiports.led
+package nl.dutchland.grove.led
 
 import nl.dutchland.grove.grovepiports.DigitalPort
 import nl.dutchland.grove.grovepiports.PulseWidthModulationPort

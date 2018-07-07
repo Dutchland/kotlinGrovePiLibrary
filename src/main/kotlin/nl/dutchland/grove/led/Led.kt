@@ -1,4 +1,4 @@
-package nl.dutchland.grove.grovepiports.led
+package nl.dutchland.grove.led
 
 interface Led {
     fun turnOn()

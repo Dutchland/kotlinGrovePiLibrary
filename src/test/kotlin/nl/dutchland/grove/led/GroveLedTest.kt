@@ -1,4 +1,4 @@
-package nl.dutchland.grove.grovepiports.led
+package nl.dutchland.grove.led
 
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify

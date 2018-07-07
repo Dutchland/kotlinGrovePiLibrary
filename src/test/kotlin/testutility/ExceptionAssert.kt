@@ -1,4 +1,4 @@
-package nl.dutchland.grove.grovepiports
+package testutility
 
 import kotlin.reflect.KClass
 import kotlin.test.assertEquals
@@ -32,6 +32,4 @@ class ExceptionAssert private constructor(private val exception: Exception) {
                 "Expected expectedMessage: \"$expectedMessage\" but got: \"$actualMessage\"")
         return this
     }
-
-
 }
