@@ -11,7 +11,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.2.50</kotlin.version>
+        <kotlin.version>1.2.51</kotlin.version>
         <mockito-kotlin.version>1.6.0</mockito-kotlin.version>
         <main.class>nl.dutchland.grove.MainKt</main.class>
     </properties>
@@ -37,6 +37,11 @@
             <artifactId>mockito-kotlin</artifactId>
             <version>${mockito-kotlin.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.jodamob.kotlin</groupId>
+            <artifactId>kotlin-testrunner</artifactId>
+            <version>0.2</version>
         </dependency>
         <!--TESTING-->
 

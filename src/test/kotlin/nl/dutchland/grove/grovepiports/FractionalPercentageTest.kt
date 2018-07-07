@@ -1,7 +1,6 @@
 package nl.dutchland.grove.grovepiports
 
 import nl.dutchland.grove.utility.FractionalPercentage
-import nl.dutchland.grove.utility.InvalidFractionException
 import org.junit.Assert.*
 import kotlin.test.Test
 
@@ -15,19 +14,20 @@ class FractionalPercentageTest {
 
     private fun testValidPercentage(input: Double, expectedOutput: Double) {
         val percentage = FractionalPercentage.ofPercentage(input)
-        assertEquals(expectedOutput, percentage.percentage, 0.01)
+        assertEquals(expectedOutput, percentage.percentage, input / 1000.0)
     }
 
     @Test
     fun testValidFraction() {
-        testValidFraction(0.0, 0.0)
-        testValidFraction(0.5, 50.0)
-        testValidFraction(1.0, 100.0)
+        testValidFraction(0.0, 0.0, 0.0)
+        testValidFraction(0.5, 50.0, 0.5)
+        testValidFraction(1.0, 100.0, 1.0)
     }
 
-    private fun testValidFraction(input: Double, expectedOutput: Double) {
+    private fun testValidFraction(input: Double, expectedPercentage: Double, expectedFraction: Double) {
         val percentage = FractionalPercentage.ofFraction(input)
-        assertEquals(expectedOutput, percentage.percentage, 0.01)
+        assertEquals(expectedPercentage, percentage.percentage, input / 1000.0)
+        assertEquals(expectedFraction, percentage.fraction, input / 1000.0)
     }
 
     @Test
@@ -40,14 +40,9 @@ class FractionalPercentageTest {
     }
 
     private fun testInvalidPercentage(input: Double, expectedErrorMessage: String) {
-        try {
-            FractionalPercentage.ofPercentage(input)
-        } catch (e: InvalidFractionException) {
-            assertEquals(expectedErrorMessage, e.message)
-            return
-        }
-
-        fail("Expected an exception but did not throw any")
+        ExceptionAssert.assertThrows { FractionalPercentage.ofFraction(input) }
+//                .assertExceptionType(RuntimeException::class)
+                .assertExceptionMessage(expectedErrorMessage)
     }
 
     @Test
@@ -60,13 +55,7 @@ class FractionalPercentageTest {
     }
 
     private fun testInvalidFraction(input: Double, expectedErrorMessage: String) {
-        try {
-            FractionalPercentage.ofFraction(input)
-        } catch (e: InvalidFractionException) {
-            assertEquals(expectedErrorMessage, e.message)
-            return
-        }
-
-        fail("Expected an exception but did not throw any")
+        ExceptionAssert.assertThrows { FractionalPercentage.ofFraction(input) }
+                .assertExceptionMessage(expectedErrorMessage)
     }
 }
