@@ -1,0 +1,35 @@
+package testutility
+
+import kotlin.reflect.KClass
+import kotlin.test.assertEquals
+import kotlin.test.fail
+
+typealias ExceptionThrower = () -> Unit
+
+class ExceptionAssert private constructor(private val exception: Exception) {
+    companion object {
+        fun assertThrows(function: ExceptionThrower): ExceptionAssert {
+            try {
+                function.invoke()
+            } catch (e: Exception) {
+                return ExceptionAssert(e)
+            }
+
+            fail("Expected an exception to be thrown, but there was none")
+        }
+    }
+
+    fun assertExactExceptionType(expectedType: KClass<out Exception>) : ExceptionAssert {
+        val actualType = exception::class
+        assertEquals(expectedType, actualType, "Was different type")
+
+        return this
+    }
+
+    fun assertExceptionMessage(expectedMessage : String) : ExceptionAssert {
+        val actualMessage = this.exception.message
+        assertEquals(expectedMessage, actualMessage,
+                "Expected expectedMessage: \"$expectedMessage\" but got: \"$actualMessage\"")
+        return this
+    }
+}
