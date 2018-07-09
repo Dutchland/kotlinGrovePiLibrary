@@ -19,17 +19,22 @@ class ExceptionAssert private constructor(private val exception: Exception) {
         }
     }
 
-    fun assertExactExceptionType(expectedType: KClass<out Exception>) : ExceptionAssert {
-        val actualType = exception::class
-        assertEquals(expectedType, actualType, "Was different type")
+    fun assertExactExceptionType(expectedType: KClass<out Exception>) =
+            apply {
+                val actualType = exception::class
+                assertEquals(expectedType, actualType, "Was different type")
+            }
 
-        return this
-    }
+    fun assertExactExceptionType(expectedType: Class<out Exception>) =
+            apply {
+                val actualType = exception::class.java
+                assertEquals(expectedType, actualType, "Was different type")
+            }
 
-    fun assertExceptionMessage(expectedMessage : String) : ExceptionAssert {
-        val actualMessage = this.exception.message
-        assertEquals(expectedMessage, actualMessage,
-                "Expected expectedMessage: \"$expectedMessage\" but got: \"$actualMessage\"")
-        return this
-    }
+    fun assertExceptionMessage(expectedMessage: String) =
+            apply {
+                val actualMessage = this.exception.message
+                assertEquals(expectedMessage, actualMessage,
+                        "Expected expectedMessage: \"$expectedMessage\" but got: \"$actualMessage\"")
+            }
 }

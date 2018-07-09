@@ -5,13 +5,13 @@ import java.util.*
 import kotlin.concurrent.fixedRateTimer
 
 class GroveButton internal constructor(private val digitalIn : GroveDigitalIn) : Button {
-    private var statusChangedListener : Collection<(Boolean) -> Unit> = ArrayList()
-    private val fixedRateTimer: Timer
+    private var statusChangedListeners : Collection<ButtonStatusChangedListener> = ArrayList()
+    private val pollButtonTimer: Timer
 
     private var currentStatus : Boolean = false;
 
     init {
-        this.fixedRateTimer = fixedRateTimer("Polling button task", false, 0, 100) { pollButton()}
+        this.pollButtonTimer = fixedRateTimer("Polling button task", false, 0, 100) { pollButton()}
     }
 
     private fun pollButton() {
@@ -25,11 +25,11 @@ class GroveButton internal constructor(private val digitalIn : GroveDigitalIn) :
         println("Polling button")
     }
 
-    override fun addStatusChangedListener(listener: (Boolean) -> Unit) {
-        val newListeners = ArrayList(this.statusChangedListener)
+    override fun addStatusChangedListener(listener: ButtonStatusChangedListener) {
+        val newListeners = ArrayList(this.statusChangedListeners)
         newListeners.add(listener)
 
-        this.statusChangedListener = newListeners
+        this.statusChangedListeners = newListeners
     }
 
     override fun isPressed(): Boolean {
@@ -38,7 +38,7 @@ class GroveButton internal constructor(private val digitalIn : GroveDigitalIn) :
     }
 
     private fun onStatusChanged(isPressed : Boolean) {
-        this.statusChangedListener.parallelStream()
+        this.statusChangedListeners.parallelStream()
                 .forEach{ l -> l.invoke(isPressed) }
     }
 }

@@ -1,9 +1,9 @@
 package nl.dutchland.grove
 
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
 import nl.dutchland.grove.button.GroveButton
 import org.iot.raspberry.grovepi.GroveDigitalIn
+import org.mockito.Mockito
+import org.mockito.Mockito.mock
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -16,9 +16,9 @@ class GroveButtonTest {
 
     private fun testButtonStatus(isPressed: Boolean) {
         // Arrange
-        val mockedDigitalIn = mock<GroveDigitalIn> {
-            on { get() } doReturn isPressed
-        }
+        val mockedDigitalIn = mock(GroveDigitalIn::class.java)
+        Mockito.`when`(mockedDigitalIn.get())
+                .thenReturn(isPressed)
 
         // Act
         val groveButton = GroveButton(mockedDigitalIn)
@@ -30,8 +30,7 @@ class GroveButtonTest {
     @Test
     fun testOnChangedListener() {
         // Arrange
-        val mockedDigitalIn = mock<GroveDigitalIn> {
-            on { get() } doReturn true
-        }
+        val mockedDigitalIn = mock(GroveDigitalIn::class.java)
+        Mockito.`when`(mockedDigitalIn.get()).thenReturn(true)
     }
 }
