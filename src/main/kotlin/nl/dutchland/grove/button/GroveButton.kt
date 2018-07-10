@@ -21,8 +21,6 @@ class GroveButton internal constructor(private val digitalIn : GroveDigitalIn) :
             this.currentStatus = newStatus;
             this.onStatusChanged(newStatus)
         }
-
-        println("Polling button")
     }
 
     override fun addStatusChangedListener(listener: ButtonStatusChangedListener) {
