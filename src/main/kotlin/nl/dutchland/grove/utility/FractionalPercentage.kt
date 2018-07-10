@@ -1,6 +1,6 @@
 package nl.dutchland.grove.utility
 
-class FractionalPercentage private constructor(val percentage: Double) {
+data class FractionalPercentage private constructor(val percentage: Double) {
     val fraction : Double = this.percentage / 100.0
 
     companion object {
