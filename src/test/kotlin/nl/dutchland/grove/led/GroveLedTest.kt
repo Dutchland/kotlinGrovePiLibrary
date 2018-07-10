@@ -1,18 +1,15 @@
 package nl.dutchland.grove.led
 
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.verify
-import de.jodamob.kotlin.testrunner.KotlinTestRunner
 import nl.dutchland.grove.utility.FractionalPercentage
 import org.junit.Test
-import org.junit.runner.RunWith
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
 
-@RunWith(KotlinTestRunner::class)
 class GroveLedTest {
     @Test
     fun testTurnOn() {
         // Arrange
-        val mockedLed = mock<org.iot.raspberry.grovepi.devices.GroveLed>()
+        val mockedLed = mock(org.iot.raspberry.grovepi.devices.GroveLed::class.java)
         val groveLed = GroveLed(mockedLed)
 
         // Act
@@ -25,7 +22,7 @@ class GroveLedTest {
     @Test
     fun testTurnOff() {
         // Arrange
-        val mockedLed = mock<org.iot.raspberry.grovepi.devices.GroveLed>()
+        val mockedLed = mock(org.iot.raspberry.grovepi.devices.GroveLed::class.java)
         val groveLed = GroveLed(mockedLed)
 
         // Act
@@ -44,7 +41,7 @@ class GroveLedTest {
 
     private fun testTurnOnWithPercentage(percentage: Double, expectedBrightnessNumber: Int) {
         // Arrange
-        val mockedLed = mock<org.iot.raspberry.grovepi.devices.GroveLed>()
+        val mockedLed = mock(org.iot.raspberry.grovepi.devices.GroveLed::class.java)
         val groveLed = GroveLed(mockedLed)
 
         // Act
