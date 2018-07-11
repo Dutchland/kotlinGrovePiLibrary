@@ -6,7 +6,7 @@ import java.util.*
 import kotlin.concurrent.fixedRateTimer
 
 class GroveRotarySensor internal constructor(private val sensor: GroveRotarySensor) : RotarySensor {
-    private var currentStatus: FractionalPercentage = getStatus()
+    private var mostRecentStatus: FractionalPercentage = getStatus()
     private var statusChangedListeners : Collection<RotaryChangedListener> = ArrayList()
     private var pollRotaryTimer: Timer
 
@@ -26,8 +26,8 @@ class GroveRotarySensor internal constructor(private val sensor: GroveRotarySens
     private fun pollRotary() {
         val newStatus = getStatus()
 
-        if (this.currentStatus != newStatus) {
-            this.currentStatus = newStatus;
+        if (this.mostRecentStatus != newStatus) {
+            this.mostRecentStatus = newStatus;
             this.onStatusChanged(newStatus)
         }
     }

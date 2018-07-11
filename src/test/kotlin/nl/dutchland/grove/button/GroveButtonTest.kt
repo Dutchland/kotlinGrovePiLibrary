@@ -34,14 +34,13 @@ class GroveButtonTest {
     fun testOnChangedListener_StatusChanges() {
         // Arrange
         val mockedDigitalIn = mock(GroveDigitalIn::class.java)
+        Mockito.`when`(mockedDigitalIn.get()).thenReturn(true)
         val groveButton = GroveButton(mockedDigitalIn)
 
         val fakeListener = mock<ButtonStatusChangedListener>()
         groveButton.addStatusChangedListener(fakeListener)
 
         // Act
-        Mockito.`when`(mockedDigitalIn.get()).thenReturn(true)
-        Thread.sleep(101)
         Mockito.`when`(mockedDigitalIn.get()).thenReturn(false)
         Thread.sleep(101)
 
@@ -65,6 +64,6 @@ class GroveButtonTest {
 
         // Assert
         verify(fakeListener, times(0)).invoke(true)
-        verify(fakeListener, times(0)).invoke(false)
+        verify(fakeListener).invoke(false)
     }
 }
