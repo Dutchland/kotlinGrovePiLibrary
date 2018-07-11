@@ -8,14 +8,14 @@ class GroveButton internal constructor(private val digitalIn : GroveDigitalIn) :
     private var statusChangedListeners : Collection<ButtonStatusChangedListener> = ArrayList()
     private val pollButtonTimer: Timer
 
-    private var currentStatus : Boolean = false;
+    private var currentStatus : Boolean = getStatus();
 
     init {
         this.pollButtonTimer = fixedRateTimer("Polling button task", false, 0, 100) { pollButton()}
     }
 
     private fun pollButton() {
-        val newStatus : Boolean = this.digitalIn.get()
+        val newStatus : Boolean = getStatus()
 
         if (this.currentStatus != newStatus) {
             this.currentStatus = newStatus;
@@ -26,13 +26,17 @@ class GroveButton internal constructor(private val digitalIn : GroveDigitalIn) :
     override fun addStatusChangedListener(listener: ButtonStatusChangedListener) {
         val newListeners = ArrayList(this.statusChangedListeners)
         newListeners.add(listener)
-
         this.statusChangedListeners = newListeners
+
+        listener.invoke(getStatus())
+    }
+
+    private fun getStatus() : Boolean {
+        return this.digitalIn.get();
     }
 
     override fun isPressed(): Boolean {
-        pollButton()
-        return this.currentStatus
+        return getStatus()
     }
 
     private fun onStatusChanged(isPressed : Boolean) {

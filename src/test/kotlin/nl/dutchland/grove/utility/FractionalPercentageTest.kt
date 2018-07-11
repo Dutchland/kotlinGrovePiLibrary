@@ -1,8 +1,6 @@
-package nl.dutchland.grove.grovepiports
+package nl.dutchland.grove.utility
 
 import testutility.ExceptionAssert
-import nl.dutchland.grove.utility.FractionalPercentage
-import nl.dutchland.grove.utility.InvalidFractionException
 import org.junit.Assert.*
 import kotlin.test.Test
 

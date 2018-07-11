@@ -1,9 +1,7 @@
-package nl.dutchland.grove
+package nl.dutchland.grove.button
 
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.times
-import nl.dutchland.grove.button.ButtonStatusChangedListener
-import nl.dutchland.grove.button.GroveButton
 import org.iot.raspberry.grovepi.GroveDigitalIn
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
@@ -36,18 +34,17 @@ class GroveButtonTest {
     fun testOnChangedListener_StatusChanges() {
         // Arrange
         val mockedDigitalIn = mock(GroveDigitalIn::class.java)
+        Mockito.`when`(mockedDigitalIn.get()).thenReturn(true)
         val groveButton = GroveButton(mockedDigitalIn)
 
         val fakeListener = mock<ButtonStatusChangedListener>()
         groveButton.addStatusChangedListener(fakeListener)
 
-        // When
-        Mockito.`when`(mockedDigitalIn.get()).thenReturn(true)
-        Thread.sleep(101)
+        // Act
         Mockito.`when`(mockedDigitalIn.get()).thenReturn(false)
         Thread.sleep(101)
 
-        // Then
+        // Assert
         verify(fakeListener).invoke(true)
         verify(fakeListener).invoke(false)
     }
@@ -62,11 +59,11 @@ class GroveButtonTest {
         val fakeListener = mock<ButtonStatusChangedListener>()
         groveButton.addStatusChangedListener(fakeListener)
 
-        // When
+        // Act
         Thread.sleep(101)
 
-        // Then
+        // Assert
         verify(fakeListener, times(0)).invoke(true)
-        verify(fakeListener, times(0)).invoke(false)
+        verify(fakeListener).invoke(false)
     }
 }
