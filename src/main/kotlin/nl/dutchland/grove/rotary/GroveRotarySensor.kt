@@ -2,10 +2,34 @@ package nl.dutchland.grove.rotary
 
 import nl.dutchland.grove.utility.FractionalPercentage
 import org.iot.raspberry.grovepi.devices.GroveRotarySensor
+import java.util.*
+import kotlin.concurrent.fixedRateTimer
 
 class GroveRotarySensor internal constructor(private val sensor: GroveRotarySensor) : RotarySensor {
+    private var currentStatus: FractionalPercentage = getStatus()
+    private var statusChangedListeners : Collection<RotaryChangedListener> = ArrayList()
+    private var pollRotaryTimer: Timer
+
+    init {
+        this.pollRotaryTimer = fixedRateTimer("Polling rotary task", false, 0, 100) { pollRotary()}
+    }
+
     override fun addStatusChangedListener(listener: RotaryChangedListener) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val newListeners = ArrayList(this.statusChangedListeners)
+        newListeners.add(listener)
+
+        this.statusChangedListeners = newListeners
+
+        listener.invoke(getStatus())
+    }
+
+    private fun pollRotary() {
+        val newStatus = getStatus()
+
+        if (this.currentStatus != newStatus) {
+            this.currentStatus = newStatus;
+            this.onStatusChanged(newStatus)
+        }
     }
 
     override fun getStatus(): FractionalPercentage {
@@ -17,5 +41,10 @@ class GroveRotarySensor internal constructor(private val sensor: GroveRotarySens
 
         val angle = Math.min(GroveRotarySensor.FULL_ANGLE, sensorValue.degrees)
         return Math.max(0.0, angle) / GroveRotarySensor.FULL_ANGLE
+    }
+
+    private fun onStatusChanged(newStatus : FractionalPercentage) {
+        this.statusChangedListeners.parallelStream()
+                .forEach{ l -> l.invoke(newStatus) }
     }
 }
