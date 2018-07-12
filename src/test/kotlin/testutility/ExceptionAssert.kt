@@ -17,6 +17,14 @@ class ExceptionAssert private constructor(private val exception: Exception) {
 
             fail("Expected an exception to be thrown, but there was none")
         }
+
+        fun assertNotThrows(function: ExceptionThrower) {
+            try {
+                function.invoke()
+            } catch (e: Exception) {
+                fail("Asserted not to throw an exception but did: $e")
+            }
+        }
     }
 
     fun assertExactExceptionType(expectedType: KClass<out Exception>) =
