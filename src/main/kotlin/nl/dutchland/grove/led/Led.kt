@@ -1,6 +1,6 @@
 package nl.dutchland.grove.led
 
-interface Led {
-    fun turnOn()
-    fun turnOff()
+import nl.dutchland.grove.digitaloutput.DigitalOutputDevice
+
+interface Led : DigitalOutputDevice {
 }
