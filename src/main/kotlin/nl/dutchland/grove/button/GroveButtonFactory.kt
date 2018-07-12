@@ -6,7 +6,7 @@ import org.iot.raspberry.grovepi.GrovePi
 
 class GroveButtonFactory(private val grovePi: GrovePi) {
     fun aButton(port: DigitalPort) : GroveButton {
-        val digitalIn = GroveDigitalIn(this.grovePi, port.digitalPin)
-        return GroveButton(digitalIn)
+        return GroveButton(
+                GroveDigitalIn(this.grovePi, port.digitalPin))
     }
 }
