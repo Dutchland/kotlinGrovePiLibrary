@@ -1,6 +1,6 @@
 package nl.dutchland.grove.utility
 
-class Temperature private constructor(private val temperatureInKelvin: Double) {
+data class Temperature private constructor(private val temperatureInKelvin: Double) {
     companion object {
         fun of(value: Double, scale : Scale): Temperature {
             scale.validate(value)
