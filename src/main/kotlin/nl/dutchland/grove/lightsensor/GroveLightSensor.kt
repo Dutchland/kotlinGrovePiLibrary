@@ -1,7 +1,8 @@
 package nl.dutchland.grove.lightsensor
 
 import nl.dutchland.grove.utility.FractionalPercentage
-import nl.dutchland.grove.utility.Interval
+import nl.dutchland.grove.utility.time.Duration
+import nl.dutchland.grove.utility.time.Millisecond
 import org.iot.raspberry.grovepi.devices.GroveLightSensor
 import kotlin.concurrent.fixedRateTimer
 
@@ -18,8 +19,9 @@ class GroveLightSensor internal constructor(private val sensor : GroveLightSenso
         this.mostRecentValue = getStatus()
     }
 
-    override fun subscribe(listener: LightSensorValueListener, pollInterval: Interval) {
-        fixedRateTimer("Polling timer", false, pollInterval.inMilliseconds, pollInterval.inMilliseconds) { callListener(listener) }
+    override fun subscribe(listener: LightSensorValueListener, pollInterval: Duration) {
+        val intervalInMilliseconds : Long = pollInterval.valueIn(Millisecond).toLong()
+        fixedRateTimer("Polling timer", false, intervalInMilliseconds, intervalInMilliseconds) { callListener(listener) }
         callListener(listener)
     }
 

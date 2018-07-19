@@ -16,8 +16,8 @@ class Conditions {
             }
         }
 
-        fun assertLargerThanZero(value: Long, errorHandler: ErrorHandler) {
-            if (value <= 0) {
+        fun assertLargerThanZero(value: Double, errorHandler: ErrorHandler) {
+            if (value <= 0.0) {
                 errorHandler.invoke()
             }
         }

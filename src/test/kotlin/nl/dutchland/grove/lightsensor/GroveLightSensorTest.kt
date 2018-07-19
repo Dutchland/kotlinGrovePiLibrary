@@ -2,7 +2,8 @@ package nl.dutchland.grove.lightsensor
 
 import com.nhaarman.mockito_kotlin.mock
 import nl.dutchland.grove.utility.FractionalPercentage
-import nl.dutchland.grove.utility.Interval
+import nl.dutchland.grove.utility.time.Duration
+import nl.dutchland.grove.utility.time.Millisecond
 import org.iot.raspberry.grovepi.devices.GroveLightSensor
 import org.junit.Assert
 import org.mockito.Mockito.*
@@ -43,7 +44,7 @@ class GroveLightSensorTest {
         val mockedListener = mock<LightSensorValueListener>()
 
         // Act
-        sensor.subscribe(mockedListener, Interval.inMilliseconds(100))
+        sensor.subscribe(mockedListener, Duration.of(100.0, Millisecond))
         `when`(groveSensor.get()).thenReturn(MAX_SENSOR_VALUE)
         Thread.sleep(101)
 
