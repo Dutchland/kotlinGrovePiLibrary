@@ -10,8 +10,14 @@ class Conditions {
             }
         }
 
-        fun assertNotNegative(percentage: Double, errorHandler: ErrorHandler) {
-            if (percentage < 0) {
+        fun assertNotNegative(value: Double, errorHandler: ErrorHandler) {
+            if (value < 0) {
+                errorHandler.invoke()
+            }
+        }
+
+        fun assertLargerThanZero(value: Long, errorHandler: ErrorHandler) {
+            if (value <= 0) {
                 errorHandler.invoke()
             }
         }
