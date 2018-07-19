@@ -1,6 +1,6 @@
-package nl.dutchland.grove.utility
+package nl.dutchland.grove.utility.temperature
 
-class Celcius : Temperature.Scale {
+object Celcius : Temperature.Scale {
     override
     fun fromKelvin(valueInKelvin: Double): Double {
         return valueInKelvin + absoluteZero

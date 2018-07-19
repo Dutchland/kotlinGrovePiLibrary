@@ -1,6 +1,8 @@
 package nl.dutchland.grove.utility
 
 import com.nhaarman.mockito_kotlin.mock
+import nl.dutchland.grove.utility.temperature.InvalidTemperatureException
+import nl.dutchland.grove.utility.temperature.Temperature
 import org.junit.Assert
 import org.mockito.Mockito
 import testutility.ExceptionAssert

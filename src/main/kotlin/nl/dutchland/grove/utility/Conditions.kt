@@ -11,7 +11,14 @@ class Conditions {
         }
 
         fun assertNotNegative(value: Double, errorHandler: ErrorHandler) {
-            if (value < 0.0) {
+            if (value < 0) {
+                errorHandler.invoke()
+            }
+        }
+
+        fun assertLargerThanZero(value: Double, errorHandler: ErrorHandler) {
+            if (value <= 0.0) {
+
                 errorHandler.invoke()
             }
         }

@@ -1,4 +1,4 @@
-package nl.dutchland.grove.utility
+package nl.dutchland.grove.utility.temperature
 
 data class Temperature private constructor(private val temperatureInKelvin: Double) {
     companion object {
@@ -7,7 +7,7 @@ data class Temperature private constructor(private val temperatureInKelvin: Doub
             return Temperature(scale.toKelvin(value))
         }
 
-        val ABSOLUTE_ZERO: Temperature = Temperature(Kelvin().absoluteZero)
+        val ABSOLUTE_ZERO: Temperature = Temperature(Kelvin.absoluteZero)
     }
 
     fun valueIn(scale : Scale): Double {
