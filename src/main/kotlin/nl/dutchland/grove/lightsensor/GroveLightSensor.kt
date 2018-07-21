@@ -30,12 +30,8 @@ class GroveLightSensor internal constructor(private val sensor : GroveLightSenso
     }
 
     override fun getStatus(): FractionalPercentage {
-        val sensorValue = getSensorValue()
+        val sensorValue = sensor.get().coerceIn(0.0, MAX_SENSOR_VALUE)
         return FractionalPercentage.ofFraction(sensorValue / MAX_SENSOR_VALUE)
     }
 
-    private fun getSensorValue(): Double {
-        val nonNegativeValue = Math.max(0.0, sensor.get())
-        return Math.min(nonNegativeValue, MAX_SENSOR_VALUE)
-    }
 }
