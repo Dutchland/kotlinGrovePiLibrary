@@ -19,7 +19,11 @@ class GroveTemperatureHumiditySensor internal constructor(private val sensor : G
     }
 
     override fun subscribeToTemperatureHumidity(listener: TemperatureHumidityListener, pollInterval: Period) {
+        val intervalInMilliseconds : Long = pollInterval.valueIn(Millisecond).toLong()
+        fixedRateTimer("Calling listener", false, intervalInMilliseconds, intervalInMilliseconds)
+        { callTemperatureHumidityListener(listener) }
 
+        callTemperatureHumidityListener(listener)
     }
 
     override fun subscribeToTemperature(listener: TemperatureListener, pollInterval: Period) {
@@ -67,5 +71,9 @@ class GroveTemperatureHumiditySensor internal constructor(private val sensor : G
         listener.invoke(HumidityMeasurement(
                 this.mostRecentValue.humidity,
                 this.mostRecentValue.timeStamp))
+    }
+
+    private fun callTemperatureHumidityListener(listener: TemperatureHumidityListener) {
+        listener.invoke(this.mostRecentValue)
     }
 }

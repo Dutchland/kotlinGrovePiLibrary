@@ -85,11 +85,11 @@ class GroveTemperatureHumiditySensorTest {
         // Act
         sensor.subscribeToTemperature(mockedListener, Period.of(100.0, Millisecond))
         `when`(groveSensor.get()).thenReturn(GroveTemperatureAndHumidityValue(someOtherTemperature, 0.0))
-        Thread.sleep(101)
+        Thread.sleep(200)
 
         // Assert
         argumentCaptor<TemperatureMeasurement>().apply {
-            verify(mockedListener, times(2)).invoke(capture())
+            verify(mockedListener, atLeast(2)).invoke(capture())
             assertEquals(Temperature.of(someTemperature, Celcius), firstValue.temperature)
             assertEquals(Temperature.of(someOtherTemperature, Celcius), allValues.last().temperature)
         }
@@ -98,25 +98,57 @@ class GroveTemperatureHumiditySensorTest {
     @Test
     fun testSubscribeHumidity() {
         // Arrange
-        val someHumidityPercentage = 40.0
-        val someOtherHumidityPercentage = 50.0
+        val someHumidityPercentage = FractionalPercentage.ofPercentage(40.0)
+        val someOtherHumidityPercentage = FractionalPercentage.ofPercentage(50.0)
 
         val groveSensor = mock(GroveTemperatureAndHumiditySensor::class.java)
-        `when`(groveSensor.get()).thenReturn(GroveTemperatureAndHumidityValue(0.0, someHumidityPercentage))
+        `when`(groveSensor.get()).thenReturn(GroveTemperatureAndHumidityValue(0.0, someHumidityPercentage.percentage))
         val sensor = nl.dutchland.grove.temperatureandhumidity.GroveTemperatureHumiditySensor(groveSensor)
 
         val mockedListener = mock<HumidityListener>()
 
         // Act
         sensor.subscribeToHumidity(mockedListener, Period.of(100.0, Millisecond))
-        `when`(groveSensor.get()).thenReturn(GroveTemperatureAndHumidityValue(0.0, someOtherHumidityPercentage))
-        Thread.sleep(101)
+        `when`(groveSensor.get()).thenReturn(GroveTemperatureAndHumidityValue(0.0, someOtherHumidityPercentage.percentage))
+        Thread.sleep(200)
 
         // Assert
         argumentCaptor<HumidityMeasurement>().apply {
-            verify(mockedListener, times(2)).invoke(capture())
-            assertEquals(RelativeHumidity(FractionalPercentage.ofPercentage(someHumidityPercentage)), firstValue.humidity)
-            assertEquals(RelativeHumidity(FractionalPercentage.ofPercentage(someOtherHumidityPercentage)), allValues.last().humidity)
+            verify(mockedListener, atLeast(2)).invoke(capture())
+            assertEquals(RelativeHumidity(someHumidityPercentage), firstValue.humidity)
+            assertEquals(RelativeHumidity(someOtherHumidityPercentage), allValues.last().humidity)
+        }
+    }
+
+    @Test
+    fun testSubscribeTemperatureHumidity() {
+        // Arrange
+        val someHumidityPercentage = FractionalPercentage.ofPercentage(40.0)
+        val someOtherHumidityPercentage = FractionalPercentage.ofPercentage(50.0)
+
+        val someTemperature = 20.0
+        val someOtherTemperature = 30.0
+
+        val groveSensor = mock(GroveTemperatureAndHumiditySensor::class.java)
+        `when`(groveSensor.get()).thenReturn(GroveTemperatureAndHumidityValue(someTemperature, someHumidityPercentage.percentage))
+        val sensor = nl.dutchland.grove.temperatureandhumidity.GroveTemperatureHumiditySensor(groveSensor)
+
+        val mockedListener = mock<TemperatureHumidityListener>()
+
+        // Act
+        sensor.subscribeToTemperatureHumidity(mockedListener, Period.of(100.0, Millisecond))
+        `when`(groveSensor.get()).thenReturn(GroveTemperatureAndHumidityValue(someOtherTemperature, someOtherHumidityPercentage.percentage))
+        Thread.sleep(200)
+
+        // Assert
+        argumentCaptor<TemperatureHumidityMeasurement>().apply {
+            verify(mockedListener, atLeast(2)).invoke(capture())
+
+            assertEquals(RelativeHumidity(someHumidityPercentage), firstValue.humidity)
+            assertEquals(RelativeHumidity(someOtherHumidityPercentage), allValues.last().humidity)
+
+            assertEquals(Temperature.of(someTemperature, Celcius), firstValue.temperature)
+            assertEquals(Temperature.of(someOtherTemperature, Celcius), allValues.last().temperature)
         }
     }
 }
