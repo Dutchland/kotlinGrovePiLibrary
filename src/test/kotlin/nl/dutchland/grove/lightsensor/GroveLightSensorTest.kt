@@ -1,5 +1,6 @@
 package nl.dutchland.grove.lightsensor
 
+import com.nhaarman.mockito_kotlin.argumentCaptor
 import com.nhaarman.mockito_kotlin.mock
 import nl.dutchland.grove.utility.FractionalPercentage
 import nl.dutchland.grove.utility.time.Period
@@ -8,6 +9,7 @@ import org.iot.raspberry.grovepi.devices.GroveLightSensor
 import org.junit.Assert
 import org.mockito.Mockito.*
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class GroveLightSensorTest {
     private val MAX_SENSOR_VALUE = 1023.0
@@ -46,10 +48,14 @@ class GroveLightSensorTest {
         // Act
         sensor.subscribe(mockedListener, Period.of(100.0, Millisecond))
         `when`(groveSensor.get()).thenReturn(MAX_SENSOR_VALUE)
-        Thread.sleep(101)
+        Thread.sleep(150)
 
         // Assert
-        verify(mockedListener).invoke(FractionalPercentage.ofFraction(0.0))
-        verify(mockedListener).invoke(FractionalPercentage.ofFraction(1.0))
+        argumentCaptor<FractionalPercentage>().apply {
+            verify(mockedListener, atLeast(2)).invoke(capture())
+
+            assertEquals(FractionalPercentage.ofFraction(0.0), firstValue)
+            assertEquals(FractionalPercentage.ofFraction(1.0), allValues.last())
+        }
     }
 }
