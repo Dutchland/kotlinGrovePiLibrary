@@ -10,7 +10,7 @@ import nl.dutchland.grove.utility.time.Period
 import org.iot.raspberry.grovepi.devices.GroveTemperatureAndHumiditySensor
 import kotlin.concurrent.fixedRateTimer
 
-class GroveTemperatureHumiditySensor internal constructor(private val sensor : GroveTemperatureAndHumiditySensor) : TemperatureHumiditySensor{
+internal class GroveTemperatureHumiditySensor(private val sensor : GroveTemperatureAndHumiditySensor) : TemperatureHumiditySensor{
     private var mostRecentValue = getTemperatureHumidity()
 
     init {

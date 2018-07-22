@@ -6,7 +6,7 @@ import nl.dutchland.grove.utility.time.Millisecond
 import org.iot.raspberry.grovepi.devices.GroveLightSensor
 import kotlin.concurrent.fixedRateTimer
 
-class GroveLightSensor internal constructor(private val sensor : GroveLightSensor) : LightSensor {
+internal class GroveLightSensor(private val sensor : GroveLightSensor) : LightSensor {
     private val MAX_SENSOR_VALUE = 1023.0
 
     private var mostRecentValue: FractionalPercentage = getStatus()

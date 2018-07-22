@@ -5,7 +5,7 @@ import org.iot.raspberry.grovepi.devices.GroveRotarySensor
 import java.util.*
 import kotlin.concurrent.fixedRateTimer
 
-class GroveRotarySensor internal constructor(private val sensor: GroveRotarySensor) : RotarySensor {
+internal class GroveRotarySensor(private val sensor: GroveRotarySensor) : RotarySensor {
     private var mostRecentStatus: FractionalPercentage = getStatus()
     private var statusChangedListeners : Collection<RotaryChangedListener> = ArrayList()
     private var pollRotaryTimer: Timer
