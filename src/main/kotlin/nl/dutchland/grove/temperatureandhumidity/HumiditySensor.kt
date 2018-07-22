@@ -1,7 +1,10 @@
 package nl.dutchland.grove.temperatureandhumidity
 
-typealias HumidityMeasurementListener = (HumidityMeasurement) -> Unit
+import nl.dutchland.grove.utility.time.Period
+
+typealias HumidityListener = (HumidityMeasurement) -> Unit
 
 interface HumiditySensor {
     fun getHumidity() : HumidityMeasurement
+    fun subscribeToHumidity(listener: HumidityListener, pollInterval: Period)
 }

@@ -1,6 +1,6 @@
 package nl.dutchland.grove.utility.time
 
-object Millisecond : Duration.TimeScale {
+object Millisecond : Period.TimeScale {
     private val MILLI_TO_SECONDS = 1_000
 
     override fun toSeconds(value: Double): Double {

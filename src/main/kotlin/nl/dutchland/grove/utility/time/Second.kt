@@ -1,6 +1,6 @@
 package nl.dutchland.grove.utility.time
 
-object Second : Duration.TimeScale {
+object Second : Period.TimeScale {
     override fun toSeconds(value: Double): Double {
         return value
     }
