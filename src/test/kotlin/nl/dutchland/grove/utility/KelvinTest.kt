@@ -22,7 +22,6 @@ class KelvinTest {
 
     @Test
     fun test_validate_Invalid() {
-
         ExceptionAssert.assertThrows { Kelvin.validate(-1.0) }
                 .assertExactExceptionType(InvalidTemperatureException::class)
                 .assertExceptionMessage("Invalid temperature: -1.0. Minimal value is 0.0 Kelvin")
