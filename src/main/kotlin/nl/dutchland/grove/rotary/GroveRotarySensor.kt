@@ -33,14 +33,9 @@ class GroveRotarySensor internal constructor(private val sensor: GroveRotarySens
     }
 
     override fun getStatus(): FractionalPercentage {
-        return FractionalPercentage.ofFraction(getSensorTurnFraction())
-    }
-
-    private fun getSensorTurnFraction() : Double {
         val sensorValue = this.sensor.get()
-
-        val angle = Math.min(GroveRotarySensor.FULL_ANGLE, sensorValue.degrees)
-        return Math.max(0.0, angle) / GroveRotarySensor.FULL_ANGLE
+        val turnFraction =  sensorValue.degrees.coerceIn(0.0, GroveRotarySensor.FULL_ANGLE) / GroveRotarySensor.FULL_ANGLE
+        return FractionalPercentage.ofFraction(turnFraction)
     }
 
     private fun onStatusChanged(newStatus : FractionalPercentage) {

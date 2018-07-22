@@ -60,7 +60,7 @@ class GroveRotarySensorTest {
         // Act
         groveRotarySensor.addStatusChangedListener(fakeListener)
         Mockito.`when`(mockeGroveRotarySensor.get()).thenReturn(createGroveRotaryValue(0.0))
-        Thread.sleep(101)
+        Thread.sleep(200)
 
         // Assert
         Mockito.verify(fakeListener).invoke(FractionalPercentage.ofPercentage(0.0))
