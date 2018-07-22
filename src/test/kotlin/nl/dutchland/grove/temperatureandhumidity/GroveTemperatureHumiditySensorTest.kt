@@ -2,6 +2,7 @@ package nl.dutchland.grove.temperatureandhumidity
 
 import com.nhaarman.mockito_kotlin.*
 import nl.dutchland.grove.utility.FractionalPercentage
+import nl.dutchland.grove.utility.RelativeHumidity
 import nl.dutchland.grove.utility.temperature.Celcius
 import nl.dutchland.grove.utility.temperature.Temperature
 import nl.dutchland.grove.utility.time.Millisecond
@@ -84,13 +85,38 @@ class GroveTemperatureHumiditySensorTest {
         // Act
         sensor.subscribeToTemperature(mockedListener, Period.of(100.0, Millisecond))
         `when`(groveSensor.get()).thenReturn(GroveTemperatureAndHumidityValue(someOtherTemperature, 0.0))
-        Thread.sleep(150)
+        Thread.sleep(101)
 
         // Assert
         argumentCaptor<TemperatureMeasurement>().apply {
             verify(mockedListener, times(2)).invoke(capture())
             assertEquals(Temperature.of(someTemperature, Celcius), firstValue.temperature)
-            assertEquals(Temperature.of(someOtherTemperature, Celcius), secondValue.temperature)
+            assertEquals(Temperature.of(someOtherTemperature, Celcius), allValues.last().temperature)
+        }
+    }
+
+    @Test
+    fun testSubscribeHumidity() {
+        // Arrange
+        val someHumidityPercentage = 40.0
+        val someOtherHumidityPercentage = 50.0
+
+        val groveSensor = mock(GroveTemperatureAndHumiditySensor::class.java)
+        `when`(groveSensor.get()).thenReturn(GroveTemperatureAndHumidityValue(0.0, someHumidityPercentage))
+        val sensor = nl.dutchland.grove.temperatureandhumidity.GroveTemperatureHumiditySensor(groveSensor)
+
+        val mockedListener = mock<HumidityListener>()
+
+        // Act
+        sensor.subscribeToHumidity(mockedListener, Period.of(100.0, Millisecond))
+        `when`(groveSensor.get()).thenReturn(GroveTemperatureAndHumidityValue(0.0, someOtherHumidityPercentage))
+        Thread.sleep(101)
+
+        // Assert
+        argumentCaptor<HumidityMeasurement>().apply {
+            verify(mockedListener, times(2)).invoke(capture())
+            assertEquals(RelativeHumidity(FractionalPercentage.ofPercentage(someHumidityPercentage)), firstValue.humidity)
+            assertEquals(RelativeHumidity(FractionalPercentage.ofPercentage(someOtherHumidityPercentage)), allValues.last().humidity)
         }
     }
 }

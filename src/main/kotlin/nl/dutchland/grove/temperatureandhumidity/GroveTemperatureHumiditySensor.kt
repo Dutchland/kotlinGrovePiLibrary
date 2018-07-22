@@ -24,18 +24,18 @@ class GroveTemperatureHumiditySensor internal constructor(private val sensor : G
 
     override fun subscribeToTemperature(listener: TemperatureListener, pollInterval: Period) {
         val intervalInMilliseconds : Long = pollInterval.valueIn(Millisecond).toLong()
-        fixedRateTimer("Calling listener", false, intervalInMilliseconds, intervalInMilliseconds) { callListener(listener) }
-        callListener(listener)
-    }
+        fixedRateTimer("Calling listener", false, intervalInMilliseconds, intervalInMilliseconds)
+        { callTemperatureListener(listener) }
 
-    private fun callListener(listener: TemperatureListener) {
-        listener.invoke(TemperatureMeasurement(
-                this.mostRecentValue.temperature,
-                this.mostRecentValue.timeStamp))
+        callTemperatureListener(listener)
     }
 
     override fun subscribeToHumidity(listener: HumidityListener, pollInterval: Period) {
+        val intervalInMilliseconds : Long = pollInterval.valueIn(Millisecond).toLong()
+        fixedRateTimer("Calling listener", false, intervalInMilliseconds, intervalInMilliseconds)
+        { callHumidityListener(listener) }
 
+        callHumidityListener(listener)
     }
 
     override fun getTemperatureHumidity(): TemperatureHumidityMeasurement {
@@ -55,5 +55,17 @@ class GroveTemperatureHumiditySensor internal constructor(private val sensor : G
     override fun getTemperature(): TemperatureMeasurement {
         val temperatureAndHumidity = getTemperatureHumidity()
         return TemperatureMeasurement(temperatureAndHumidity.temperature, temperatureAndHumidity.timeStamp)
+    }
+
+    private fun callTemperatureListener(listener: TemperatureListener) {
+        listener.invoke(TemperatureMeasurement(
+                this.mostRecentValue.temperature,
+                this.mostRecentValue.timeStamp))
+    }
+
+    private fun callHumidityListener(listener: HumidityListener) {
+        listener.invoke(HumidityMeasurement(
+                this.mostRecentValue.humidity,
+                this.mostRecentValue.timeStamp))
     }
 }
