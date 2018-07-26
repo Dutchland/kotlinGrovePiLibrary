@@ -1,6 +1,10 @@
 package nl.dutchland.grove.utility.temperature
 
 data class Temperature private constructor(private val temperatureInKelvin: Double) {
+    init {
+        Kelvin.validate(temperatureInKelvin)
+    }
+
     companion object {
         fun of(value: Double, scale : Scale): Temperature {
             scale.validate(value)
@@ -22,4 +26,4 @@ data class Temperature private constructor(private val temperatureInKelvin: Doub
     }
 }
 
-class InvalidTemperatureException(message: String) : RuntimeException(message)
+class InvalidTemperatureException(message: String) : IllegalArgumentException (message)

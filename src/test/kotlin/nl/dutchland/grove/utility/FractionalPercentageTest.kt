@@ -32,6 +32,15 @@ class FractionalPercentageTest {
     }
 
     @Test
+    fun testCopy() {
+        val validFraction = FractionalPercentage.ofFraction(0.5)
+
+        ExceptionAssert.assertThrows { validFraction.copy(-1.0) }
+                .assertExactExceptionType(InvalidFractionException::class)
+                .assertExceptionMessage("A percentage cannot be negative: " + -1.0)
+    }
+
+    @Test
     fun testInvalidPercentage() {
         // Test negative percentage
         testInvalidPercentage(-1.0, "A percentage cannot be negative: " + -1.0)

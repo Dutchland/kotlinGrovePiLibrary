@@ -2,10 +2,14 @@ package nl.dutchland.grove.utility.time
 
 import nl.dutchland.grove.utility.Conditions
 
-data class Period private constructor(private val seconds : Double) {
+data class Period internal constructor(private val seconds : Double) {
+    init {
+        Conditions.assertLargerThanZero(seconds)
+        { throw InvalidIntervalException("Period cannot be negative") }
+    }
+
     companion object {
         fun of(value: Double, scale: TimeScale) : Period {
-            Conditions.assertLargerThanZero(value) { throw InvalidIntervalException("Period cannot be negative") }
             return Period(scale.toSeconds(value))
         }
     }
@@ -20,6 +24,4 @@ data class Period private constructor(private val seconds : Double) {
     }
 }
 
-class InvalidIntervalException(message: String) : RuntimeException(message) {
-
-}
+class InvalidIntervalException(message: String) : IllegalArgumentException (message)

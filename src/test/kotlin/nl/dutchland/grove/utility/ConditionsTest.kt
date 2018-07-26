@@ -9,72 +9,72 @@ class ConditionsTest {
     @Test
     fun testNotLargerThan_Larger() {
         // Arrange
-        val mockErrorHandler: ErrorHandler = mock()
+        val mockAssertionFailedHandler: AssertionFailedHandler = mock()
 
         // Act
-        Conditions.assertNotLargerThan(2.0, 1.0, mockErrorHandler)
+        Conditions.assertNotLargerThan(2.0, 1.0, mockAssertionFailedHandler)
 
         // Assert
-        verify(mockErrorHandler).invoke()
+        verify(mockAssertionFailedHandler).invoke()
     }
 
     @Test
     fun testNotLargerThan_Equal() {
         // Arrange
-        val mockErrorHandler: ErrorHandler = mock()
+        val mockAssertionFailedHandler: AssertionFailedHandler = mock()
 
         // Act
-        Conditions.assertNotLargerThan(1.0, 1.0, mockErrorHandler)
+        Conditions.assertNotLargerThan(1.0, 1.0, mockAssertionFailedHandler)
 
         // Assert
-        verify(mockErrorHandler, times(0)).invoke()
+        verify(mockAssertionFailedHandler, times(0)).invoke()
     }
 
     @Test
     fun testNotLargerThan_Smaller() {
         // Arrange
-        val mockErrorHandler: ErrorHandler = mock()
+        val mockAssertionFailedHandler: AssertionFailedHandler = mock()
 
         // Act
-        Conditions.assertNotLargerThan(1.0, 2.0, mockErrorHandler)
+        Conditions.assertNotLargerThan(1.0, 2.0, mockAssertionFailedHandler)
 
         // Assert
-        verify(mockErrorHandler, times(0)).invoke()
+        verify(mockAssertionFailedHandler, times(0)).invoke()
     }
 
     @Test
     fun testNotNegative_Positive() {
         // Arrange
-        val mockErrorHandler: ErrorHandler = mock()
+        val mockAssertionFailedHandler: AssertionFailedHandler = mock()
 
         // Act
-        Conditions.assertNotNegative(1.0, mockErrorHandler)
+        Conditions.assertNotNegative(1.0, mockAssertionFailedHandler)
 
         // Assert
-        verify(mockErrorHandler, times(0)).invoke()
+        verify(mockAssertionFailedHandler, times(0)).invoke()
     }
 
     @Test
     fun testNotNegative_Zero() {
         // Arrange
-        val mockErrorHandler: ErrorHandler = mock()
+        val mockAssertionFailedHandler: AssertionFailedHandler = mock()
 
         // Act
-        Conditions.assertNotNegative(0.0, mockErrorHandler)
+        Conditions.assertNotNegative(0.0, mockAssertionFailedHandler)
 
         // Assert
-        verify(mockErrorHandler, times(0)).invoke()
+        verify(mockAssertionFailedHandler, times(0)).invoke()
     }
 
     @Test
     fun testNotNegative_Negative() {
         // Arrange
-        val mockErrorHandler: ErrorHandler = mock()
+        val mockAssertionFailedHandler: AssertionFailedHandler = mock()
 
         // Act
-        Conditions.assertNotNegative(-1.0, mockErrorHandler)
+        Conditions.assertNotNegative(-1.0, mockAssertionFailedHandler)
 
         // Assert
-        verify(mockErrorHandler).invoke()
+        verify(mockAssertionFailedHandler).invoke()
     }
 }

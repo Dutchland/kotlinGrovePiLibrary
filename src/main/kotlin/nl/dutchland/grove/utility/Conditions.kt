@@ -1,26 +1,24 @@
 package nl.dutchland.grove.utility
 
-typealias ErrorHandler = () -> Unit
+typealias AssertionFailedHandler = () -> Unit
 
-class Conditions {
-    companion object {
-        fun assertNotLargerThan(value: Double, reference: Double, errorHandler: ErrorHandler) {
-            if (value > reference) {
-                errorHandler.invoke()
-            }
+object Conditions {
+
+    fun assertNotLargerThan(value: Number, reference: Number, assertionFailedHandler: AssertionFailedHandler) {
+        if (value.toDouble() > reference.toDouble()) {
+            assertionFailedHandler.invoke()
         }
+    }
 
-        fun assertNotNegative(value: Double, errorHandler: ErrorHandler) {
-            if (value < 0) {
-                errorHandler.invoke()
-            }
+    fun assertNotNegative(value: Number, assertionFailedHandler: AssertionFailedHandler) {
+        if (value.toDouble() < 0.0) {
+            assertionFailedHandler.invoke()
         }
+    }
 
-        fun assertLargerThanZero(value: Double, errorHandler: ErrorHandler) {
-            if (value <= 0.0) {
-
-                errorHandler.invoke()
-            }
+    fun assertLargerThanZero(value: Number, assertionFailedHandler: AssertionFailedHandler) {
+        if (value.toDouble() <= 0.0) {
+            assertionFailedHandler.invoke()
         }
     }
 }
