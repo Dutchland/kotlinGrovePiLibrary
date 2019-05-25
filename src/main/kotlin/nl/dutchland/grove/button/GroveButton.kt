@@ -5,7 +5,7 @@ import java.util.*
 import kotlin.concurrent.fixedRateTimer
 
 class GroveButton internal constructor(private val digitalIn : GroveDigitalIn) : Button {
-    private var statusChangedListeners : Collection<ButtonStatusChangedListener> = ArrayList()
+    private var statusChangedListeners : Collection<ButtonStatusChangedListener> = listOf()
     private val pollButtonTimer: Timer
 
     private var currentStatus : Boolean = getStatus();

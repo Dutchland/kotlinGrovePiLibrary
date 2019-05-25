@@ -20,16 +20,4 @@ class CelciusTest {
 
         Assert.assertEquals(-73.15, temperatureinCelcius, 0.01)
     }
-
-    @Test
-    fun test_validate_Invalid() {
-        ExceptionAssert.assertThrows { Celcius.validate(-300.0) }
-                .assertExactExceptionType(InvalidTemperatureException::class)
-                .assertExceptionMessage("Invalid temperature: -300.0. Minimal value is -273.15 Celcius")
-    }
-
-    @Test
-    fun test_validate_AbsoluteZero() {
-        ExceptionAssert.assertNotThrows { Celcius.validate( -273.15 ) }
-    }
 }

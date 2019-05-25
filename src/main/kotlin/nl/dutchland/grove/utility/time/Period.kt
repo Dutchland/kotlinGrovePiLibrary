@@ -1,10 +1,10 @@
 package nl.dutchland.grove.utility.time
 
-import nl.dutchland.grove.utility.Conditions
+import nl.dutchland.grove.utility.Assert
 
 data class Period internal constructor(private val seconds : Double) {
     init {
-        Conditions.assertLargerThanZero(seconds)
+        Assert.largerThanZero(seconds)
         { throw InvalidIntervalException("Period cannot be negative") }
     }
 

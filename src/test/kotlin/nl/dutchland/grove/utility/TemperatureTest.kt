@@ -1,7 +1,9 @@
 package nl.dutchland.grove.utility
 
 import com.nhaarman.mockito_kotlin.mock
+import nl.dutchland.grove.utility.temperature.Celcius
 import nl.dutchland.grove.utility.temperature.InvalidTemperatureException
+import nl.dutchland.grove.utility.temperature.Kelvin
 import nl.dutchland.grove.utility.temperature.Temperature
 import org.junit.Assert
 import org.mockito.Mockito
@@ -10,13 +12,29 @@ import kotlin.test.Test
 
 class TemperatureTest {
     @Test
-    fun testOfTemperature_ValidationFails() {
+    fun testInvalidTemperature() {
         val mockedTemperatureScale = mock<Temperature.Scale>()
-        Mockito.`when`(mockedTemperatureScale.validate(1.0))
-                .thenThrow(InvalidTemperatureException::class.java)
+        Mockito.`when`(mockedTemperatureScale.name)
+                .thenReturn("MockedTemperatureScale")
+        Mockito.`when`(mockedTemperatureScale.absoluteZero)
+                .thenReturn(-100.0)
 
-        ExceptionAssert.assertThrows { Temperature.of(1.0, mockedTemperatureScale) }
+        ExceptionAssert.assertThrows { Temperature.of(-101.0, mockedTemperatureScale) }
                 .assertExactExceptionType(InvalidTemperatureException::class)
+                .assertExceptionMessage("Invalid temperature: -101.0. Minimal value is -100.0 MockedTemperatureScale")
+    }
+
+    @Test
+    fun testInvalidTemperature_copy() {
+        val mockedTemperatureScale = mock<Temperature.Scale>()
+        Mockito.`when`(mockedTemperatureScale.name)
+                .thenReturn("MockedTemperatureScale")
+
+        val validTemperature = Temperature.of(0.0, mockedTemperatureScale)
+
+        ExceptionAssert.assertThrows { validTemperature.copy(-1.0) }
+                .assertExactExceptionType(InvalidTemperatureException::class)
+                .assertExceptionMessage("Invalid temperature: -1.0. Minimal value is 0.0 ${Kelvin.name}")
     }
 
     @Test

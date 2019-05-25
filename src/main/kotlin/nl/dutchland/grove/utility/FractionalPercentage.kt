@@ -4,9 +4,9 @@ data class FractionalPercentage private constructor(val percentage: Double) {
     val fraction : Double = this.percentage / 100.0
 
     init {
-        Conditions.assertNotLargerThan(percentage, 100.0)
+        Assert.notLargerThan(percentage, 100.0)
         {  handleInvalidFraction("A fractional percentage cannot be larger than 100%: $percentage") }
-        Conditions.assertNotNegative(percentage)
+        Assert.notNegative(percentage)
         { handleInvalidFraction("A percentage cannot be negative: $percentage") }
     }
 
@@ -16,9 +16,9 @@ data class FractionalPercentage private constructor(val percentage: Double) {
         }
 
         fun ofFraction(fraction : Double) : FractionalPercentage {
-            Conditions.assertNotLargerThan(fraction, 1.0)
+            Assert.notLargerThan(fraction, 1.0)
             {  handleInvalidFraction("A fraction cannot be larger than 1.0: $fraction") }
-            Conditions.assertNotNegative(fraction)
+            Assert.notNegative(fraction)
             { handleInvalidFraction("A fraction cannot be negative: $fraction") }
 
             return FractionalPercentage(fraction * 100.0)

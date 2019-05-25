@@ -5,14 +5,14 @@ import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import kotlin.test.Test
 
-class ConditionsTest {
+class AssertTest {
     @Test
     fun testNotLargerThan_Larger() {
         // Arrange
         val mockAssertionFailedHandler: AssertionFailedHandler = mock()
 
         // Act
-        Conditions.assertNotLargerThan(2.0, 1.0, mockAssertionFailedHandler)
+        Assert.notLargerThan(2.0, 1.0, mockAssertionFailedHandler)
 
         // Assert
         verify(mockAssertionFailedHandler).invoke()
@@ -24,7 +24,7 @@ class ConditionsTest {
         val mockAssertionFailedHandler: AssertionFailedHandler = mock()
 
         // Act
-        Conditions.assertNotLargerThan(1.0, 1.0, mockAssertionFailedHandler)
+        Assert.notLargerThan(1.0, 1.0, mockAssertionFailedHandler)
 
         // Assert
         verify(mockAssertionFailedHandler, times(0)).invoke()
@@ -36,7 +36,7 @@ class ConditionsTest {
         val mockAssertionFailedHandler: AssertionFailedHandler = mock()
 
         // Act
-        Conditions.assertNotLargerThan(1.0, 2.0, mockAssertionFailedHandler)
+        Assert.notLargerThan(1.0, 2.0, mockAssertionFailedHandler)
 
         // Assert
         verify(mockAssertionFailedHandler, times(0)).invoke()
@@ -48,7 +48,7 @@ class ConditionsTest {
         val mockAssertionFailedHandler: AssertionFailedHandler = mock()
 
         // Act
-        Conditions.assertNotNegative(1.0, mockAssertionFailedHandler)
+        Assert.notNegative(1.0, mockAssertionFailedHandler)
 
         // Assert
         verify(mockAssertionFailedHandler, times(0)).invoke()
@@ -60,7 +60,7 @@ class ConditionsTest {
         val mockAssertionFailedHandler: AssertionFailedHandler = mock()
 
         // Act
-        Conditions.assertNotNegative(0.0, mockAssertionFailedHandler)
+        Assert.notNegative(0.0, mockAssertionFailedHandler)
 
         // Assert
         verify(mockAssertionFailedHandler, times(0)).invoke()
@@ -72,7 +72,7 @@ class ConditionsTest {
         val mockAssertionFailedHandler: AssertionFailedHandler = mock()
 
         // Act
-        Conditions.assertNotNegative(-1.0, mockAssertionFailedHandler)
+        Assert.notNegative(-1.0, mockAssertionFailedHandler)
 
         // Assert
         verify(mockAssertionFailedHandler).invoke()
