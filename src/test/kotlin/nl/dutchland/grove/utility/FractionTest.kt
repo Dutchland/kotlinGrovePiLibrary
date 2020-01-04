@@ -4,7 +4,7 @@ import testutility.ExceptionAssert
 import org.junit.Assert.*
 import kotlin.test.Test
 
-class FractionalPercentageTest {
+class FractionTest {
     @Test
     fun testValidPercentage() {
         testValidPercentage(0.0, 0.0, 0.0)
@@ -13,7 +13,7 @@ class FractionalPercentageTest {
     }
 
     private fun testValidPercentage(input: Double, expectedPercentage: Double, expectedFraction: Double) {
-        val percentage = FractionalPercentage.ofPercentage(input)
+        val percentage = Fraction.ofPercentage(input)
         assertEquals(expectedPercentage, percentage.percentage, input / 1000.0)
         assertEquals(expectedFraction, percentage.fraction, input / 1000.0)
     }
@@ -26,14 +26,14 @@ class FractionalPercentageTest {
     }
 
     private fun testValidFraction(input: Double, expectedPercentage: Double, expectedFraction: Double) {
-        val percentage = FractionalPercentage.ofFraction(input)
+        val percentage = Fraction.ofFraction(input)
         assertEquals(expectedPercentage, percentage.percentage, input / 1000.0)
         assertEquals(expectedFraction, percentage.fraction, input / 1000.0)
     }
 
     @Test
     fun testCopy() {
-        val validFraction = FractionalPercentage.ofFraction(0.5)
+        val validFraction = Fraction.ofFraction(0.5)
 
         ExceptionAssert.assertThrows { validFraction.copy(-1.0) }
                 .assertExactExceptionType(InvalidFractionException::class)
@@ -50,7 +50,7 @@ class FractionalPercentageTest {
     }
 
     private fun testInvalidPercentage(input: Double, expectedErrorMessage: String) {
-        ExceptionAssert.assertThrows { FractionalPercentage.ofPercentage(input) }
+        ExceptionAssert.assertThrows { Fraction.ofPercentage(input) }
                 .assertExactExceptionType(InvalidFractionException::class)
                 .assertExceptionMessage(expectedErrorMessage)
     }
@@ -65,7 +65,7 @@ class FractionalPercentageTest {
     }
 
     private fun testInvalidFraction(input: Double, expectedErrorMessage: String) {
-        ExceptionAssert.assertThrows { FractionalPercentage.ofFraction(input) }
+        ExceptionAssert.assertThrows { Fraction.ofFraction(input) }
                 .assertExactExceptionType(InvalidFractionException::class)
                 .assertExceptionMessage(expectedErrorMessage)
     }

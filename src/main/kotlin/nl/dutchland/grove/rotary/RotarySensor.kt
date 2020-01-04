@@ -1,10 +1,10 @@
 package nl.dutchland.grove.rotary
 
-import nl.dutchland.grove.utility.FractionalPercentage
+import nl.dutchland.grove.utility.Fraction
 
-typealias RotaryChangedListener = (FractionalPercentage) -> Unit
+typealias RotaryChangedListener = (Fraction) -> Unit
 
 interface RotarySensor {
     fun addStatusChangedListener(listener: RotaryChangedListener)
-    fun getStatus() : FractionalPercentage
+    fun getStatus() : Fraction
 }

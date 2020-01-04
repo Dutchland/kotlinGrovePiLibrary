@@ -17,5 +17,16 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <createTable tableName="humidity">
+            <column name="id" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="value" type="double">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestamp" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
     </changeSet>
 </databaseChangeLog>

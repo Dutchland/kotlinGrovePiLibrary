@@ -1,7 +1,7 @@
 package nl.dutchland.grove.temperatureandhumidity
 
 import com.nhaarman.mockito_kotlin.*
-import nl.dutchland.grove.utility.FractionalPercentage
+import nl.dutchland.grove.utility.Fraction
 import nl.dutchland.grove.utility.RelativeHumidity
 import nl.dutchland.grove.utility.temperature.Celcius
 import nl.dutchland.grove.utility.temperature.Temperature
@@ -47,7 +47,7 @@ class GroveTemperatureHumiditySensorTest {
         val value = sensor.getHumidity()
 
         // Assert
-        assertEquals(FractionalPercentage.ofPercentage(relativeHumidityPercentage), value.humidity.relativeHumidity)
+        assertEquals(Fraction.ofPercentage(relativeHumidityPercentage), value.humidity.relativeHumidity)
         assertTrue(value.timestamp.millisecondsSinceEpoch > 0)
     }
 
@@ -66,7 +66,7 @@ class GroveTemperatureHumiditySensorTest {
 
         // Assert
         assertEquals(someTemperature, value.temperature.valueIn(Celcius), 0.001)
-        assertEquals(FractionalPercentage.ofPercentage(someRelativeHumidityPercentage), value.humidity.relativeHumidity)
+        assertEquals(Fraction.ofPercentage(someRelativeHumidityPercentage), value.humidity.relativeHumidity)
         assertTrue(value.timeStamp.millisecondsSinceEpoch > 0)
     }
 
@@ -98,8 +98,8 @@ class GroveTemperatureHumiditySensorTest {
     @Test
     fun testSubscribeHumidity() {
         // Arrange
-        val someHumidityPercentage = FractionalPercentage.ofPercentage(40.0)
-        val someOtherHumidityPercentage = FractionalPercentage.ofPercentage(50.0)
+        val someHumidityPercentage = Fraction.ofPercentage(40.0)
+        val someOtherHumidityPercentage = Fraction.ofPercentage(50.0)
 
         val groveSensor = mock(GroveTemperatureAndHumiditySensor::class.java)
         `when`(groveSensor.get()).thenReturn(GroveTemperatureAndHumidityValue(0.0, someHumidityPercentage.percentage))
@@ -123,8 +123,8 @@ class GroveTemperatureHumiditySensorTest {
     @Test
     fun testSubscribeTemperatureHumidity() {
         // Arrange
-        val someHumidityPercentage = FractionalPercentage.ofPercentage(40.0)
-        val someOtherHumidityPercentage = FractionalPercentage.ofPercentage(50.0)
+        val someHumidityPercentage = Fraction.ofPercentage(40.0)
+        val someOtherHumidityPercentage = Fraction.ofPercentage(50.0)
 
         val someTemperature = 20.0
         val someOtherTemperature = 30.0

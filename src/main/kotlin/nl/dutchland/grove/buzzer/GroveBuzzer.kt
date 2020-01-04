@@ -13,11 +13,11 @@ private class GroveBuzzer(groveLed : GroveLed)
 class GroveBuzzerFactory(private val grovePi : GrovePi) {
     fun createBuzzerOn(port : DigitalPort) : Buzzer {
         return GroveBuzzer(
-                org.iot.raspberry.grovepi.devices.GroveLed(this.grovePi, port.digitalPin))
+                GroveLed(this.grovePi, port.digitalPin))
     }
 
     fun createAdjustableBuzzerOn(port: PulseWidthModulationPort) : AdjustableBuzzer {
         return GroveBuzzer(
-                org.iot.raspberry.grovepi.devices.GroveLed(this.grovePi, port.digitalPin))
+                GroveLed(this.grovePi, port.digitalPin))
     }
 }

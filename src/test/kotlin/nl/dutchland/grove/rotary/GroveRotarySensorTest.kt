@@ -1,6 +1,6 @@
 package nl.dutchland.grove.rotary
 
-import nl.dutchland.grove.utility.FractionalPercentage
+import nl.dutchland.grove.utility.Fraction
 import org.iot.raspberry.grovepi.devices.GroveRotaryValue
 import org.junit.Assert
 import org.mockito.Mockito
@@ -29,7 +29,7 @@ class GroveRotarySensorTest {
         val status = rotarySensor.getStatus()
 
         // Assert
-        Assert.assertEquals(FractionalPercentage.ofFraction(expectedFraction), status)
+        Assert.assertEquals(Fraction.ofFraction(expectedFraction), status)
     }
 
     @Test
@@ -45,7 +45,7 @@ class GroveRotarySensorTest {
         groveRotarySensor.addStatusChangedListener(fakeListener)
 
         // Assert
-        Mockito.verify(fakeListener).invoke(FractionalPercentage.ofPercentage(100.0))
+        Mockito.verify(fakeListener).invoke(Fraction.ofPercentage(100.0))
     }
 
     @Test
@@ -63,7 +63,7 @@ class GroveRotarySensorTest {
         Thread.sleep(200)
 
         // Assert
-        Mockito.verify(fakeListener).invoke(FractionalPercentage.ofPercentage(0.0))
+        Mockito.verify(fakeListener).invoke(Fraction.ofPercentage(0.0))
     }
 
     private fun createGroveRotaryValue(angleInDegrees: Double): GroveRotaryValue {

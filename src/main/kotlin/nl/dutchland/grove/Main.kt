@@ -14,6 +14,7 @@ import nl.dutchland.grove.led.GroveLedFactory
 import nl.dutchland.grove.led.Led
 import nl.dutchland.grove.temperatureandhumidity.GroveTemperatureHumiditySensorFactory
 import nl.dutchland.grove.temperatureandhumidity.TemperatureMeasurement
+import nl.dutchland.grove.temperaturerepository.DatabaseCredentials
 import nl.dutchland.grove.temperaturerepository.KtormTemperatureRepository
 import nl.dutchland.grove.utility.RelativeHumidity
 import nl.dutchland.grove.utility.TimeStamp
@@ -27,34 +28,39 @@ import java.sql.DriverManager
 fun main() {
     migrateDatabase()
 
-//    val temperatureRepository = KtormTemperatureRepository()
+    val temperatureRepository = KtormTemperatureRepository(
+            DatabaseCredentials(
+            "jdbc:h2:mem:testdb",
+            "org.h2.Driver",
+            "sa",
+            ""))
 
-//    temperatureRepository.persist(
-//            TemperatureMeasurement(Temperature.ABSOLUTE_ZERO, TimeStamp.now()))
+    temperatureRepository.persist(
+            TemperatureMeasurement(Temperature.ABSOLUTE_ZERO, TimeStamp.now()))
 
-//    val grovePi4J: GrovePi = GrovePi4J()
-//    GrovePi4J().use {
-//        val ledFactory = GroveLedFactory(grovePi4J)
-//        val led = ledFactory.createLed(GrovePiZero.A1)
-//
-//        val indicator = LedButtonIndicator(led)
-//        val buttonFactory = GroveButtonFactory(grovePi4J)
-//        val button = buttonFactory.aButton(GrovePiZero.A0, indicator)
-//
-//        val temperatureHumiditySensorFactory = GroveTemperatureHumiditySensorFactory(grovePi4J)
-//        val sensor = temperatureHumiditySensorFactory.createDHT11(GrovePiZero.A2)
-//        val humidityIndicator = LedHighHumidityIndicator(led)
-//
-//
-//        sensor.subscribe(
-//                { measurement -> humidityIndicator.toggle(measurement.humidity) },
-//                Period.of(30.0, Second))
-//
-//
-//        sensor.subscribe(
-//                { measurement -> temperatureRepository.persist(measurement.toTemperatureMeasurement()) },
-//                Period.of(1.0, Minute))
-//    }
+    val grovePi4J: GrovePi = GrovePi4J()
+    GrovePi4J().use {
+        val ledFactory = GroveLedFactory(grovePi4J)
+        val led = ledFactory.createLed(GrovePiZero.A1)
+
+        val indicator = LedButtonIndicator(led)
+        val buttonFactory = GroveButtonFactory(grovePi4J)
+        val button = buttonFactory.aButton(GrovePiZero.A0, indicator)
+
+        val temperatureHumiditySensorFactory = GroveTemperatureHumiditySensorFactory(grovePi4J)
+        val sensor = temperatureHumiditySensorFactory.createDHT11(GrovePiZero.A2)
+        val humidityIndicator = LedHighHumidityIndicator(led)
+
+
+        sensor.subscribe(
+                { measurement -> humidityIndicator.toggle(measurement.humidity) },
+                Period.of(30.0, Second))
+
+
+        sensor.subscribe(
+                { measurement -> temperatureRepository.persist(measurement.toTemperatureMeasurement()) },
+                Period.of(1.0, Minute))
+    }
 
 
 

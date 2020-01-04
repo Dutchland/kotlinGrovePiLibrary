@@ -1,6 +1,6 @@
 package nl.dutchland.grove.digitaloutput
 
-import nl.dutchland.grove.utility.FractionalPercentage
+import nl.dutchland.grove.utility.Fraction
 import org.iot.raspberry.grovepi.devices.GroveLed
 import org.junit.Test
 import org.mockito.Mockito
@@ -45,7 +45,7 @@ class GrovePulseWithModulationOutputDeviceTest {
         val device = SomePulseWithModulationDevice(mockedLed)
 
         // Act
-        device.turnOn(FractionalPercentage.ofPercentage(percentage))
+        device.turnOn(Fraction.ofPercentage(percentage))
 
         // Assert
         Mockito.verify(mockedLed).set(groveNumber)

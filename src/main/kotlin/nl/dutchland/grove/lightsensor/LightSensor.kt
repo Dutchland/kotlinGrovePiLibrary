@@ -1,11 +1,11 @@
 package nl.dutchland.grove.lightsensor
 
-import nl.dutchland.grove.utility.FractionalPercentage
+import nl.dutchland.grove.utility.Fraction
 import nl.dutchland.grove.utility.time.Period
 
-typealias LightSensorValueListener = (FractionalPercentage) -> Unit
+typealias LightSensorValueListener = (Fraction) -> Unit
 
-abstract class LightSensor : PollingSensor<FractionalPercentage>() {
+abstract class LightSensor : PollingSensor<Fraction>() {
     override fun subscribe(listener: LightSensorValueListener, pollInterval: Period){
         super.subscribe(listener, pollInterval)
     }

@@ -28,22 +28,24 @@ class KtormTemperatureRepository(credentials: DatabaseCredentials) : Temperature
         }
     }
 
-    private fun mapToEntity(dto: TemperatureMeasurementDto): TemperatureMeasurement {
-        return TemperatureMeasurement(
-                Temperature.of(dto.value, Kelvin),
-                TimeStamp(dto.timestamp))
-    }
+
 
     override fun all(): Collection<TemperatureMeasurement> {
         return TemperatureTable
                 .findAll()
-                .map { row -> mapToEntity(row) }
+                .map { row -> row.toEntity() }
     }
 
     interface TemperatureMeasurementDto : Entity<TemperatureMeasurementDto> {
         val id: Int
         var value: Double
         var timestamp: Long
+
+        fun toEntity(): TemperatureMeasurement {
+            return TemperatureMeasurement(
+                    Temperature.of(this.value, Kelvin),
+                    TimeStamp(this.timestamp))
+        }
     }
 
     object TemperatureTable : Table<TemperatureMeasurementDto>("temperature") {

@@ -1,6 +1,6 @@
 package nl.dutchland.grove.temperatureandhumidity
 
-import nl.dutchland.grove.utility.FractionalPercentage
+import nl.dutchland.grove.utility.Fraction
 import nl.dutchland.grove.utility.RelativeHumidity
 import nl.dutchland.grove.utility.TimeStamp
 import nl.dutchland.grove.utility.temperature.Celcius
@@ -18,7 +18,7 @@ internal class GroveTemperatureHumiditySensor(private val sensor: GroveTemperatu
             by Delegates.observable(
                     TemperatureHumidityMeasurement(
                             Temperature.ABSOLUTE_ZERO,
-                            RelativeHumidity(FractionalPercentage.ZERO),
+                            RelativeHumidity(Fraction.ZERO),
                             TimeStamp.now()))
             { _, _, newValue ->
                 //                this.listeners.forEach { l -> l.onStatusChanged(newValue) }
@@ -72,7 +72,7 @@ internal class GroveTemperatureHumiditySensor(private val sensor: GroveTemperatu
     private fun pollSensor() : TemperatureHumidityMeasurement {
         val sensorValue = this.sensor.get()
 
-        val humidity = RelativeHumidity(FractionalPercentage.ofPercentage(sensorValue.humidity))
+        val humidity = RelativeHumidity(Fraction.ofPercentage(sensorValue.humidity))
         val temperature = Temperature.of(sensorValue.temperature, Celcius)
 
         return TemperatureHumidityMeasurement(temperature, humidity, TimeStamp.now())

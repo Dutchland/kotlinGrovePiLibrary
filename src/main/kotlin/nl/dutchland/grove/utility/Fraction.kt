@@ -1,6 +1,6 @@
 package nl.dutchland.grove.utility
 
-data class FractionalPercentage private constructor(val percentage: Double) {
+data class Fraction private constructor(val percentage: Double) {
     val fraction : Double = this.percentage / 100.0
 
     init {
@@ -11,25 +11,25 @@ data class FractionalPercentage private constructor(val percentage: Double) {
     }
 
     companion object {
-        fun ofPercentage(percentage : Double) : FractionalPercentage {
-           return FractionalPercentage(percentage)
+        fun ofPercentage(percentage : Double) : Fraction {
+           return Fraction(percentage)
         }
 
-        fun ofFraction(fraction : Double) : FractionalPercentage {
+        fun ofFraction(fraction : Double) : Fraction {
             Assert.notLargerThan(fraction, 1.0)
             {  handleInvalidFraction("A fraction cannot be larger than 1.0: $fraction") }
             Assert.notNegative(fraction)
             { handleInvalidFraction("A fraction cannot be negative: $fraction") }
 
-            return FractionalPercentage(fraction * 100.0)
+            return Fraction(fraction * 100.0)
         }
 
         private fun handleInvalidFraction(errorMessage: String) {
             throw InvalidFractionException(errorMessage)
         }
 
-        val ZERO = FractionalPercentage.ofFraction(0.0)
-        val HUNDRED_PERCENT = FractionalPercentage.ofFraction(1.0)
+        val ZERO = ofFraction(0.0)
+        val HUNDRED_PERCENT = ofFraction(1.0)
     }
 }
 

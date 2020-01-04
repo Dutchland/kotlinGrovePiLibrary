@@ -3,7 +3,6 @@ package nl.dutchland.grove.led
 import nl.dutchland.grove.digitaloutput.GrovePulseWithModulationOutputDevice
 import nl.dutchland.grove.grovepiports.DigitalPort
 import nl.dutchland.grove.grovepiports.PulseWidthModulationPort
-import nl.dutchland.grove.utility.FractionalPercentage
 import org.iot.raspberry.grovepi.GrovePi
 import org.iot.raspberry.grovepi.devices.GroveLed
 
