@@ -8,18 +8,16 @@ import org.iot.raspberry.grovepi.GrovePi
 import org.iot.raspberry.grovepi.devices.GroveLed
 
 private class GroveLed(groveLed : GroveLed)
-    : DimmableLed, GrovePulseWithModulationOutputDevice(groveLed) {
-}
+    : DimmableLed, GrovePulseWithModulationOutputDevice(groveLed)
 
 class GroveLedFactory(private val grovePi : GrovePi) {
     fun createLed(port : DigitalPort) : Led {
         return GroveLed(
-                org.iot.raspberry.grovepi.devices.GroveLed(this.grovePi, port.digitalPin))
+                GroveLed(this.grovePi, port.digitalPin))
     }
 
     fun createDimmableLed(port: PulseWidthModulationPort) : DimmableLed {
         return GroveLed(
-                org.iot.raspberry.grovepi.devices.GroveLed(this.grovePi, port.digitalPin))
+                GroveLed(this.grovePi, port.digitalPin))
     }
 }
-

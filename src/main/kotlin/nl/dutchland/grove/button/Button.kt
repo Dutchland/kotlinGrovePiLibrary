@@ -1,8 +1,12 @@
 package nl.dutchland.grove.button
 
-typealias ButtonStatusChangedListener = (Boolean) -> Unit
+typealias ButtonStatusChangedListener = (ButtonStatus) -> Unit
 
 interface Button {
-    fun addStatusChangedListener(listener: ButtonStatusChangedListener)
-    fun isPressed() : Boolean
+    val status: ButtonStatus
+}
+
+enum class ButtonStatus(val isPressed: Boolean) {
+    PRESSED(true),
+    NOT_PRESSED(false)
 }

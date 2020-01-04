@@ -24,7 +24,7 @@ class GroveButtonTest {
         val groveButton = GroveButton(mockedDigitalIn)
 
         // Act
-        val actualIsPressed = groveButton.isPressed();
+        val actualIsPressed = groveButton.status();
 
         // Assert
         assertEquals(expectedIsPressed, actualIsPressed)
