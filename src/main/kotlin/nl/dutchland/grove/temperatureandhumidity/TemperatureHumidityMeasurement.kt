@@ -8,4 +8,12 @@ data class TemperatureHumidityMeasurement(
         val temperature: Temperature,
         val humidity: RelativeHumidity,
         val timeStamp : TimeStamp) {
+
+    fun toHumidityMeasurement() : HumidityMeasurement {
+        return HumidityMeasurement(this.humidity, this.timeStamp)
+    }
+
+    fun toTemperatureMeasurement() : TemperatureMeasurement {
+        return TemperatureMeasurement(this.temperature, this.timeStamp)
+    }
 }

@@ -45,11 +45,10 @@ internal class GroveTemperatureHumiditySensor(private val sensor : GroveTemperat
     override fun getTemperatureHumidity(): TemperatureHumidityMeasurement {
         val sensorValue = this.sensor.get()
 
-        val timeStamp = TimeStamp.fromMillisecondsSinceEpoch(System.currentTimeMillis())
         val humidity = RelativeHumidity(FractionalPercentage.ofPercentage(sensorValue.humidity))
         val temperature = Temperature.of(sensorValue.temperature, Celcius)
 
-        return TemperatureHumidityMeasurement(temperature, humidity, timeStamp)
+        return TemperatureHumidityMeasurement(temperature, humidity, TimeStamp.now())
     }
 
     override fun getHumidity(): HumidityMeasurement {
@@ -60,11 +59,5 @@ internal class GroveTemperatureHumiditySensor(private val sensor : GroveTemperat
         return getTemperatureHumidity().toTemperatureMeasurement()
     }
 
-    private fun TemperatureHumidityMeasurement.toHumidityMeasurement() : HumidityMeasurement {
-        return HumidityMeasurement(this.humidity, this.timeStamp)
-    }
 
-    private fun TemperatureHumidityMeasurement.toTemperatureMeasurement() : TemperatureMeasurement {
-                return TemperatureMeasurement(this.temperature, this.timeStamp)
-    }
 }

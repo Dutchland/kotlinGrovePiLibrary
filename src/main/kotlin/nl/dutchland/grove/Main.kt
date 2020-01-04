@@ -1,5 +1,9 @@
 package nl.dutchland.grove
 
+import liquibase.Liquibase
+import liquibase.database.DatabaseFactory
+import liquibase.database.jvm.JdbcConnection
+import liquibase.resource.FileSystemResourceAccessor
 import nl.dutchland.grove.button.ButtonStatus
 import nl.dutchland.grove.button.ButtonStatus.*
 import nl.dutchland.grove.button.ButtonStatusChangedListener
@@ -11,40 +15,54 @@ import nl.dutchland.grove.temperatureandhumidity.GroveTemperatureHumiditySensorF
 import nl.dutchland.grove.temperatureandhumidity.TemperatureMeasurement
 import nl.dutchland.grove.temperaturerepository.DatabaseTemperatureRepository
 import nl.dutchland.grove.utility.RelativeHumidity
+import nl.dutchland.grove.utility.TimeStamp
+import nl.dutchland.grove.utility.temperature.Temperature
 import nl.dutchland.grove.utility.time.Minute
 import nl.dutchland.grove.utility.time.Period
+import nl.dutchland.grove.utility.time.Second
 import org.iot.raspberry.grovepi.GrovePi
+import java.sql.DriverManager
+import java.sql.Timestamp
 
 fun main() {
-    val grovePi4J: GrovePi = GrovePi4J()
+    migrateDatabase()
+    val temperatureRepository = DatabaseTemperatureRepository()
 
-    val ledFactory = GroveLedFactory(grovePi4J)
-    val led = ledFactory.createLed(GrovePiZero.A1)
+    temperatureRepository.persist(
+            TemperatureMeasurement(Temperature.ABSOLUTE_ZERO, TimeStamp.now()))
 
-    val indicator = LedButtonIndicator(led)
-    val buttonFactory = GroveButtonFactory(grovePi4J)
-    val button = buttonFactory.aButton(GrovePiZero.A0, indicator)
+//    val grovePi4J: GrovePi = GrovePi4J()
+//
+//    val ledFactory = GroveLedFactory(grovePi4J)
+//    val led = ledFactory.createLed(GrovePiZero.A1)
+//
+//    val indicator = LedButtonIndicator(led)
+//    val buttonFactory = GroveButtonFactory(grovePi4J)
+//    val button = buttonFactory.aButton(GrovePiZero.A0, indicator)
+//
+//    val temperatureHumiditySensorFactory = GroveTemperatureHumiditySensorFactory(grovePi4J)
+//    val sensor = temperatureHumiditySensorFactory.createDHT11(GrovePiZero.A2)
+//    val humidityIndicator = LedHighHumidityIndicator(led)
+//
+//
+//    sensor.subscribe(
+//            { measurement -> humidityIndicator.toggle(measurement.humidity) },
+//            Period.of(30.0, Second))
+//
+//
+//    sensor.subscribe(
+//            { measurement -> temperatureRepository.persist(measurement.toTemperatureMeasurement()) },
+//            Period.of(1.0, Minute))
+//
+//
+//    println("Hello, World")
+}
 
-    val temperatureHumiditySensorFactory = GroveTemperatureHumiditySensorFactory(grovePi4J)
-    val sensor = temperatureHumiditySensorFactory.createDHT11(GrovePiZero.A2)
-    val humidityIndicator = LedHighHumidityIndicator(led)
-
-
-    sensor.subscribe(
-            { measurement -> humidityIndicator.toggle(measurement.humidity) },
-            Period.of(1.0, Minute))
-
-    val temperatureRepository = DatabaseTemperatureRepository();
-
-    sensor.subscribe(
-            { measurement ->
-                temperatureRepository.persist(
-                        TemperatureMeasurement(measurement.temperature, measurement.timeStamp))
-            }
-            , Period.of(1.0, Minute))
-
-
-    println("Hello, World")
+fun migrateDatabase() {
+    val sqlConnection = DriverManager.getConnection("jdbc:h2:mem:testdb", "sa", "")
+    val database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(JdbcConnection(sqlConnection))
+    val liquibase = Liquibase("src/main/resources/db-changelog.xml", FileSystemResourceAccessor(), database)
+    liquibase.update("main")
 }
 
 class LedButtonIndicator(private val led: Led) : ButtonStatusChangedListener {

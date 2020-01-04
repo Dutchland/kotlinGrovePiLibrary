@@ -13,7 +13,7 @@ class GroveButton internal constructor(
     override var status: ButtonStatus
             by observable(NOT_PRESSED)
             { _, _, newValue ->
-                this.listeners.forEach { l -> l.invoke(newValue) }
+                this.listeners.forEach { l -> l.onStatusChanged(newValue) }
             }
 
     private lateinit var pollButtonTimer: Timer
