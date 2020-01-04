@@ -6,5 +6,5 @@ typealias TemperatureHumidityListener = (TemperatureHumidityMeasurement) -> Unit
 
 interface TemperatureHumiditySensor : TemperatureSensor, HumiditySensor {
     fun getTemperatureHumidity() : TemperatureHumidityMeasurement
-    fun subscribeToTemperatureHumidity(listener: TemperatureHumidityListener, pollInterval: Period)
+    fun subscribe(listener: TemperatureHumidityListener, pollInterval: Period)
 }

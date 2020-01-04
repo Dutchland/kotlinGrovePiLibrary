@@ -18,7 +18,7 @@ internal class GroveTemperatureHumiditySensor(private val sensor : GroveTemperat
         { mostRecentValue = getTemperatureHumidity()}
     }
 
-    override fun subscribeToTemperatureHumidity(listener: TemperatureHumidityListener, pollInterval: Period) {
+    override fun subscribe(listener: TemperatureHumidityListener, pollInterval: Period) {
         val intervalInMilliseconds : Long = pollInterval.valueIn(Millisecond).toLong()
         fixedRateTimer("Calling listener", false, intervalInMilliseconds, intervalInMilliseconds)
         { listener.invoke(mostRecentValue) }

@@ -1,9 +1,6 @@
 package nl.dutchland.grove
 
-import java.io.IOException
 import org.iot.raspberry.grovepi.devices.GroveRgbLcd
-import java.util.logging.Level.SEVERE
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.IO
 import org.iot.raspberry.grovepi.GrovePiSequenceVoid
 import org.iot.raspberry.grovepi.GrovePiSequence
 import org.iot.raspberry.grovepi.GrovePi

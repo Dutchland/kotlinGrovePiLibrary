@@ -5,7 +5,7 @@ import org.iot.raspberry.grovepi.GrovePi
 import org.iot.raspberry.grovepi.devices.GroveTemperatureAndHumiditySensor
 
 class GroveTemperatureHumiditySensorFactory(private val grovePi : GrovePi) {
-    fun createTemperatureAndHumidityDHT11(port: AnalogPort) : TemperatureHumiditySensor {
+    fun createDHT11(port: AnalogPort) : TemperatureHumiditySensor {
         val sensor = GroveTemperatureAndHumiditySensor(grovePi, port.analogPin, GroveTemperatureAndHumiditySensor.Type.DHT11)
         return GroveTemperatureHumiditySensor(sensor)
     }
