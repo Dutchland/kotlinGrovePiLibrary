@@ -4,6 +4,7 @@ import liquibase.Liquibase
 import liquibase.database.DatabaseFactory
 import liquibase.database.jvm.JdbcConnection
 import liquibase.resource.FileSystemResourceAccessor
+import me.liuwj.ktorm.database.use
 import nl.dutchland.grove.button.ButtonStatus
 import nl.dutchland.grove.button.ButtonStatus.*
 import nl.dutchland.grove.button.ButtonStatusChangedListener
@@ -13,7 +14,7 @@ import nl.dutchland.grove.led.GroveLedFactory
 import nl.dutchland.grove.led.Led
 import nl.dutchland.grove.temperatureandhumidity.GroveTemperatureHumiditySensorFactory
 import nl.dutchland.grove.temperatureandhumidity.TemperatureMeasurement
-import nl.dutchland.grove.temperaturerepository.DatabaseTemperatureRepository
+import nl.dutchland.grove.temperaturerepository.KtormTemperatureRepository
 import nl.dutchland.grove.utility.RelativeHumidity
 import nl.dutchland.grove.utility.TimeStamp
 import nl.dutchland.grove.utility.temperature.Temperature
@@ -22,40 +23,43 @@ import nl.dutchland.grove.utility.time.Period
 import nl.dutchland.grove.utility.time.Second
 import org.iot.raspberry.grovepi.GrovePi
 import java.sql.DriverManager
-import java.sql.Timestamp
 
 fun main() {
     migrateDatabase()
-    val temperatureRepository = DatabaseTemperatureRepository()
 
-    temperatureRepository.persist(
-            TemperatureMeasurement(Temperature.ABSOLUTE_ZERO, TimeStamp.now()))
+//    val temperatureRepository = KtormTemperatureRepository()
+
+//    temperatureRepository.persist(
+//            TemperatureMeasurement(Temperature.ABSOLUTE_ZERO, TimeStamp.now()))
 
 //    val grovePi4J: GrovePi = GrovePi4J()
+//    GrovePi4J().use {
+//        val ledFactory = GroveLedFactory(grovePi4J)
+//        val led = ledFactory.createLed(GrovePiZero.A1)
 //
-//    val ledFactory = GroveLedFactory(grovePi4J)
-//    val led = ledFactory.createLed(GrovePiZero.A1)
+//        val indicator = LedButtonIndicator(led)
+//        val buttonFactory = GroveButtonFactory(grovePi4J)
+//        val button = buttonFactory.aButton(GrovePiZero.A0, indicator)
 //
-//    val indicator = LedButtonIndicator(led)
-//    val buttonFactory = GroveButtonFactory(grovePi4J)
-//    val button = buttonFactory.aButton(GrovePiZero.A0, indicator)
-//
-//    val temperatureHumiditySensorFactory = GroveTemperatureHumiditySensorFactory(grovePi4J)
-//    val sensor = temperatureHumiditySensorFactory.createDHT11(GrovePiZero.A2)
-//    val humidityIndicator = LedHighHumidityIndicator(led)
-//
-//
-//    sensor.subscribe(
-//            { measurement -> humidityIndicator.toggle(measurement.humidity) },
-//            Period.of(30.0, Second))
+//        val temperatureHumiditySensorFactory = GroveTemperatureHumiditySensorFactory(grovePi4J)
+//        val sensor = temperatureHumiditySensorFactory.createDHT11(GrovePiZero.A2)
+//        val humidityIndicator = LedHighHumidityIndicator(led)
 //
 //
-//    sensor.subscribe(
-//            { measurement -> temperatureRepository.persist(measurement.toTemperatureMeasurement()) },
-//            Period.of(1.0, Minute))
+//        sensor.subscribe(
+//                { measurement -> humidityIndicator.toggle(measurement.humidity) },
+//                Period.of(30.0, Second))
 //
 //
-//    println("Hello, World")
+//        sensor.subscribe(
+//                { measurement -> temperatureRepository.persist(measurement.toTemperatureMeasurement()) },
+//                Period.of(1.0, Minute))
+//    }
+
+
+
+
+    println("Hello, World")
 }
 
 fun migrateDatabase() {

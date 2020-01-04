@@ -8,18 +8,33 @@ import nl.dutchland.grove.utility.temperature.Temperature
 import nl.dutchland.grove.utility.time.Millisecond
 import nl.dutchland.grove.utility.time.Period
 import org.iot.raspberry.grovepi.devices.GroveTemperatureAndHumiditySensor
+import java.util.*
 import kotlin.concurrent.fixedRateTimer
+import kotlin.properties.Delegates
 
-internal class GroveTemperatureHumiditySensor(private val sensor : GroveTemperatureAndHumiditySensor) : TemperatureHumiditySensor{
-    private var mostRecentValue = getTemperatureHumidity()
+internal class GroveTemperatureHumiditySensor(private val sensor: GroveTemperatureAndHumiditySensor) : TemperatureHumiditySensor {
+    private lateinit var timer: Timer
+    private var mostRecentValue: TemperatureHumidityMeasurement
+            by Delegates.observable(
+                    TemperatureHumidityMeasurement(
+                            Temperature.ABSOLUTE_ZERO,
+                            RelativeHumidity(FractionalPercentage.ZERO),
+                            TimeStamp.now()))
+            { _, _, newValue ->
+                //                this.listeners.forEach { l -> l.onStatusChanged(newValue) }
+            }
 
-    init {
-        fixedRateTimer("Polling sensor timer", false, 100, 100)
-        { mostRecentValue = getTemperatureHumidity()}
+    fun start() {
+        timer = fixedRateTimer("Polling sensor timer", false, 0, 100)
+        { mostRecentValue = getTemperatureHumidity() }
+    }
+
+    fun stop() {
+        this.timer.cancel()
     }
 
     override fun subscribe(listener: TemperatureHumidityListener, pollInterval: Period) {
-        val intervalInMilliseconds : Long = pollInterval.valueIn(Millisecond).toLong()
+        val intervalInMilliseconds: Long = pollInterval.valueIn(Millisecond).toLong()
         fixedRateTimer("Calling listener", false, intervalInMilliseconds, intervalInMilliseconds)
         { listener.invoke(mostRecentValue) }
 
@@ -27,7 +42,7 @@ internal class GroveTemperatureHumiditySensor(private val sensor : GroveTemperat
     }
 
     override fun subscribeToTemperature(listener: TemperatureListener, pollInterval: Period) {
-        val intervalInMilliseconds : Long = pollInterval.valueIn(Millisecond).toLong()
+        val intervalInMilliseconds: Long = pollInterval.valueIn(Millisecond).toLong()
         fixedRateTimer("Calling listener", false, intervalInMilliseconds, intervalInMilliseconds)
         { listener.invoke(mostRecentValue.toTemperatureMeasurement()) }
 
@@ -35,7 +50,7 @@ internal class GroveTemperatureHumiditySensor(private val sensor : GroveTemperat
     }
 
     override fun subscribeToHumidity(listener: HumidityListener, pollInterval: Period) {
-        val intervalInMilliseconds : Long = pollInterval.valueIn(Millisecond).toLong()
+        val intervalInMilliseconds: Long = pollInterval.valueIn(Millisecond).toLong()
         fixedRateTimer("Calling listener", false, intervalInMilliseconds, intervalInMilliseconds)
         { listener.invoke(mostRecentValue.toHumidityMeasurement()) }
 
@@ -43,20 +58,24 @@ internal class GroveTemperatureHumiditySensor(private val sensor : GroveTemperat
     }
 
     override fun getTemperatureHumidity(): TemperatureHumidityMeasurement {
+        return mostRecentValue;
+    }
+
+    override fun getHumidity(): HumidityMeasurement {
+        return mostRecentValue.toHumidityMeasurement()
+    }
+
+    override fun getTemperature(): TemperatureMeasurement {
+        return mostRecentValue.toTemperatureMeasurement()
+    }
+
+    private fun pollSensor() : TemperatureHumidityMeasurement {
         val sensorValue = this.sensor.get()
 
         val humidity = RelativeHumidity(FractionalPercentage.ofPercentage(sensorValue.humidity))
         val temperature = Temperature.of(sensorValue.temperature, Celcius)
 
         return TemperatureHumidityMeasurement(temperature, humidity, TimeStamp.now())
-    }
-
-    override fun getHumidity(): HumidityMeasurement {
-        return getTemperatureHumidity().toHumidityMeasurement()
-    }
-
-    override fun getTemperature(): TemperatureMeasurement {
-        return getTemperatureHumidity().toTemperatureMeasurement()
     }
 
 

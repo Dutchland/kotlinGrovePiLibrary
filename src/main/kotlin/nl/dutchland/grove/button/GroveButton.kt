@@ -20,15 +20,15 @@ class GroveButton internal constructor(
 
     fun start() {
         this.pollButtonTimer = fixedRateTimer("Polling button task", false, 0, 100)
-        { pollButton() }
+        { status = pollButton() }
     }
 
     fun stop() {
         this.pollButtonTimer.cancel()
     }
 
-    private fun pollButton() {
-        this.status = when (this.digitalIn.get()) {
+    private fun pollButton() : ButtonStatus {
+        return when (this.digitalIn.get()) {
             true -> PRESSED
             else -> NOT_PRESSED
         }
