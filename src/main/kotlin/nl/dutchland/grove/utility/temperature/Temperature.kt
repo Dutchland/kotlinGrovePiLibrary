@@ -22,7 +22,7 @@ data class Temperature private constructor(private val temperatureInKelvin: Doub
     }
 
     fun valueIn(scale : Scale): Double {
-        return scale.fromKelvin(temperatureInKelvin);
+        return scale.fromKelvin(temperatureInKelvin)
     }
 
     operator fun compareTo(other: Temperature) : Int {

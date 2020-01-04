@@ -8,6 +8,8 @@ import nl.dutchland.grove.grovepiports.zero.GrovePiZero
 import nl.dutchland.grove.led.GroveLedFactory
 import nl.dutchland.grove.led.Led
 import nl.dutchland.grove.temperatureandhumidity.GroveTemperatureHumiditySensorFactory
+import nl.dutchland.grove.temperatureandhumidity.TemperatureMeasurement
+import nl.dutchland.grove.temperaturerepository.DatabaseTemperatureRepository
 import nl.dutchland.grove.utility.RelativeHumidity
 import nl.dutchland.grove.utility.time.Minute
 import nl.dutchland.grove.utility.time.Period
@@ -23,7 +25,6 @@ fun main() {
     val buttonFactory = GroveButtonFactory(grovePi4J)
     val button = buttonFactory.aButton(GrovePiZero.A0, indicator)
 
-
     val temperatureHumiditySensorFactory = GroveTemperatureHumiditySensorFactory(grovePi4J)
     val sensor = temperatureHumiditySensorFactory.createDHT11(GrovePiZero.A2)
     val humidityIndicator = LedHighHumidityIndicator(led)
@@ -33,19 +34,25 @@ fun main() {
             { measurement -> humidityIndicator.toggle(measurement.humidity) },
             Period.of(1.0, Minute))
 
+    val temperatureRepository = DatabaseTemperatureRepository();
+
+    sensor.subscribe(
+            { measurement ->
+                temperatureRepository.persist(
+                        TemperatureMeasurement(measurement.temperature, measurement.timeStamp))
+            }
+            , Period.of(1.0, Minute))
+
+
     println("Hello, World")
 }
 
 class LedButtonIndicator(private val led: Led) : ButtonStatusChangedListener {
-    fun toggle(isPressed: ButtonStatus) {
-        when (isPressed) {
+    override fun onStatusChanged(newStatus: ButtonStatus) {
+        when (newStatus) {
             PRESSED -> led.turnOn()
             NOT_PRESSED -> led.turnOff()
         }
-    }
-
-    override fun invoke(newButtonStatus: ButtonStatus) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
 
