@@ -1,63 +1,48 @@
 package nl.dutchland.grove
 
-import org.iot.raspberry.grovepi.devices.GroveRgbLcd
-import org.iot.raspberry.grovepi.GrovePiSequenceVoid
-import org.iot.raspberry.grovepi.GrovePiSequence
+import com.pi4j.io.i2c.I2CBus
+import com.pi4j.io.i2c.I2CDevice
+import com.pi4j.io.i2c.I2CFactory
+import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException
 import org.iot.raspberry.grovepi.GrovePi
-import java.io.Closeable
+import org.iot.raspberry.grovepi.GrovePiSequence
+import org.iot.raspberry.grovepi.GrovePiSequenceVoid
+import org.iot.raspberry.grovepi.devices.GroveRgbLcd
 
-
-class GrovePi4J : Closeable, GrovePi {
+/**
+ * Create a new GrovePi interface using the Pi4j library
+ *
+ * @author Eduardo Moranchel <emoranchel></emoranchel>@asmatron.org>
+ */
+class GrovePi4J : GrovePi {
+    private val bus: I2CBus
+    private val device: I2CDevice
     override fun getLCD(): GroveRgbLcd {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun <T : Any?> exec(p0: GrovePiSequence<T>?): T {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    //  @Override
+    override fun <T> exec(sequence: GrovePiSequence<T>): T {
+        synchronized(this) { return sequence.execute(IO(device)) }
     }
 
-    override fun execVoid(p0: GrovePiSequenceVoid<*>?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    //  @Override
+    override fun execVoid(sequence: GrovePiSequenceVoid<*>) {
+        synchronized(this) { sequence.execute(IO(device)) }
     }
 
-    //    private val bus: I2CBus
-//    private val device: I2CDevice
-//
-//    init {
-//        this.bus = I2CFactory.getInstance(I2CBus.BUS_1)
-//        this.device = bus.getDevice(GROVEPI_ADDRESS)
-//    }
-//
-//    @Throws(IOException::class)
-//    override fun <T> exec(sequence: GrovePiSequence<T>): T {
-//        synchronized(this) {
-//            return sequence.execute(IO(device))
-//        }
-//    }
-//
-//    @Throws(IOException::class)
-//    override fun execVoid(sequence: GrovePiSequenceVoid<*>) {
-//        synchronized(this) {
-//            sequence.execute(IO(device))
-//        }
-//    }
-//
+    //  @Override
     override fun close() {
-//        try {
-//            bus.close()
-//        } catch (ex: IOException) {
-//            Logger.getLogger("GrovePi").log(Level.SEVERE, null, ex)
-//        }
-
+        bus.close()
     }
-//
-//    @Throws(IOException::class)
-//    override fun getLCD(): GroveRgbLcd {
-//        return GroveRgbLcdPi4J()
-//    }
-//
-//    companion object {
-//
-//        private val GROVEPI_ADDRESS = 4
-//    }
+
+
+    companion object {
+        private const val GROVEPI_ADDRESS = 4
+    }
+
+    init {
+        bus = I2CFactory.getInstance(I2CBus.BUS_1)
+        device = bus.getDevice(GROVEPI_ADDRESS)
+    }
 }

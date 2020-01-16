@@ -24,7 +24,7 @@ internal class GroveTemperatureHumiditySensor(private val sensor: GroveTemperatu
                 //                this.listeners.forEach { l -> l.onStatusChanged(newValue) }
             }
 
-    fun start() {
+    override fun start() {
         timer = fixedRateTimer("Polling sensor timer", false, 0, 100)
         { mostRecentValue = getTemperatureHumidity() }
     }
@@ -58,7 +58,7 @@ internal class GroveTemperatureHumiditySensor(private val sensor: GroveTemperatu
     }
 
     override fun getTemperatureHumidity(): TemperatureHumidityMeasurement {
-        return mostRecentValue;
+        return pollSensor();
     }
 
     override fun getHumidity(): HumidityMeasurement {

@@ -1,6 +1,6 @@
 package nl.dutchland.grove.utility
 
-data class Fraction private constructor(val percentage: Double) {
+data class Fraction private constructor(val percentage: Double) : Comparable<Fraction> {
     val fraction : Double = this.percentage / 100.0
 
     init {
@@ -30,6 +30,10 @@ data class Fraction private constructor(val percentage: Double) {
 
         val ZERO = ofFraction(0.0)
         val HUNDRED_PERCENT = ofFraction(1.0)
+    }
+
+    override fun compareTo(other: Fraction): Int {
+        return other.fraction.compareTo(this.fraction)
     }
 }
 

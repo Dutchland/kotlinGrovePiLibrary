@@ -14,12 +14,9 @@ import nl.dutchland.grove.utility.temperature.Kelvin
 import nl.dutchland.grove.utility.temperature.Temperature
 
 class KtormTemperatureRepository(credentials: DatabaseCredentials) : TemperatureRepository {
-    init {
-        Database.connect(
-                url = credentials.url,
-                driver = credentials.driver,
-                user = credentials.user)
-    }
+    private val database: Database = Database.connect(
+            url = credentials.url,
+            driver = credentials.driver)
 
     override fun persist(measurement: TemperatureMeasurement) {
         TemperatureTable.insert {
@@ -28,12 +25,10 @@ class KtormTemperatureRepository(credentials: DatabaseCredentials) : Temperature
         }
     }
 
-
-
     override fun all(): Collection<TemperatureMeasurement> {
         return TemperatureTable
                 .findAll()
-                .map { row -> row.toEntity() }
+                .map { t -> t.toEntity() }
     }
 
     interface TemperatureMeasurementDto : Entity<TemperatureMeasurementDto> {
@@ -48,7 +43,7 @@ class KtormTemperatureRepository(credentials: DatabaseCredentials) : Temperature
         }
     }
 
-    object TemperatureTable : Table<TemperatureMeasurementDto>("temperature") {
+    object TemperatureTable : Table<TemperatureMeasurementDto>("t_temperature") {
         val id by int("id").primaryKey()
                 .bindTo { it.id }
         val value by double("value")

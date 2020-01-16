@@ -17,11 +17,11 @@ class KtormTemperatureRepositoryTest {
         val repository = KtormTemperatureRepository(DatabaseCredentials(
                 "jdbc:h2:mem:testdb",
                 "org.h2.Driver",
-                "sa",
+                "",
                 ""))
 
         migrateDatabase()
-        repository.all()
+//        repository.all()
         repository.persist(TemperatureMeasurement(Temperature.ABSOLUTE_ZERO, TimeStamp.now()))
 
         assertEquals(1, repository.all().size)

@@ -3,7 +3,7 @@ package nl.dutchland.grove.lightsensor
 import nl.dutchland.grove.utility.Fraction
 import org.iot.raspberry.grovepi.devices.GroveLightSensor
 
-internal class GroveLightSensor(private val sensor : GroveLightSensor) : LightSensor() {
+class GroveLightSensor(private val sensor : GroveLightSensor) : LightSensor() {
     private val MAX_SENSOR_VALUE = 1023.0
 
     override fun getStatus(): Fraction {

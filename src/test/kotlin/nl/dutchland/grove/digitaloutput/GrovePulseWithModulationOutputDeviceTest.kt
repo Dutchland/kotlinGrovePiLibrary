@@ -51,5 +51,5 @@ class GrovePulseWithModulationOutputDeviceTest {
         Mockito.verify(mockedLed).set(groveNumber)
     }
 
-    private class SomePulseWithModulationDevice(groveLed: GroveLed) : GrovePulseWithModulationOutputDevice(groveLed)
+    private class SomePulseWithModulationDevice(groveLed: GroveLed) : GrovePulseWidthModulationOutputDevice(groveLed)
 }
