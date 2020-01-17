@@ -1,6 +1,12 @@
 package nl.dutchland.grove.digitaloutput
 
-interface DigitalOutputDevice {
+import nl.dutchland.grove.OutputDevice
+
+interface DigitalOutputDevice : OutputDevice {
     fun turnOn()
     fun turnOff()
+
+    override fun stop() {
+        turnOff()
+    }
 }

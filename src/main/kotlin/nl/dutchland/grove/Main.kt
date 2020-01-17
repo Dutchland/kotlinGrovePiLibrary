@@ -15,7 +15,6 @@ import nl.dutchland.grove.rgblcd.GroveLcd
 import nl.dutchland.grove.rgblcd.BackgroundColor
 import nl.dutchland.grove.utility.Fraction
 import nl.dutchland.grove.utility.RelativeHumidity
-import org.iot.raspberry.grovepi.GrovePi
 import java.sql.DriverManager
 
 fun main(vararg args: String) {
@@ -37,8 +36,8 @@ fun main(vararg args: String) {
 //    temperatureRepository.persist(
 //            TemperatureMeasurement(Temperature.ABSOLUTE_ZERO, TimeStamp.now()))
 //
-    val grovePi4J: GrovePi = GrovePi4J()
-    grovePi4J.use {
+    val grovePi = GrovePi4J()
+    grovePi.use {
 //        val led = GroveLedFactory(grovePi4J)
 //                .createDimmableLed(GrovePiZero.D3)
 //        val indicator = LedButtonIndicator(led)

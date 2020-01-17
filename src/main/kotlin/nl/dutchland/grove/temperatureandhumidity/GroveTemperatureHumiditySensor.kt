@@ -16,13 +16,9 @@ internal class GroveTemperatureHumiditySensor(private val sensor: GroveTemperatu
     private lateinit var timer: Timer
     private var listeners: Collection<TemperatureHumidityListener> = emptyList()
     private var mostRecentValue: TemperatureHumidityMeasurement
-            by Delegates.observable(
-                    TemperatureHumidityMeasurement(
-                            Temperature.ABSOLUTE_ZERO,
-                            RelativeHumidity(Fraction.ZERO),
-                            TimeStamp.now()))
+            by Delegates.observable(pollSensor())
             { _, _, newValue ->
-                                this.listeners.forEach { l -> l.invoke(newValue) }
+                this.listeners.forEach { l -> l.invoke(newValue) }
             }
 
     override fun start() {
@@ -30,17 +26,12 @@ internal class GroveTemperatureHumiditySensor(private val sensor: GroveTemperatu
         { mostRecentValue = pollSensor() }
     }
 
-    fun stop() {
+    override fun stop() {
         this.timer.cancel()
     }
 
     override fun subscribe(listener: TemperatureHumidityListener) {
         this.listeners += listener
-//
-//        fixedRateTimer("Calling listener", false, intervalInMilliseconds, intervalInMilliseconds)
-//        { listener.invoke(mostRecentValue) }
-//
-//        listener.invoke(mostRecentValue)
     }
 
     override fun subscribeToTemperature(listener: TemperatureListener, pollInterval: Period) {
@@ -71,7 +62,7 @@ internal class GroveTemperatureHumiditySensor(private val sensor: GroveTemperatu
         return mostRecentValue.toTemperatureMeasurement()
     }
 
-    private fun pollSensor() : TemperatureHumidityMeasurement {
+    private fun pollSensor(): TemperatureHumidityMeasurement {
         val sensorValue = this.sensor.get()
 
         val humidity = RelativeHumidity(Fraction.ofPercentage(sensorValue.humidity))
