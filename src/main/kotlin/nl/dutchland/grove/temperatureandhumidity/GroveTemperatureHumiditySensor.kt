@@ -14,6 +14,7 @@ import kotlin.properties.Delegates
 
 internal class GroveTemperatureHumiditySensor(private val sensor: GroveTemperatureAndHumiditySensor) : TemperatureHumiditySensor {
     private lateinit var timer: Timer
+    private var listeners: Collection<TemperatureHumidityListener> = emptyList()
     private var mostRecentValue: TemperatureHumidityMeasurement
             by Delegates.observable(
                     TemperatureHumidityMeasurement(
@@ -21,24 +22,25 @@ internal class GroveTemperatureHumiditySensor(private val sensor: GroveTemperatu
                             RelativeHumidity(Fraction.ZERO),
                             TimeStamp.now()))
             { _, _, newValue ->
-                //                this.listeners.forEach { l -> l.onStatusChanged(newValue) }
+                                this.listeners.forEach { l -> l.invoke(newValue) }
             }
 
     override fun start() {
-        timer = fixedRateTimer("Polling sensor timer", false, 0, 100)
-        { mostRecentValue = getTemperatureHumidity() }
+        timer = fixedRateTimer("Polling sensor timer", false, 0, 1000)
+        { mostRecentValue = pollSensor() }
     }
 
     fun stop() {
         this.timer.cancel()
     }
 
-    override fun subscribe(listener: TemperatureHumidityListener, pollInterval: Period) {
-        val intervalInMilliseconds: Long = pollInterval.valueIn(Millisecond).toLong()
-        fixedRateTimer("Calling listener", false, intervalInMilliseconds, intervalInMilliseconds)
-        { listener.invoke(mostRecentValue) }
-
-        listener.invoke(mostRecentValue)
+    override fun subscribe(listener: TemperatureHumidityListener) {
+        this.listeners += listener
+//
+//        fixedRateTimer("Calling listener", false, intervalInMilliseconds, intervalInMilliseconds)
+//        { listener.invoke(mostRecentValue) }
+//
+//        listener.invoke(mostRecentValue)
     }
 
     override fun subscribeToTemperature(listener: TemperatureListener, pollInterval: Period) {
@@ -58,7 +60,7 @@ internal class GroveTemperatureHumiditySensor(private val sensor: GroveTemperatu
     }
 
     override fun getTemperatureHumidity(): TemperatureHumidityMeasurement {
-        return pollSensor();
+        return mostRecentValue
     }
 
     override fun getHumidity(): HumidityMeasurement {

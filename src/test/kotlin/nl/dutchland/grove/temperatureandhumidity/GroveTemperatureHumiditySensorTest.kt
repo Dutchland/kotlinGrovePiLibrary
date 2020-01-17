@@ -136,7 +136,7 @@ class GroveTemperatureHumiditySensorTest {
         val mockedListener = mock<TemperatureHumidityListener>()
 
         // Act
-        sensor.subscribe(mockedListener, Period.of(100.0, Millisecond))
+        sensor.subscribe(mockedListener)
         `when`(groveSensor.get()).thenReturn(GroveTemperatureAndHumidityValue(someOtherTemperature, someOtherHumidityPercentage.percentage))
         Thread.sleep(200)
 

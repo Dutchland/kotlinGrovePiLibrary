@@ -6,12 +6,14 @@ import liquibase.database.DatabaseFactory
 import liquibase.database.jvm.JdbcConnection
 import liquibase.pro.packaged.v
 import liquibase.resource.FileSystemResourceAccessor
+import me.liuwj.ktorm.database.use
 import nl.dutchland.grove.button.ButtonStatus
 import nl.dutchland.grove.button.ButtonStatus.*
 import nl.dutchland.grove.button.ButtonStatusChangedListener
 import nl.dutchland.grove.button.GroveButtonFactory
 import nl.dutchland.grove.buzzer.GroveBuzzerFactory
 import nl.dutchland.grove.grovepiports.GrovePiZero
+import nl.dutchland.grove.led.DimmableLed
 import nl.dutchland.grove.led.GroveLedFactory
 import nl.dutchland.grove.led.Led
 import kotlin.concurrent.fixedRateTimer
@@ -30,6 +32,7 @@ import nl.dutchland.grove.utility.time.Minute
 import nl.dutchland.grove.utility.time.Period
 import nl.dutchland.grove.utility.time.Second
 import org.iot.raspberry.grovepi.GrovePi
+import org.iot.raspberry.grovepi.devices.GroveRgbLcd
 import java.sql.DriverManager
 import kotlin.concurrent.fixedRateTimer
 
@@ -53,23 +56,34 @@ fun main(vararg args: String) {
 //            TemperatureMeasurement(Temperature.ABSOLUTE_ZERO, TimeStamp.now()))
 //
     val grovePi4J: GrovePi = GrovePi4J()
-//    GrovePi4J().use {
-//        val buzzerFactory = GroveBuzzerFactory(grovePi4J)
-//        val buzzer = buzzerFactory.createAdjustableBuzzerOn(GrovePiZero.D3)
-//
-//
-//    val ledFactory = GroveLedFactory(grovePi4J)
-//    val led = ledFactory.createLed(GrovePiZero.A1)
-//    val indicator = LedButtonIndicator(led)
-//    val buttonFactory = GroveButtonFactory(grovePi4J)
-//    val button = buttonFactory.aButton(GrovePiZero.D3, indicator)
-//    button.start()
-//
-        val temperatureHumiditySensorFactory = GroveTemperatureHumiditySensorFactory(grovePi4J)
-        val sensor = temperatureHumiditySensorFactory.createDHT11(GrovePiZero.A2)
-    sensor.start()
+    grovePi4J.use {
+        val led = GroveLedFactory(grovePi4J)
+                .createDimmableLed(GrovePiZero.D3)
+        val indicator = LedButtonIndicator(led)
 
-    sensor.subscribe({t -> println(t)}, Period.of(5.0, Second))
+        val button = GroveButtonFactory(grovePi4J).
+                aButton(GrovePiZero.A0, indicator)
+        button.start()
+
+
+        val rotary = GroveRotarySensorFactory(grovePi4J)
+                .createRotarySensor(GrovePiZero.A2)
+
+        val buzzer = GroveBuzzerFactory(grovePi4J)
+                .createAdjustableBuzzerOn(GrovePiZero.D3)
+
+        rotary.addStatusChangedListener { percentageTurned -> buzzer.turnOn(percentageTurned) }
+
+//        val temperatureHumiditySensorFactory = GroveTemperatureHumiditySensorFactory(grovePi4J)
+//        val sensor = temperatureHumiditySensorFactory.createDHT11(GrovePiZero.A0)
+//        sensor.start()
+//
+//
+//        val display = GroveRgbLcdPi4J()
+//        display.setText("Hallo")
+//        sensor.subscribe { t -> println(t)}
+
+    }
 //        val humidityIndicator = LedHighHumidityIndicator(led)
 //
 //        sensor.subscribe({ measurment -> if (measurment.humidity.relativeHumidity > Fraction.ofPercentage(50.0)) },
@@ -99,10 +113,16 @@ fun migrateDatabase() {
     liquibase.update("main")
 }
 
-class LedButtonIndicator(private val led: Led) : ButtonStatusChangedListener {
+class LedButtonIndicator(private val led: DimmableLed) : ButtonStatusChangedListener {
+    var percentageTurnedOn = Fraction.ofPercentage(0.0)
+
     override fun onStatusChanged(newStatus: ButtonStatus) {
         when (newStatus) {
-            PRESSED -> led.turnOn()
+            PRESSED -> {
+                val newPercentage = (percentageTurnedOn.percentage + 10.0) % 100.0
+                this.percentageTurnedOn = Fraction.ofPercentage(newPercentage)
+                led.turnOn(percentageTurnedOn)
+            }
             NOT_PRESSED -> led.turnOff()
         }
     }

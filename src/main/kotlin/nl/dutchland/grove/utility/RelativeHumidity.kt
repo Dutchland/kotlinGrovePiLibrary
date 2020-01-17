@@ -1,3 +1,3 @@
 package nl.dutchland.grove.utility
 
-class RelativeHumidity(val relativeHumidity : Fraction)
+data class RelativeHumidity(val relativeHumidity : Fraction)
