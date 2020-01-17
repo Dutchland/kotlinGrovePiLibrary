@@ -20,6 +20,9 @@ object GrovePiZero {
         override val digitalPin = 3
     }
 
+    object I2c : I2cPort {
+        override val i2cNumber = 1
+    }
+
     object RPISER
-    object I2c
 }

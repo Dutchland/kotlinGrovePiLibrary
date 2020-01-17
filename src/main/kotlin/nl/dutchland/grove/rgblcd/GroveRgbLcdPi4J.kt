@@ -1,41 +1,36 @@
-package nl.dutchland.grove
+package nl.dutchland.grove.rgblcd
 
 import com.pi4j.io.i2c.I2CBus
 import com.pi4j.io.i2c.I2CDevice
 import com.pi4j.io.i2c.I2CFactory
+import nl.dutchland.grove.IO
 import org.iot.raspberry.grovepi.GrovePiSequenceVoid
 import org.iot.raspberry.grovepi.devices.GroveRgbLcd
 import java.io.IOException
-import java.util.logging.Level
-import java.util.logging.Logger
+import java.lang.RuntimeException
 
-class GroveRgbLcdPi4J : GroveRgbLcd() {
-    private val bus: I2CBus
-    private val rgb: I2CDevice
-    private val text: I2CDevice
+internal class GroveRgbLcdPi4J(private val i2cNumber: Int) : GroveRgbLcd() {
+    private val bus: I2CBus = I2CFactory.getInstance(i2cNumber)
+    private val rgb: I2CDevice = bus.getDevice(DISPLAY_RGB_ADDR)
+    private val text: I2CDevice = bus.getDevice(DISPLAY_TEXT_ADDR)
+
+    init {
+        init()
+    }
 
     override fun close() {
         try {
             bus.close()
         } catch (ex: IOException) {
-            Logger.getLogger("GrovePi").log(Level.SEVERE, null, ex)
+            throw RuntimeException(ex)
         }
     }
 
-    @Throws(IOException::class)
     override fun execRGB(sequence: GrovePiSequenceVoid<*>) {
         synchronized(this) { sequence.execute(IO(rgb)) }
     }
 
-    @Throws(IOException::class)
     override fun execTEXT(sequence: GrovePiSequenceVoid<*>) {
         synchronized(this) { sequence.execute(IO(text)) }
-    }
-
-    init {
-        bus = I2CFactory.getInstance(I2CBus.BUS_1)
-        rgb = bus.getDevice(DISPLAY_RGB_ADDR)
-        text = bus.getDevice(DISPLAY_TEXT_ADDR)
-        init()
     }
 }

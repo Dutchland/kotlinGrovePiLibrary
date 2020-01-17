@@ -1,40 +1,22 @@
 package nl.dutchland.grove
 
-import com.pi4j.wiringpi.Gpio.delay
 import liquibase.Liquibase
 import liquibase.database.DatabaseFactory
 import liquibase.database.jvm.JdbcConnection
-import liquibase.pro.packaged.v
 import liquibase.resource.FileSystemResourceAccessor
 import me.liuwj.ktorm.database.use
 import nl.dutchland.grove.button.ButtonStatus
 import nl.dutchland.grove.button.ButtonStatus.*
 import nl.dutchland.grove.button.ButtonStatusChangedListener
-import nl.dutchland.grove.button.GroveButtonFactory
-import nl.dutchland.grove.buzzer.GroveBuzzerFactory
 import nl.dutchland.grove.grovepiports.GrovePiZero
 import nl.dutchland.grove.led.DimmableLed
-import nl.dutchland.grove.led.GroveLedFactory
 import nl.dutchland.grove.led.Led
-import kotlin.concurrent.fixedRateTimer
-import nl.dutchland.grove.rotary.GroveRotarySensorFactory
-import nl.dutchland.grove.temperatureandhumidity.GroveTemperatureHumiditySensor
-import nl.dutchland.grove.temperatureandhumidity.GroveTemperatureHumiditySensorFactory
-import nl.dutchland.grove.temperatureandhumidity.TemperatureMeasurement
-import nl.dutchland.grove.temperaturerepository.DatabaseCredentials
-import nl.dutchland.grove.temperaturerepository.KtormTemperatureRepository
+import nl.dutchland.grove.rgblcd.GroveLcd
+import nl.dutchland.grove.rgblcd.BackgroundColor
 import nl.dutchland.grove.utility.Fraction
 import nl.dutchland.grove.utility.RelativeHumidity
-import nl.dutchland.grove.utility.TimeStamp
-import nl.dutchland.grove.utility.temperature.Kelvin
-import nl.dutchland.grove.utility.temperature.Temperature
-import nl.dutchland.grove.utility.time.Minute
-import nl.dutchland.grove.utility.time.Period
-import nl.dutchland.grove.utility.time.Second
 import org.iot.raspberry.grovepi.GrovePi
-import org.iot.raspberry.grovepi.devices.GroveRgbLcd
 import java.sql.DriverManager
-import kotlin.concurrent.fixedRateTimer
 
 fun main(vararg args: String) {
 //    fixedRateTimer("Calling listener", false, 0, 1000)
@@ -57,30 +39,35 @@ fun main(vararg args: String) {
 //
     val grovePi4J: GrovePi = GrovePi4J()
     grovePi4J.use {
-        val led = GroveLedFactory(grovePi4J)
-                .createDimmableLed(GrovePiZero.D3)
-        val indicator = LedButtonIndicator(led)
-
-        val button = GroveButtonFactory(grovePi4J).
-                aButton(GrovePiZero.A0, indicator)
-        button.start()
-
-
-        val rotary = GroveRotarySensorFactory(grovePi4J)
-                .createRotarySensor(GrovePiZero.A2)
-
-        val buzzer = GroveBuzzerFactory(grovePi4J)
-                .createAdjustableBuzzerOn(GrovePiZero.D3)
-
-        rotary.addStatusChangedListener { percentageTurned -> buzzer.turnOn(percentageTurned) }
+//        val led = GroveLedFactory(grovePi4J)
+//                .createDimmableLed(GrovePiZero.D3)
+//        val indicator = LedButtonIndicator(led)
+//
+//        val button = GroveButtonFactory(grovePi4J).
+//                aButton(GrovePiZero.A0, indicator)
+//        button.start()
+//
+//
+//        val rotary = GroveRotarySensorFactory(grovePi4J)
+//                .createRotarySensor(GrovePiZero.A2)
+//
+//        val buzzer = GroveBuzzerFactory(grovePi4J)
+//                .createAdjustableBuzzerOn(GrovePiZero.D3)
+//
+//        rotary.addStatusChangedListener { percentageTurned -> buzzer.turnOn(percentageTurned) }
 
 //        val temperatureHumiditySensorFactory = GroveTemperatureHumiditySensorFactory(grovePi4J)
 //        val sensor = temperatureHumiditySensorFactory.createDHT11(GrovePiZero.A0)
 //        sensor.start()
 //
 //
-//        val display = GroveRgbLcdPi4J()
-//        display.setText("Hallo")
+        val display = GroveLcd.on(GrovePiZero.I2c)
+        display.setText("1234567" , "8901234567890123456789012345678")
+        display.setBackground(BackgroundColor.TURQUOISE)
+
+        Thread.sleep(10000)
+
+        display.stop()
 //        sensor.subscribe { t -> println(t)}
 
     }
