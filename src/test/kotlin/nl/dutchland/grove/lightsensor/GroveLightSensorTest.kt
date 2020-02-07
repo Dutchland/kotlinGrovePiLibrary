@@ -30,7 +30,7 @@ class GroveLightSensorTest {
         val sensor = nl.dutchland.grove.lightsensor.GroveLightSensor(groveSensor)
 
         // Act
-        val value = sensor.getStatus()
+        val value = sensor.poll()
 
         // Assert
         Assert.assertEquals(expectedOutput, value.fraction, 0.001)
@@ -46,7 +46,7 @@ class GroveLightSensorTest {
         val mockedListener = mock<LightSensorValueListener>()
 
         // Act
-        sensor.subscribe(mockedListener, Period.of(100.0, Millisecond))
+        sensor.subscribe(mockedListener)
         `when`(groveSensor.get()).thenReturn(MAX_SENSOR_VALUE)
         Thread.sleep(150)
 
