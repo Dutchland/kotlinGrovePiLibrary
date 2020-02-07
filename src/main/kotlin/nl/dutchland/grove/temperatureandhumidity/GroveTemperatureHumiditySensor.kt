@@ -5,8 +5,7 @@ import nl.dutchland.grove.utility.RelativeHumidity
 import nl.dutchland.grove.utility.TimeStamp
 import nl.dutchland.grove.utility.temperature.Celcius
 import nl.dutchland.grove.utility.temperature.Temperature
-import nl.dutchland.grove.utility.time.Millisecond
-import nl.dutchland.grove.utility.time.Period
+
 import org.iot.raspberry.grovepi.devices.GroveTemperatureAndHumiditySensor
 import java.util.*
 import kotlin.concurrent.fixedRateTimer
@@ -34,20 +33,12 @@ internal class GroveTemperatureHumiditySensor(private val sensor: GroveTemperatu
         this.listeners += listener
     }
 
-    override fun subscribeToTemperature(listener: TemperatureListener, pollInterval: Period) {
-        val intervalInMilliseconds: Long = pollInterval.valueIn(Millisecond).toLong()
-        fixedRateTimer("Calling listener", false, intervalInMilliseconds, intervalInMilliseconds)
-        { listener.invoke(mostRecentValue.toTemperatureMeasurement()) }
-
-        listener.invoke(mostRecentValue.toTemperatureMeasurement())
+    override fun subscribeToTemperature(listener: TemperatureListener) {
+        this.listeners += { th -> listener.invoke(th.toTemperatureMeasurement()) }
     }
 
-    override fun subscribeToHumidity(listener: HumidityListener, pollInterval: Period) {
-        val intervalInMilliseconds: Long = pollInterval.valueIn(Millisecond).toLong()
-        fixedRateTimer("Calling listener", false, intervalInMilliseconds, intervalInMilliseconds)
-        { listener.invoke(mostRecentValue.toHumidityMeasurement()) }
-
-        listener.invoke(mostRecentValue.toHumidityMeasurement())
+    override fun subscribeToHumidity(listener: HumidityListener) {
+        this.listeners += { th -> listener.invoke(th.toHumidityMeasurement()) }
     }
 
     override fun getTemperatureHumidity(): TemperatureHumidityMeasurement {
@@ -70,6 +61,4 @@ internal class GroveTemperatureHumiditySensor(private val sensor: GroveTemperatu
 
         return TemperatureHumidityMeasurement(temperature, humidity, TimeStamp.now())
     }
-
-
 }

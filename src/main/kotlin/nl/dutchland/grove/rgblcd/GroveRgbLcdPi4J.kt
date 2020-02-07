@@ -9,7 +9,7 @@ import org.iot.raspberry.grovepi.devices.GroveRgbLcd
 import java.io.IOException
 import java.lang.RuntimeException
 
-internal class GroveRgbLcdPi4J(private val i2cNumber: Int) : GroveRgbLcd() {
+internal class GroveRgbLcdPi4J(i2cNumber: Int) : GroveRgbLcd() {
     private val bus: I2CBus = I2CFactory.getInstance(i2cNumber)
     private val rgb: I2CDevice = bus.getDevice(DISPLAY_RGB_ADDR)
     private val text: I2CDevice = bus.getDevice(DISPLAY_TEXT_ADDR)

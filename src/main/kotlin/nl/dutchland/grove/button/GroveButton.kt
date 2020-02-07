@@ -11,16 +11,17 @@ class GroveButton internal constructor(
         private val listeners: Collection<ButtonStatusChangedListener>) : Button {
 
     override var status: ButtonStatus
-            by observable(NOT_PRESSED)
+            by observable(pollButton())
             { _, _, newValue ->
                 this.listeners.forEach { l -> l.onStatusChanged(newValue) }
             }
 
-    private lateinit var pollButtonTimer: Timer
+    private var pollButtonTimer: Timer = fixedRateTimer("Polling button task", false, 0, 100)
+    { status = pollButton() }
 
     fun start() {
-        this.pollButtonTimer = fixedRateTimer("Polling button task", false, 0, 100)
-        { status = pollButton() }
+//        this.pollButtonTimer = fixedRateTimer("Polling button task", false, 0, 100)
+//        { status = pollButton() }
     }
 
     fun stop() {
@@ -28,6 +29,7 @@ class GroveButton internal constructor(
     }
 
     private fun pollButton(): ButtonStatus {
+        println("Polling button")
         return when (this.digitalIn.get()) {
             true -> PRESSED
             else -> NOT_PRESSED

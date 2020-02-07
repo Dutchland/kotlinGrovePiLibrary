@@ -7,5 +7,5 @@ typealias TemperatureListener = (TemperatureMeasurement) -> Unit
 
 interface TemperatureSensor : InputDevice {
     fun getTemperature() : TemperatureMeasurement
-    fun subscribeToTemperature(listener: TemperatureListener, pollInterval: Period)
+    fun subscribeToTemperature(listener: TemperatureListener)
 }

@@ -15,8 +15,9 @@ import org.iot.raspberry.grovepi.devices.GroveRgbLcd
  * @author Eduardo Moranchel <emoranchel></emoranchel>@asmatron.org>
  */
 class GrovePi4J : GrovePi {
-    private val bus: I2CBus
-    private val device: I2CDevice
+    private val bus: I2CBus = I2CFactory.getInstance(I2CBus.BUS_1)
+    private val device: I2CDevice = bus.getDevice(GROVEPI_ADDRESS)
+
     override fun getLCD(): GroveRgbLcd {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -39,10 +40,5 @@ class GrovePi4J : GrovePi {
 
     companion object {
         private const val GROVEPI_ADDRESS = 4
-    }
-
-    init {
-        bus = I2CFactory.getInstance(I2CBus.BUS_1)
-        device = bus.getDevice(GROVEPI_ADDRESS)
     }
 }

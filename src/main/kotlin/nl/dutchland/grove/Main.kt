@@ -1,5 +1,6 @@
 package nl.dutchland.grove
 
+import com.pi4j.wiringpi.Gpio.delay
 import liquibase.Liquibase
 import liquibase.database.DatabaseFactory
 import liquibase.database.jvm.JdbcConnection
@@ -8,43 +9,77 @@ import me.liuwj.ktorm.database.use
 import nl.dutchland.grove.button.ButtonStatus
 import nl.dutchland.grove.button.ButtonStatus.*
 import nl.dutchland.grove.button.ButtonStatusChangedListener
+import nl.dutchland.grove.button.GroveButtonFactory
+import nl.dutchland.grove.buzzer.GroveBuzzerFactory
 import nl.dutchland.grove.grovepiports.GrovePiZero
 import nl.dutchland.grove.led.DimmableLed
+import nl.dutchland.grove.led.GroveLedFactory
 import nl.dutchland.grove.led.Led
+import nl.dutchland.grove.lightsensor.GroveLightSensorFactory
+import nl.dutchland.grove.lightsensor.LightSensor
 import nl.dutchland.grove.rgblcd.GroveLcd
 import nl.dutchland.grove.rgblcd.BackgroundColor
+import nl.dutchland.grove.rotary.GroveRotarySensorFactory
+import nl.dutchland.grove.temperatureandhumidity.GroveTemperatureHumiditySensorFactory
 import nl.dutchland.grove.utility.Fraction
 import nl.dutchland.grove.utility.RelativeHumidity
+import org.iot.raspberry.grovepi.GrovePi
 import java.sql.DriverManager
 
 fun main(vararg args: String) {
-//    fixedRateTimer("Calling listener", false, 0, 1000)
-//    {
-//
-//        println(TemperatureMeasurement(Temperature.of(100.0, Kelvin),
-//                TimeStamp.fromMillisecondsSinceEpoch(100000)))
-//    }
 //    migrateDatabase()
+    val grovePi : GrovePi = GrovePi4J()
+    val led = GroveLedFactory(grovePi)
+            .createLed(GrovePiZero.D3)
 
-//    val temperatureRepository = KtormTemperatureRepository(
-//            DatabaseCredentials(
-//                    "jdbc:h2:mem:testdb",
-//                    "org.h2.Driver",
-//                    "sa",
-//                    ""))
+    val indicator = LedButtonIndicator(led)
+
+    val button = GroveButtonFactory(grovePi).aButton(GrovePiZero.A0, indicator)
+    button.start()
+
+    val lightSensor : LightSensor = GroveLightSensorFactory(grovePi)
+            .createLigthSensorV1_2(GrovePiZero.A2)
+
+
+    val temperatureSensor = GroveTemperatureHumiditySensorFactory(grovePi)
+            .createDHT11(GrovePiZero.A1)
+
+    temperatureSensor.subscribe { th -> println(th) }
+    temperatureSensor.start()
+
+//    val display = GroveLcd.on(GrovePiZero.I2c)
+//    display.setText("Maayke", "is lief!")
+//    display.setBackground(BackgroundColor.TURQUOISE(Fraction.ofPercentage(10.0)))
+//    val rotary = GroveRotarySensorFactory(grovePi)
+//            .createRotarySensor(GrovePiZero.A2)
 //
-//    temperatureRepository.persist(
-//            TemperatureMeasurement(Temperature.ABSOLUTE_ZERO, TimeStamp.now()))
+//    val buzzer = GroveBuzzerFactory(grovePi)
+//            .createBuzzerOn(GrovePiZero.A1)
+
+    Runtime.getRuntime().addShutdownHook(object : Thread() {
+        override fun run() {
+            println("Shutting down")
+            button.stop()
+            temperatureSensor.stop()
+//            rotary.stop()
+            delay(100)
+
+            led.stop()
+//            display.stop()
+//            buzzer.stop()
+
+            delay(100)
+            grovePi.close();
+        }
+    })
 //
-    val grovePi = GrovePi4J()
-    grovePi.use {
-//        val led = GroveLedFactory(grovePi4J)
-//                .createDimmableLed(GrovePiZero.D3)
-//        val indicator = LedButtonIndicator(led)
 //
-//        val button = GroveButtonFactory(grovePi4J).
-//                aButton(GrovePiZero.A0, indicator)
-//        button.start()
+
+
+}
+//    }
+
+
 //
 //
 //        val rotary = GroveRotarySensorFactory(grovePi4J)
@@ -60,16 +95,14 @@ fun main(vararg args: String) {
 //        sensor.start()
 //
 //
-        val display = GroveLcd.on(GrovePiZero.I2c)
-        display.setText("1234567" , "8901234567890123456789012345678")
-        display.setBackground(BackgroundColor.TURQUOISE)
 
-        Thread.sleep(10000)
+//
+//        Thread.sleep(10000)
+//        display.stop()
 
-        display.stop()
+//        display.stop()
 //        sensor.subscribe { t -> println(t)}
 
-    }
 //        val humidityIndicator = LedHighHumidityIndicator(led)
 //
 //        sensor.subscribe({ measurment -> if (measurment.humidity.relativeHumidity > Fraction.ofPercentage(50.0)) },
@@ -90,16 +123,43 @@ fun main(vararg args: String) {
 //
 //
 //    println("Hello, World")
-}
+
+//    fixedRateTimer("Calling listener", false, 0, 1000)
+//    {
+//
+//        println(TemperatureMeasurement(Temperature.of(100.0, Kelvin),
+//                TimeStamp.fromMillisecondsSinceEpoch(100000)))
+//    }
+//    migrateDatabase()
+
+//    val temperatureRepository = KtormTemperatureRepository(
+//            DatabaseCredentials(
+//                    "jdbc:h2:mem:testdb",
+//                    "org.h2.Driver",
+//                    "sa",
+//                    ""))
+//
+//    temperatureRepository.persist(
+//            TemperatureMeasurement(Temperature.ABSOLUTE_ZERO, TimeStamp.now()))
+//
 
 fun migrateDatabase() {
-    val sqlConnection = DriverManager.getConnection("jdbc:h2:mem:testdb", "sa", "")
+    val sqlConnection = DriverManager.getConnection("jdbc:postgresql://192.168.86.25:5432/postgres", "postgres", "mysecretpassword")
     val database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(JdbcConnection(sqlConnection))
     val liquibase = Liquibase("src/main/resources/db-changelog.xml", FileSystemResourceAccessor(), database)
     liquibase.update("main")
 }
 
-class LedButtonIndicator(private val led: DimmableLed) : ButtonStatusChangedListener {
+class LedButtonIndicator(private val led: Led) : ButtonStatusChangedListener {
+    override fun onStatusChanged(newStatus: ButtonStatus) {
+        when (newStatus) {
+            PRESSED -> led.turnOn()
+            NOT_PRESSED -> led.turnOff()
+        }
+    }
+}
+
+class DimmableLedIndicator(private val led: DimmableLed) : ButtonStatusChangedListener {
     var percentageTurnedOn = Fraction.ofPercentage(0.0)
 
     override fun onStatusChanged(newStatus: ButtonStatus) {

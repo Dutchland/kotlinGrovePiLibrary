@@ -12,7 +12,7 @@ class AssertTest {
         val mockAssertionFailedHandler: AssertionFailedHandler = mock()
 
         // Act
-        Assert.notLargerThan(2.0, 1.0, mockAssertionFailedHandler)
+        2.0.assertNotLargerThan(1.0, mockAssertionFailedHandler)
 
         // Assert
         verify(mockAssertionFailedHandler).invoke()
@@ -24,7 +24,7 @@ class AssertTest {
         val mockAssertionFailedHandler: AssertionFailedHandler = mock()
 
         // Act
-        Assert.notLargerThan(1.0, 1.0, mockAssertionFailedHandler)
+        1.0.assertNotLargerThan(1.0, mockAssertionFailedHandler)
 
         // Assert
         verify(mockAssertionFailedHandler, times(0)).invoke()
@@ -36,7 +36,7 @@ class AssertTest {
         val mockAssertionFailedHandler: AssertionFailedHandler = mock()
 
         // Act
-        Assert.notLargerThan(1.0, 2.0, mockAssertionFailedHandler)
+        1.0.assertNotLargerThan(2.0, mockAssertionFailedHandler)
 
         // Assert
         verify(mockAssertionFailedHandler, times(0)).invoke()
@@ -48,7 +48,7 @@ class AssertTest {
         val mockAssertionFailedHandler: AssertionFailedHandler = mock()
 
         // Act
-        Assert.notNegative(1.0, mockAssertionFailedHandler)
+        1.0.assertNotNegative(mockAssertionFailedHandler)
 
         // Assert
         verify(mockAssertionFailedHandler, times(0)).invoke()
@@ -60,7 +60,7 @@ class AssertTest {
         val mockAssertionFailedHandler: AssertionFailedHandler = mock()
 
         // Act
-        Assert.notNegative(0.0, mockAssertionFailedHandler)
+        0.0.assertNotNegative(mockAssertionFailedHandler)
 
         // Assert
         verify(mockAssertionFailedHandler, times(0)).invoke()
@@ -72,7 +72,7 @@ class AssertTest {
         val mockAssertionFailedHandler: AssertionFailedHandler = mock()
 
         // Act
-        Assert.notNegative(-1.0, mockAssertionFailedHandler)
+        (-1.0).assertNotNegative(mockAssertionFailedHandler)
 
         // Assert
         verify(mockAssertionFailedHandler).invoke()

@@ -1,6 +1,6 @@
 package nl.dutchland.grove.utility.temperature
 
-import nl.dutchland.grove.utility.Assert
+import nl.dutchland.grove.utility.assertLargerOrEquals
 
 data class Temperature private constructor(private val temperatureInKelvin: Double) {
     init {
@@ -14,7 +14,7 @@ data class Temperature private constructor(private val temperatureInKelvin: Doub
         }
 
         private fun validate(value: Double, scale: Scale) {
-            Assert.largerOrEquals(value, scale.absoluteZero)
+            value.assertLargerOrEquals(scale.absoluteZero)
             { throw InvalidTemperatureException("Invalid temperature: $value. Minimal value is ${scale.absoluteZero} ${scale.name}") }
         }
 

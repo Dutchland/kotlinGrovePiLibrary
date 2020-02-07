@@ -33,7 +33,7 @@ class GroveLcd private constructor(groveRgbLcd: () -> GroveRgbLcd) : OutputDevic
     override fun stop() {
         setBackground(BackgroundColor.NO_BACKLIGHT)
         setText("")
-        lcd.close()
+//        lcd.close()
     }
 }
 

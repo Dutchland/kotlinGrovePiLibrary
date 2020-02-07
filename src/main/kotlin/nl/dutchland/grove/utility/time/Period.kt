@@ -1,27 +1,26 @@
 package nl.dutchland.grove.utility.time
 
-import nl.dutchland.grove.utility.Assert
+import nl.dutchland.grove.utility.assertLargerThanZero
 
-data class Period internal constructor(private val seconds : Double) {
+data class Period internal constructor(private val seconds: Double) {
     init {
-        Assert.largerThanZero(seconds)
-        { throw InvalidIntervalException("Period cannot be negative") }
+        seconds.assertLargerThanZero { throw InvalidIntervalException("Period cannot be negative") }
     }
 
     companion object {
-        fun of(value: Double, scale: TimeScale) : Period {
+        fun of(value: Double, scale: TimeScale): Period {
             return Period(scale.toSeconds(value))
         }
     }
 
-    fun valueIn(scale: TimeScale) : Double {
+    fun valueIn(scale: TimeScale): Double {
         return scale.fromSeconds(this.seconds)
     }
 
     interface TimeScale {
-        fun toSeconds(value: Double) : Double
-        fun fromSeconds(value: Double) : Double
+        fun toSeconds(value: Double): Double
+        fun fromSeconds(value: Double): Double
     }
 }
 
-class InvalidIntervalException(message: String) : IllegalArgumentException (message)
+class InvalidIntervalException(message: String) : IllegalArgumentException(message)
