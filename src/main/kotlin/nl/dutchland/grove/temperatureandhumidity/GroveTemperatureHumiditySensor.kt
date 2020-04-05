@@ -21,7 +21,7 @@ internal class GroveTemperatureHumiditySensor(private val sensor: GroveTemperatu
             }
 
     override fun start() {
-        timer = fixedRateTimer("Polling sensor timer", false, 0, 10000)
+        timer = fixedRateTimer("Polling sensor timer", false, 0, 6000)
         { mostRecentValue = pollSensor() }
     }
 

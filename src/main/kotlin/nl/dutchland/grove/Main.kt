@@ -1,101 +1,83 @@
 package nl.dutchland.grove
 
 import com.pi4j.wiringpi.Gpio.delay
-import hep.dataforge.meta.buildMeta
-import io.ktor.util.KtorExperimentalAPI
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.NonCancellable.isActive
-//import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import liquibase.Liquibase
-import liquibase.database.DatabaseFactory
-import liquibase.database.jvm.JdbcConnection
-import liquibase.resource.FileSystemResourceAccessor
-import me.liuwj.ktorm.database.use
 import nl.dutchland.grove.button.ButtonStatus
 import nl.dutchland.grove.button.ButtonStatus.*
 import nl.dutchland.grove.button.ButtonStatusChangedListener
 import nl.dutchland.grove.button.GroveButtonFactory
-import nl.dutchland.grove.buzzer.GroveBuzzerFactory
-import nl.dutchland.grove.grovepiports.GrovePiZero
-import nl.dutchland.grove.led.DimmableLed
 import nl.dutchland.grove.led.GroveLedFactory
-
 import nl.dutchland.grove.led.Led
-import nl.dutchland.grove.lightsensor.GroveLightSensorFactory
+import nl.dutchland.grove.rgblcd.GroveLcd
 import nl.dutchland.grove.temperatureandhumidity.GroveTemperatureHumiditySensorFactory
 
-import nl.dutchland.grove.utility.Fraction
-import nl.dutchland.grove.utility.RelativeHumidity
 import org.iot.raspberry.grovepi.GrovePi
-import scientifik.plotly.Plotly
-import scientifik.plotly.makeFile
-import scientifik.plotly.makeHtml
-import scientifik.plotly.models.Trace
-import scientifik.plotly.server.serve
-import java.lang.Math.*
-import java.sql.DriverManager
 
-
-fun main(vararg args: String) {
-//    migrateDatabase()
-    val grovePi : GrovePi = GrovePi4J()
-
-    val lightSensor = GroveLightSensorFactory(grovePi).createLigthSensorV1_2(GrovePiZero.A0)
-    lightSensor.start()
-    lightSensor.subscribe{ n -> println(n) }
-
-//    val led = GroveLedFactory(grovePi)
-//            .createLed(GrovePiZero.D3)
+fun main() {
+    val grovePi: GrovePi = GrovePi4J()
+//    val led = GroveLedFactory(grovePi).createLed(nl.dutchland.grove.grovepiports.GrovePi.A0)
 //
-//    val indicator = LedButtonIndicator(led)
+//    val indicator = LedIndicator(led)
 //
-//    val button = GroveButtonFactory(grovePi).aButton(GrovePiZero.A0, indicator)
+//    val button = GroveButtonFactory(grovePi).aButton(nl.dutchland.grove.grovepiports.GrovePi.A1, indicator)
 //    button.start()
-//
-//    val lightSensor : LightSensor = GroveLightSensorFactory(grovePi)
-//            .createLigthSensorV1_2(GrovePiZero.A2)
-//
-//
-    val temperatureSensor = GroveTemperatureHumiditySensorFactory(grovePi)
-            .createDHT11(GrovePiZero.A1)
 
-    temperatureSensor.subscribe { th -> println(th) }
-    temperatureSensor.start()
-//
-//    val display = GroveLcd.on(GrovePiZero.I2c)
-//    display.setText("Maayke", "is lief!")
-//    display.setBackground(BackgroundColor.TURQUOISE(Fraction.ofPercentage(10.0)))
-//    val rotary = GroveRotarySensorFactory(grovePi)
-//            .createRotarySensor(GrovePiZero.A2)
-//
-//    val buzzer = GroveBuzzerFactory(grovePi)
-//            .createBuzzerOn(GrovePiZero.A1)
+    val temperatureSensorDht11 = GroveTemperatureHumiditySensorFactory(grovePi)
+            .createDHT11(nl.dutchland.grove.grovepiports.GrovePi.A0)
+
+    val temperatureSensorDht22 = GroveTemperatureHumiditySensorFactory(grovePi)
+            .createDHT22(nl.dutchland.grove.grovepiports.GrovePi.A1)
+
+    temperatureSensorDht11.subscribe { th -> println(th) }
+    temperatureSensorDht22.subscribe { th -> println(th) }
+    temperatureSensorDht11.start()
+    temperatureSensorDht22.start()
+
+    val display = GroveLcd.on(nl.dutchland.grove.grovepiports.GrovePi.I2c3)
+    val tempHumidityDisplay = TempHumidityDisplay(display, temperatureSensorDht11)
+    tempHumidityDisplay.start()
+
 
     Runtime.getRuntime().addShutdownHook(object : Thread() {
         override fun run() {
             println("Shutting down")
-            lightSensor.stop()
-            temperatureSensor.stop()
 //            button.stop()
-//            temperatureSensor.stop()
-////            rotary.stop()
-//            delay(100)
-//
 //            led.stop()
-////            display.stop()
-////            buzzer.stop()
-//
+            temperatureSensorDht11.stop()
+            temperatureSensorDht22.stop()
+            tempHumidityDisplay.stop()
+            display.stop()
+
             delay(100)
             grovePi.close();
         }
     })
-
-
-
-
 }
+
+//class LightDisplay(private val display: GroveLcd, private val lightSensor: LightSensor) {
+//    private var newestValue: Double = 0.0
+//    private lateinit var timer: Timer
+//
+//    init {
+//        lightSensor.subscribe { s -> onLightChanged(s) }
+//    }
+//
+//    private fun onLightChanged(newMeasurement: LightSensorMeasurement) {
+//        newestValue = newMeasurement.value.percentage
+//    }
+//
+//    fun start() {
+//        timer = fixedRateTimer("Polling sensor timer", false, 0, 10000)
+//        { display.setText("Light: $newestValue%") }
+//    }
+//
+//    fun stop() {
+//        timer.cancel()
+//    }
+//}
+
+//    val lightSensor = GroveLightSensorFactory(grovePi).createLigthSensorV1_2(GrovePiZero.A0)
+//    lightSensor.start()
+//    lightSensor.subscribe { n -> println(n) }
 //    }
 
 
@@ -178,6 +160,15 @@ fun main(vararg args: String) {
 //    }
 //}
 //
+class LedIndicator(private val led: Led) : ButtonStatusChangedListener {
+    override fun onStatusChanged(newStatus: ButtonStatus) {
+        when (newStatus) {
+            PRESSED -> led.turnOn()
+            NOT_PRESSED -> led.turnOff()
+        }
+    }
+}
+
 //class DimmableLedIndicator(private val led: DimmableLed) : ButtonStatusChangedListener {
 //    var percentageTurnedOn = Fraction.ofPercentage(0.0)
 //
@@ -192,6 +183,7 @@ fun main(vararg args: String) {
 //        }
 //    }
 //}
+
 //
 //class LedHighHumidityIndicator(private val led: Led) {
 //    fun toggle(newMeasurement: RelativeHumidity) {

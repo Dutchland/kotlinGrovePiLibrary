@@ -45,15 +45,15 @@ object GrovePi {
     }
 
     object I2c1 : I2cPort {
-        override val i2cNumber = 1
+        override val i2cDeviceNumber = 1
     }
 
     object I2c2 : I2cPort {
-        override val i2cNumber = 2
+        override val i2cDeviceNumber = 1
     }
 
     object I2c3 : I2cPort {
-        override val i2cNumber = 3
+        override val i2cDeviceNumber = 1
     }
 
     object RPISER

@@ -21,7 +21,7 @@ object GrovePiZero {
     }
 
     object I2c : I2cPort {
-        override val i2cNumber = 1
+        override val i2cDeviceNumber = 1
     }
 
     object RPISER

@@ -11,7 +11,7 @@ class GroveLcd private constructor(groveRgbLcd: () -> GroveRgbLcd) : OutputDevic
 
     companion object {
         fun on(port: I2cPort): GroveLcd {
-            return GroveLcd { GroveRgbLcdPi4J(port.i2cNumber) }
+            return GroveLcd { GroveRgbLcdPi4J(port.i2cDeviceNumber) }
         }
     }
 

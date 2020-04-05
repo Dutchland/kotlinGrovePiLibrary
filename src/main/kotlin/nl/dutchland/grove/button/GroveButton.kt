@@ -16,12 +16,11 @@ class GroveButton internal constructor(
                 this.listeners.forEach { l -> l.onStatusChanged(newValue) }
             }
 
-    private var pollButtonTimer: Timer = fixedRateTimer("Polling button task", false, 0, 100)
-    { status = pollButton() }
+    private lateinit var pollButtonTimer: Timer
 
     fun start() {
-//        this.pollButtonTimer = fixedRateTimer("Polling button task", false, 0, 100)
-//        { status = pollButton() }
+        this.pollButtonTimer = fixedRateTimer("Polling button task", false, 0, 100)
+        { status = pollButton() }
     }
 
     fun stop() {

@@ -4,7 +4,7 @@ import nl.dutchland.grove.InputDevice
 import nl.dutchland.grove.utility.Fraction
 import nl.dutchland.grove.utility.time.Period
 
-typealias LightSensorValueListener = (Fraction) -> Unit
+typealias LightSensorValueListener = (LightSensorMeasurement) -> Unit
 
 interface LightSensor : InputDevice {
     fun subscribe(listener: LightSensorValueListener)
