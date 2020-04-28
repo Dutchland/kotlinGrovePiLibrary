@@ -8,8 +8,8 @@ import nl.dutchland.grove.temperatureandhumidity.TemperatureMeasurement
 import nl.dutchland.grove.utility.TimeStamp
 import nl.dutchland.grove.utility.temperature.Temperature
 import java.sql.DriverManager
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.Assertions.assertEquals
 
 class KtormTemperatureRepositoryTest {
     @Test

@@ -1,8 +1,8 @@
 package nl.dutchland.grove.utility
 
 import testutility.ExceptionAssert
-import org.junit.Assert.*
-import kotlin.test.Test
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 
 class FractionTest {
     @Test

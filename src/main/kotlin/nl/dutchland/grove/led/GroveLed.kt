@@ -10,7 +10,7 @@ private class GroveLed(groveLed : GroveLed)
     : DimmableLed, GrovePulseWidthModulationOutputDevice(groveLed)
 
 class GroveLedFactory(private val grovePi : GrovePi) {
-    fun createLed(port : DigitalPort) : Led {
+    fun on(port : DigitalPort) : Led {
         return GroveLed(
                 GroveLed(this.grovePi, port.digitalPin))
     }

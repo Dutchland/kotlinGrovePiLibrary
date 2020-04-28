@@ -29,12 +29,14 @@ data class Temperature private constructor(private val temperatureInKelvin: Doub
         return this.temperatureInKelvin.compareTo(other.temperatureInKelvin)
     }
 
-    interface Scale {
-        fun fromKelvin(valueInKelvin: Double): Double
-        fun toKelvin(value: Double): Double
-        val absoluteZero: Double
-        val name: String
+    abstract class Scale {
+        abstract fun fromKelvin(valueInKelvin: Double): Double
+        abstract fun toKelvin(value: Double): Double
+        abstract val absoluteZero: Double
+        abstract val name: String
+
+        override fun toString(): String {
+            return name
+        }
     }
 }
-
-class InvalidTemperatureException(message: String) : IllegalArgumentException(message)

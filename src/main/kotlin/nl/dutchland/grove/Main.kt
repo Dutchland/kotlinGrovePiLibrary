@@ -1,57 +1,130 @@
 package nl.dutchland.grove
 
-import com.pi4j.wiringpi.Gpio.delay
 import nl.dutchland.grove.button.ButtonStatus
 import nl.dutchland.grove.button.ButtonStatus.*
 import nl.dutchland.grove.button.ButtonStatusChangedListener
-import nl.dutchland.grove.button.GroveButtonFactory
+import nl.dutchland.grove.buzzer.AdjustableBuzzer
+import nl.dutchland.grove.buzzer.GroveBuzzerFactory
 import nl.dutchland.grove.led.GroveLedFactory
 import nl.dutchland.grove.led.Led
-import nl.dutchland.grove.rgblcd.GroveLcd
-import nl.dutchland.grove.temperatureandhumidity.GroveTemperatureHumiditySensorFactory
-
+import nl.dutchland.grove.rotary.GroveRotarySensorFactory
+import nl.dutchland.grove.rotary.RotarySensor
+import nl.dutchland.grove.utility.Fraction.Companion.ZERO
+import nl.dutchland.grove.utility.demo.Address
+import nl.dutchland.grove.utility.demo.Housenumber
+import nl.dutchland.grove.utility.demo.Postcode
+import nl.dutchland.grove.utility.demo.SimpleAddress
+import nl.dutchland.grove.utility.length.Inch
+import nl.dutchland.grove.utility.length.Length
+import nl.dutchland.grove.utility.length.Meter
+import nl.dutchland.grove.utility.length.Millimeter
+import nl.dutchland.grove.utility.temperature.Celsius
+import nl.dutchland.grove.utility.temperature.Fahrenheit
+import nl.dutchland.grove.utility.temperature.Kelvin
+import nl.dutchland.grove.utility.temperature.Temperature
 import org.iot.raspberry.grovepi.GrovePi
+
+import nl.dutchland.grove.grovepiports.GrovePi as GrovePiBoard
 
 fun main() {
     val grovePi: GrovePi = GrovePi4J()
-//    val led = GroveLedFactory(grovePi).createLed(nl.dutchland.grove.grovepiports.GrovePi.A0)
-//
-//    val indicator = LedIndicator(led)
-//
-//    val button = GroveButtonFactory(grovePi).aButton(nl.dutchland.grove.grovepiports.GrovePi.A1, indicator)
-//    button.start()
+    volumeExample(grovePi)
+    temperature()
+    temperature(Celsius)
 
-    val temperatureSensorDht11 = GroveTemperatureHumiditySensorFactory(grovePi)
-            .createDHT11(nl.dutchland.grove.grovepiports.GrovePi.A0)
-
-    val temperatureSensorDht22 = GroveTemperatureHumiditySensorFactory(grovePi)
-            .createDHT22(nl.dutchland.grove.grovepiports.GrovePi.A1)
-
-    temperatureSensorDht11.subscribe { th -> println(th) }
-    temperatureSensorDht22.subscribe { th -> println(th) }
-    temperatureSensorDht11.start()
-    temperatureSensorDht22.start()
-
-    val display = GroveLcd.on(nl.dutchland.grove.grovepiports.GrovePi.I2c3)
-    val tempHumidityDisplay = TempHumidityDisplay(display, temperatureSensorDht11)
-    tempHumidityDisplay.start()
-
-
-    Runtime.getRuntime().addShutdownHook(object : Thread() {
-        override fun run() {
-            println("Shutting down")
-//            button.stop()
-//            led.stop()
-            temperatureSensorDht11.stop()
-            temperatureSensorDht22.stop()
-            tempHumidityDisplay.stop()
-            display.stop()
-
-            delay(100)
-            grovePi.close();
-        }
-    })
+    length()
+    length2()
+    address()
 }
+
+private fun volumeExample(grovePi: GrovePi) {
+    // Laat je mogelijkheden op het classpath beperkt. Alleen correcte opties.
+    val speaker: AdjustableBuzzer = GroveBuzzerFactory(grovePi)
+            .adjustableBuzzerOn(2)
+
+//    val speaker: AdjustableBuzzer = GroveBuzzerFactory(grovePi)
+//            .adjustableBuzzerOn(GrovePiBoard.D3)
+
+    val muteIndicator: Led = GroveLedFactory(grovePi)
+            .on(GrovePiBoard.D2)
+
+    val volumeRotary: RotarySensor = GroveRotarySensorFactory(grovePi)
+            .on(GrovePiBoard.A0)
+
+    volumeRotary.addStatusChangedListener { volumePercentage ->
+        speaker.turnOn(volumePercentage)
+
+        when (volumePercentage) {
+            ZERO -> muteIndicator.turnOn()
+            else -> muteIndicator.turnOff()
+        }
+    }
+}
+
+private fun temperature() {
+    // Mensen maken fouten, maak het moeilijk om fouten te maken
+    val roomTemperature: Temperature = Temperature.of(22.0, Celsius)
+    val temperatureInKelvin: Double = roomTemperature.valueIn(Kelvin)
+
+    println("The current room temperature is $temperatureInKelvin $Kelvin")
+    println("In $Fahrenheit this would be ${roomTemperature.valueIn(Fahrenheit)}")
+}
+
+private fun temperature(preferredTemperatureScale: Temperature.Scale) {
+    val roomTemperature: Temperature = getCurrentRoomTemperatureFromSensor()
+    println("The current room temperature is " +
+            "${roomTemperature.valueIn(preferredTemperatureScale)} $preferredTemperatureScale")
+}
+
+private fun getCurrentRoomTemperatureFromSensor(): Temperature {
+    return Temperature.of(22.0, Celsius)
+}
+
+private fun length() {
+    val beamLength: Length = Length.of(1.0, Meter)
+    val otherBeamLength: Length = Length.of(10.0, Inch)
+
+    val totalLength: Length = beamLength + otherBeamLength
+
+    println("The total length is ${totalLength.valueIn(Inch)} $Inch")
+}
+
+private fun length2() {
+    val beamA: Length = Length.of(0.1, Meter)
+    val beamB: Length = Length.of(10.0, Inch)
+
+    when {
+        beamA > beamB -> println("Beam A is longer then beam B")
+        beamB >= beamA -> println("Beam B is longer or equal to beam A")
+    }
+}
+
+private fun address() {
+    val simpleAddress = SimpleAddress(
+            "2624VV",
+            "Delft",
+            "Herculesweg",
+            123,
+            "A"
+    )
+
+    // Utility vs value objects
+    val address = Address(
+            "Delft",
+            Postcode("2624VV"),
+            "Herculesweg",
+            Housenumber(123, "A")
+    )
+
+    // Als alles een string is dan kan de compiler je niet helpen
+//    val address2 = Address(
+//            "2624VV",
+//            "Delft",
+//            "Herculesweg",
+//            "123A"
+//    )
+}
+
 
 //class LightDisplay(private val display: GroveLcd, private val lightSensor: LightSensor) {
 //    private var newestValue: Double = 0.0
@@ -168,6 +241,44 @@ class LedIndicator(private val led: Led) : ButtonStatusChangedListener {
         }
     }
 }
+
+
+////    val indicator = LedIndicator(led)
+////
+////    val button = GroveButtonFactory(grovePi).aButton(nl.dutchland.grove.grovepiports.GrovePi.A1, indicator)
+////    button.start()
+//
+//val temperatureSensorDht11 = GroveTemperatureHumiditySensorFactory(grovePi)
+//        .createDHT11(nl.dutchland.grove.grovepiports.GrovePi.A0)
+//
+//val temperatureSensorDht22 = GroveTemperatureHumiditySensorFactory(grovePi)
+//        .createDHT22(nl.dutchland.grove.grovepiports.GrovePi.A1)
+//
+//temperatureSensorDht11.subscribe { th -> println(th) }
+//temperatureSensorDht22.subscribe { th -> println(th) }
+//temperatureSensorDht11.start()
+//temperatureSensorDht22.start()
+//
+//val display = GroveLcd.on(nl.dutchland.grove.grovepiports.GrovePi.I2c3)
+//val tempHumidityDisplay = TempHumidityDisplay(display, temperatureSensorDht11)
+//tempHumidityDisplay.start()
+//
+//
+//Runtime.getRuntime().addShutdownHook(object : Thread() {
+//    override fun run() {
+//        println("Shutting down")
+////            button.stop()
+////            led.stop()
+//        temperatureSensorDht11.stop()
+//        temperatureSensorDht22.stop()
+//        tempHumidityDisplay.stop()
+//        display.stop()
+//
+//        delay(100)
+//        grovePi.close();
+//    }
+//})
+
 
 //class DimmableLedIndicator(private val led: DimmableLed) : ButtonStatusChangedListener {
 //    var percentageTurnedOn = Fraction.ofPercentage(0.0)

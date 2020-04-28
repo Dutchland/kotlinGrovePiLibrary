@@ -2,7 +2,7 @@ package nl.dutchland.grove.digitaloutput
 
 import nl.dutchland.grove.utility.Fraction
 import org.iot.raspberry.grovepi.devices.GroveLed
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 
 class GrovePulseWithModulationOutputDeviceTest {

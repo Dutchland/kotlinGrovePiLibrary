@@ -5,7 +5,7 @@ import nl.dutchland.grove.utility.time.Period
 import nl.dutchland.grove.utility.time.InvalidIntervalException
 import testutility.ExceptionAssert
 import testutility.ExceptionThrower
-import kotlin.test.Test
+import org.junit.jupiter.api.Test
 
 class PeriodTest {
     @Test

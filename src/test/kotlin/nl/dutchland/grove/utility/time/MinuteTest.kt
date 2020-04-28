@@ -1,7 +1,7 @@
 package nl.dutchland.grove.utility.time
 
-import org.junit.Assert.*
-import kotlin.test.Test
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 
 class MinuteTest {
     @Test

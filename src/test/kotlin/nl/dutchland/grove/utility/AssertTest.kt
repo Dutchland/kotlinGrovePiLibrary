@@ -3,7 +3,7 @@ package nl.dutchland.grove.utility
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
-import kotlin.test.Test
+import org.junit.jupiter.api.Test
 
 class AssertTest {
     @Test

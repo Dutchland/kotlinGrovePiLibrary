@@ -6,8 +6,8 @@ import org.iot.raspberry.grovepi.GroveDigitalIn
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.Assertions.assertEquals
 
 class GroveButtonTest {
     @Test

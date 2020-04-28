@@ -3,17 +3,15 @@ package nl.dutchland.grove.temperatureandhumidity
 import com.nhaarman.mockito_kotlin.*
 import nl.dutchland.grove.utility.Fraction
 import nl.dutchland.grove.utility.RelativeHumidity
-import nl.dutchland.grove.utility.temperature.Celcius
+import nl.dutchland.grove.utility.temperature.Celsius
 import nl.dutchland.grove.utility.temperature.Temperature
-import nl.dutchland.grove.utility.time.Millisecond
-import nl.dutchland.grove.utility.time.Period
 import org.iot.raspberry.grovepi.devices.GroveTemperatureAndHumiditySensor
 import org.iot.raspberry.grovepi.devices.GroveTemperatureAndHumidityValue
-import org.junit.Assert.*
+import org.junit.jupiter.api.Assertions.*
 
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
-import kotlin.test.Test
+import org.junit.jupiter.api.Test
 
 class GroveTemperatureHumiditySensorTest {
 
@@ -30,7 +28,7 @@ class GroveTemperatureHumiditySensorTest {
         val value = sensor.getTemperature()
 
         // Assert
-        assertEquals(someTemperature, value.temperature.valueIn(Celcius), 0.001)
+        assertEquals(someTemperature, value.temperature.valueIn(Celsius), 0.001)
         assertTrue(value.timestamp.millisecondsSinceEpoch > 0)
     }
 
@@ -65,7 +63,7 @@ class GroveTemperatureHumiditySensorTest {
         val value = sensor.getTemperatureHumidity()
 
         // Assert
-        assertEquals(someTemperature, value.temperature.valueIn(Celcius), 0.001)
+        assertEquals(someTemperature, value.temperature.valueIn(Celsius), 0.001)
         assertEquals(Fraction.ofPercentage(someRelativeHumidityPercentage), value.humidity.relativeHumidity)
         assertTrue(value.timeStamp.millisecondsSinceEpoch > 0)
     }
@@ -90,8 +88,8 @@ class GroveTemperatureHumiditySensorTest {
         // Assert
         argumentCaptor<TemperatureMeasurement>().apply {
             verify(mockedListener, atLeast(2)).invoke(capture())
-            assertEquals(Temperature.of(someTemperature, Celcius), firstValue.temperature)
-            assertEquals(Temperature.of(someOtherTemperature, Celcius), allValues.last().temperature)
+            assertEquals(Temperature.of(someTemperature, Celsius), firstValue.temperature)
+            assertEquals(Temperature.of(someOtherTemperature, Celsius), allValues.last().temperature)
         }
     }
 
@@ -147,8 +145,8 @@ class GroveTemperatureHumiditySensorTest {
             assertEquals(RelativeHumidity(someHumidityPercentage), firstValue.humidity)
             assertEquals(RelativeHumidity(someOtherHumidityPercentage), allValues.last().humidity)
 
-            assertEquals(Temperature.of(someTemperature, Celcius), firstValue.temperature)
-            assertEquals(Temperature.of(someOtherTemperature, Celcius), allValues.last().temperature)
+            assertEquals(Temperature.of(someTemperature, Celsius), firstValue.temperature)
+            assertEquals(Temperature.of(someOtherTemperature, Celsius), allValues.last().temperature)
         }
     }
 }

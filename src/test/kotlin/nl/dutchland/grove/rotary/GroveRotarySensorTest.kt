@@ -2,11 +2,11 @@ package nl.dutchland.grove.rotary
 
 import nl.dutchland.grove.utility.Fraction
 import org.iot.raspberry.grovepi.devices.GroveRotaryValue
-import org.junit.Assert
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
-import kotlin.test.Test
+import org.junit.jupiter.api.Test
 
 class GroveRotarySensorTest {
     @Test
@@ -29,7 +29,7 @@ class GroveRotarySensorTest {
         val status = rotarySensor.getStatus()
 
         // Assert
-        Assert.assertEquals(Fraction.ofFraction(expectedFraction), status)
+        assertEquals(Fraction.ofFraction(expectedFraction), status)
     }
 
     @Test

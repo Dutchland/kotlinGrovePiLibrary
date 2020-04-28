@@ -4,9 +4,23 @@ import nl.dutchland.grove.grovepiports.DigitalPort
 import org.iot.raspberry.grovepi.GroveDigitalIn
 import org.iot.raspberry.grovepi.GrovePi
 
+typealias listenerSetter = (ButtonStatusChangedListener) -> builder
+typealias builder = () -> Button
+
 class GroveButtonFactory(private val grovePi: GrovePi) {
     private lateinit var port: DigitalPort
     private lateinit var listener: ButtonStatusChangedListener
+//
+//    companion object {
+//        fun onPort(port: DigitalPort): listenerSetter {
+//            return  { a: ButtonStatusChangedListener -> withListener(a)  }
+//        }
+//
+//        private fun withListener(listener: ButtonStatusChangedListener) : builder {
+//
+//        }
+//    }
+
 
     fun aButton(port: DigitalPort, vararg listeners: ButtonStatusChangedListener): GroveButton {
         return GroveButton(
@@ -37,7 +51,7 @@ class GroveButtonFactory(private val grovePi: GrovePi) {
     }
 
     interface ListenerSetter {
-        fun withListener(listener: ButtonStatusChangedListener): Builder
+        fun withListener(listener: ButtonStatusChangedListener)
     }
 
     interface Builder {

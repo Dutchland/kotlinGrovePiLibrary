@@ -1,12 +1,10 @@
 package nl.dutchland.grove
 
-import nl.dutchland.grove.lightsensor.LightSensor
-import nl.dutchland.grove.lightsensor.LightSensorMeasurement
 import nl.dutchland.grove.rgblcd.BackgroundColor
 import nl.dutchland.grove.rgblcd.GroveLcd
 import nl.dutchland.grove.temperatureandhumidity.TemperatureHumidityMeasurement
 import nl.dutchland.grove.temperatureandhumidity.TemperatureHumiditySensor
-import nl.dutchland.grove.utility.temperature.Celcius
+import nl.dutchland.grove.utility.temperature.Celsius
 import java.math.BigDecimal
 import java.util.*
 import kotlin.concurrent.fixedRateTimer
@@ -27,7 +25,7 @@ class TempHumidityDisplay(private val display: GroveLcd, private val tempHumidit
     fun start() {
         timer = fixedRateTimer("Polling sensor timer", false, 0, 10000)
         {
-            val roundedTemperature = BigDecimal.valueOf(newestValue.temperature.valueIn(Celcius))
+            val roundedTemperature = BigDecimal.valueOf(newestValue.temperature.valueIn(Celsius))
                     .setScale(0)
             val roundedHumidity = BigDecimal.valueOf(newestValue.humidity.relativeHumidity.percentage)
                     .setScale(0)

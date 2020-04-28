@@ -3,7 +3,7 @@ package nl.dutchland.grove.temperatureandhumidity
 import nl.dutchland.grove.utility.Fraction
 import nl.dutchland.grove.utility.RelativeHumidity
 import nl.dutchland.grove.utility.TimeStamp
-import nl.dutchland.grove.utility.temperature.Celcius
+import nl.dutchland.grove.utility.temperature.Celsius
 import nl.dutchland.grove.utility.temperature.Temperature
 
 import org.iot.raspberry.grovepi.devices.GroveTemperatureAndHumiditySensor
@@ -57,7 +57,7 @@ internal class GroveTemperatureHumiditySensor(private val sensor: GroveTemperatu
         val sensorValue = this.sensor.get()
 
         val humidity = RelativeHumidity(Fraction.ofPercentage(sensorValue.humidity))
-        val temperature = Temperature.of(sensorValue.temperature, Celcius)
+        val temperature = Temperature.of(sensorValue.temperature, Celsius)
 
         return TemperatureHumidityMeasurement(temperature, humidity, TimeStamp.now())
     }
