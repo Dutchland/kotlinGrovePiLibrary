@@ -1,11 +1,11 @@
 package nl.dutchland.grove.button
 
-import nl.dutchland.grove.grovepiports.DigitalPort
-import org.iot.raspberry.grovepi.GroveDigitalIn
 
-interface ButtonStatusChangedListener {
-    fun onStatusChanged(newStatus: ButtonStatus)
-}
+typealias ButtonStatusChangedListener = (ButtonStatus) -> Unit
+//
+//interface ButtonStatusChangedListener {
+//    fun onStatusChanged(newStatus: ButtonStatus)
+//}
 
 interface Button {
     val status: ButtonStatus

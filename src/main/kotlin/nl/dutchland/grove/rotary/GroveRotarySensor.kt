@@ -5,19 +5,10 @@ import org.iot.raspberry.grovepi.devices.GroveRotarySensor
 import java.util.*
 import kotlin.concurrent.fixedRateTimer
 
-internal class GroveRotarySensor(private val sensor: GroveRotarySensor) : RotarySensor {
+internal class GroveRotarySensor(private val sensor: GroveRotarySensor, listeners: Array<out RotaryChangedListener>) : RotarySensor {
     private var mostRecentStatus: Fraction = getStatus()
-    private var statusChangedListeners: Collection<RotaryChangedListener> = ArrayList()
+    private val statusChangedListeners: Collection<RotaryChangedListener> = listeners.asList()
     private lateinit var pollRotaryTimer: Timer
-
-    override fun addStatusChangedListener(listener: RotaryChangedListener) {
-        val newListeners = ArrayList(this.statusChangedListeners)
-        newListeners.add(listener)
-
-        this.statusChangedListeners = newListeners
-
-        listener.invoke(getStatus())
-    }
 
     private fun pollRotary() {
         val newStatus = getStatus()
@@ -31,7 +22,7 @@ internal class GroveRotarySensor(private val sensor: GroveRotarySensor) : Rotary
     override fun getStatus(): Fraction {
         val sensorValue = this.sensor.get()
         val turnFraction = sensorValue.degrees.coerceIn(0.0, GroveRotarySensor.FULL_ANGLE) / GroveRotarySensor.FULL_ANGLE
-        return Fraction.ofFraction(turnFraction)
+        return Fraction.of(turnFraction)
     }
 
     override fun start() {

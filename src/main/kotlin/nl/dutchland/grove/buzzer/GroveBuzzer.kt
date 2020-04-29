@@ -9,11 +9,6 @@ import org.iot.raspberry.grovepi.devices.GroveLed
 private class GroveBuzzer(groveLed : GroveLed)
     : AdjustableBuzzer, GrovePulseWidthModulationOutputDevice(groveLed)
 
-
-private const val D1 = 1
-private const val D2 = 2
-private const val D3 = 3
-
 class GroveBuzzerFactory(private val grovePi : GrovePi) {
     fun on(port : DigitalPort) : Buzzer {
         return GroveBuzzer(
@@ -24,10 +19,4 @@ class GroveBuzzerFactory(private val grovePi : GrovePi) {
         return GroveBuzzer(
                 GroveLed(this.grovePi, port.digitalPin))
     }
-
-    fun on(port: Int) : AdjustableBuzzer {
-        return GroveBuzzer(
-                GroveLed(this.grovePi, port))
-    }
-
 }

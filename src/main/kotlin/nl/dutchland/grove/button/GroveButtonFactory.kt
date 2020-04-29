@@ -22,7 +22,7 @@ class GroveButtonFactory(private val grovePi: GrovePi) {
 //    }
 
 
-    fun aButton(port: DigitalPort, vararg listeners: ButtonStatusChangedListener): GroveButton {
+    fun on(port: DigitalPort, vararg listeners: ButtonStatusChangedListener): GroveButton {
         return GroveButton(
                 GroveDigitalIn(this.grovePi, port.digitalPin), listeners.asList())
     }

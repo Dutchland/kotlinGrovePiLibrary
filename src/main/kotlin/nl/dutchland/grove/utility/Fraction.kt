@@ -14,7 +14,7 @@ data class Fraction private constructor(val percentage: Double) : Comparable<Fra
             return Fraction(percentage)
         }
 
-        fun ofFraction(fraction: Double): Fraction {
+        fun of(fraction: Double): Fraction {
             fraction.assertNotLargerThan(1.0)
             { throw InvalidFractionException("A fraction cannot be larger than 1.0: $fraction") }
             fraction.assertNotNegative { throw InvalidFractionException("A fraction cannot be negative: $fraction") }
@@ -22,8 +22,8 @@ data class Fraction private constructor(val percentage: Double) : Comparable<Fra
             return Fraction(fraction * 100.0)
         }
 
-        val ZERO = ofFraction(0.0)
-        val HUNDRED_PERCENT = ofFraction(1.0)
+        val ZERO = of(0.0)
+        val HUNDRED_PERCENT = of(1.0)
     }
 
     override fun compareTo(other: Fraction): Int {

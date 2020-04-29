@@ -26,14 +26,14 @@ class FractionTest {
     }
 
     private fun testValidFraction(input: Double, expectedPercentage: Double, expectedFraction: Double) {
-        val percentage = Fraction.ofFraction(input)
+        val percentage = Fraction.of(input)
         assertEquals(expectedPercentage, percentage.percentage, input / 1000.0)
         assertEquals(expectedFraction, percentage.fraction, input / 1000.0)
     }
 
     @Test
     fun testCopy() {
-        val validFraction = Fraction.ofFraction(0.5)
+        val validFraction = Fraction.of(0.5)
 
         ExceptionAssert.assertThrows { validFraction.copy(-1.0) }
                 .assertExactExceptionType(InvalidFractionException::class)
@@ -65,7 +65,7 @@ class FractionTest {
     }
 
     private fun testInvalidFraction(input: Double, expectedErrorMessage: String) {
-        ExceptionAssert.assertThrows { Fraction.ofFraction(input) }
+        ExceptionAssert.assertThrows { Fraction.of(input) }
                 .assertExactExceptionType(InvalidFractionException::class)
                 .assertExceptionMessage(expectedErrorMessage)
     }

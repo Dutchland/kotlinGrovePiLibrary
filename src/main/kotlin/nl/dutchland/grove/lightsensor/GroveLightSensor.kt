@@ -41,6 +41,6 @@ internal class GroveLightSensor(private val sensor: GroveAnalogIn) : LightSensor
         val unsignedBytes: IntArray = GroveUtil.unsign(bytes)
         var value = (unsignedBytes[1] * 256).toDouble() + unsignedBytes[2].toDouble()
         value = value.coerceIn(0.0, MAX_SENSOR_VALUE)
-        return LightSensorMeasurement(Fraction.ofFraction(value / MAX_SENSOR_VALUE), TimeStamp.now())
+        return LightSensorMeasurement(Fraction.of(value / MAX_SENSOR_VALUE), TimeStamp.now())
     }
 }
