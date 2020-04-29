@@ -12,12 +12,11 @@ import nl.dutchland.grove.rotary.RotarySensor
 import nl.dutchland.grove.utility.Fraction.Companion.ZERO
 import nl.dutchland.grove.utility.demo.Address
 import nl.dutchland.grove.utility.demo.Housenumber
-import nl.dutchland.grove.utility.demo.Postcode
+import nl.dutchland.grove.utility.demo.DutchPostcode
 import nl.dutchland.grove.utility.demo.SimpleAddress
 import nl.dutchland.grove.utility.length.Inch
 import nl.dutchland.grove.utility.length.Length
 import nl.dutchland.grove.utility.length.Meter
-import nl.dutchland.grove.utility.length.Millimeter
 import nl.dutchland.grove.utility.temperature.Celsius
 import nl.dutchland.grove.utility.temperature.Fahrenheit
 import nl.dutchland.grove.utility.temperature.Kelvin
@@ -27,23 +26,37 @@ import org.iot.raspberry.grovepi.GrovePi
 import nl.dutchland.grove.grovepiports.GrovePi as GrovePiBoard
 
 fun main() {
-    val grovePi: GrovePi = GrovePi4J()
-    volumeExample(grovePi)
-    temperature()
-    temperature(Celsius)
+    val eventBus = EventBus()
 
-    length()
-    length2()
-    address()
+    val filter = { e : TemperatureEvent -> e.bla.equals("") }
+    val handler: EventHandler<TemperatureEvent> = { e : TemperatureEvent-> println(e.bla) }
+
+    val temperatureEventFilter = forType(TemperatureEvent::class)
+
+    eventBus.subscribe(EventListener{ e: TemperatureEvent -> println(e.bla)})
+
+//    eventBus.subscribe(filter, handler)
+//    eventBus.subscribe(handler)
+//    eventBus.subscribe({ e : TemperatureEvent -> e.bla.equals("") }, { e : TemperatureEvent-> println(e.bla) })
+
+//    val grovePi: GrovePi = GrovePi4J()
+//    volumeExample(grovePi)
+//    temperature()
+//    temperature(Celsius, TemperatureSensor())
+//
+//    length()
+//    length2()
+//    address()
 }
 
 private fun volumeExample(grovePi: GrovePi) {
     // Laat je mogelijkheden op het classpath beperkt. Alleen correcte opties.
     val speaker: AdjustableBuzzer = GroveBuzzerFactory(grovePi)
-            .adjustableBuzzerOn(2)
+            .on(3)
+//            .onDigitalPort(3)
 
-//    val speaker: AdjustableBuzzer = GroveBuzzerFactory(grovePi)
-//            .adjustableBuzzerOn(GrovePiBoard.D3)
+    val speaker2: AdjustableBuzzer = GroveBuzzerFactory(grovePi)
+            .adjustableBuzzerOn(GrovePiBoard.D4)
 
     val muteIndicator: Led = GroveLedFactory(grovePi)
             .on(GrovePiBoard.D2)
@@ -61,6 +74,51 @@ private fun volumeExample(grovePi: GrovePi) {
     }
 }
 
+private fun temperature0(sensor: TemperatureSensor) {
+    // Temperature in what scale?
+    val roomTemperature: Double = sensor.currentTemperature()
+    println("Temperature in Kelvin, Celsius, Fahrenheit or some other scale?????")
+
+    persistTemperature(
+            TemperatureUtil.kelvinToFahrenheit(roomTemperature))
+}
+
+class TemperatureSensor() {
+    /**
+     * Return temperature in Kelvin
+     */
+    fun currentTemperature() : Double {
+        return 4.0
+    }
+
+    fun currentTemperatureInCelsius() : Double { // Extreme naming
+        return 4.0
+    }
+
+    fun currentRoomTemperature() : Temperature {
+        return Temperature.of(4.0, Celsius)
+    }
+}
+
+/**
+ * Temperature in Kelvin
+ */
+fun persistTemperature(temperature: Double) {
+    // Persisting
+}
+
+fun persistTemperature2(temperatureInKelvin: Double) {
+    // Persisting
+}
+
+fun persistTemperatureInKelvin(temperature: Double) { // Extreme naming
+    // Persisting
+}
+
+fun persistTemperature(temperature: Temperature) {
+    // Persisting
+}
+
 private fun temperature() {
     // Mensen maken fouten, maak het moeilijk om fouten te maken
     val roomTemperature: Temperature = Temperature.of(22.0, Celsius)
@@ -70,10 +128,12 @@ private fun temperature() {
     println("In $Fahrenheit this would be ${roomTemperature.valueIn(Fahrenheit)}")
 }
 
-private fun temperature(preferredTemperatureScale: Temperature.Scale) {
-    val roomTemperature: Temperature = getCurrentRoomTemperatureFromSensor()
+private fun temperature(preferredTemperatureScale: Temperature.Scale, sensor: TemperatureSensor) {
+    val roomTemperature: Temperature = sensor.currentRoomTemperature()
     println("The current room temperature is " +
             "${roomTemperature.valueIn(preferredTemperatureScale)} $preferredTemperatureScale")
+
+    persistTemperature(roomTemperature)
 }
 
 private fun getCurrentRoomTemperatureFromSensor(): Temperature {
@@ -101,17 +161,17 @@ private fun length2() {
 
 private fun address() {
     val simpleAddress = SimpleAddress(
-            "2624VV",
-            "Delft",
-            "Herculesweg",
-            123,
-            "A"
+            city = "2624VV",
+            postcode = "Delft",
+            street = "Herculesweg",
+            houseNumber = 123,
+            houseNumberAddition = "A"
     )
 
     // Utility vs value objects
     val address = Address(
             "Delft",
-            Postcode("2624VV"),
+            DutchPostcode("2624VV"),
             "Herculesweg",
             Housenumber(123, "A")
     )
@@ -352,3 +412,10 @@ class LedIndicator(private val led: Led) : ButtonStatusChangedListener {
 //    }
 //=======
 
+class TemperatureUtil {
+    companion object {
+        fun kelvinToFahrenheit(value: Double) : Double {
+            return 1.0
+        }
+    }
+}

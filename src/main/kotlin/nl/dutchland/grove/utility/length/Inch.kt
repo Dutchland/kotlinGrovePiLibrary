@@ -1,6 +1,6 @@
 package nl.dutchland.grove.utility.length
 
-object Inch : Length.Scale {
+object Inch : Length.Scale() {
     private const val INCH_TO_MILLIMETER_FACTOR = 25.2
 
     override val name: String = "Inch"

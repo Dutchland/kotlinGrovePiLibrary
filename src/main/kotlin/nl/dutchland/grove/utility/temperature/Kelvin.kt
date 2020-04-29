@@ -1,6 +1,6 @@
 package nl.dutchland.grove.utility.temperature
 
-object Kelvin : Temperature.Scale {
+object Kelvin : Temperature.Scale() {
     override val name = "Kelvin"
     override val absoluteZero = 0.0
 

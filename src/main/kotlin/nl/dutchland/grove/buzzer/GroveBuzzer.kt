@@ -25,7 +25,7 @@ class GroveBuzzerFactory(private val grovePi : GrovePi) {
                 GroveLed(this.grovePi, port.digitalPin))
     }
 
-    fun adjustableBuzzerOn(port: Int) : AdjustableBuzzer {
+    fun on(port: Int) : AdjustableBuzzer {
         return GroveBuzzer(
                 GroveLed(this.grovePi, port))
     }

@@ -1,6 +1,6 @@
 package nl.dutchland.grove.utility.temperature
 
-object Fahrenheit : Temperature.Scale {
+object Fahrenheit : Temperature.Scale() {
     override val name = "Fahrenheit"
     override val absoluteZero = Celsius.absoluteZero * 1.8 + 32.0
 
