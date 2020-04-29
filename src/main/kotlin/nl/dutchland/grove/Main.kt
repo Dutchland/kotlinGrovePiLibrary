@@ -1,19 +1,21 @@
 package nl.dutchland.grove
 
-import com.pi4j.wiringpi.Gpio.delay
+import nl.dutchland.grove.button.Button
 import nl.dutchland.grove.button.ButtonStatus
-import nl.dutchland.grove.button.ButtonStatus.*
-import nl.dutchland.grove.buzzer.AdjustableBuzzer
+import nl.dutchland.grove.button.ButtonStatus.PRESSED
+import nl.dutchland.grove.button.GroveButtonFactory
 import nl.dutchland.grove.buzzer.GroveBuzzerFactory
+import nl.dutchland.grove.events.EventBus
+import nl.dutchland.grove.events.MuteEvent
+import nl.dutchland.grove.events.VolumeChangedEvent
 import nl.dutchland.grove.led.GroveLedFactory
 import nl.dutchland.grove.led.Led
 import nl.dutchland.grove.rotary.GroveRotarySensorFactory
 import nl.dutchland.grove.rotary.RotaryChangedListener
 import nl.dutchland.grove.rotary.RotarySensor
-import nl.dutchland.grove.utility.Fraction
 import nl.dutchland.grove.utility.demo.Address
-import nl.dutchland.grove.utility.demo.Housenumber
 import nl.dutchland.grove.utility.demo.DutchPostcode
+import nl.dutchland.grove.utility.demo.Housenumber
 import nl.dutchland.grove.utility.demo.SimpleAddress
 import nl.dutchland.grove.utility.length.Inch
 import nl.dutchland.grove.utility.length.Length
@@ -23,91 +25,51 @@ import nl.dutchland.grove.utility.temperature.Fahrenheit
 import nl.dutchland.grove.utility.temperature.Kelvin
 import nl.dutchland.grove.utility.temperature.Temperature
 import org.iot.raspberry.grovepi.GrovePi
-
 import nl.dutchland.grove.grovepiports.GrovePi as GrovePiBoard
 
 fun main() {
-    val eventBus = EventBus()
-    val grovePi = GrovePi4J()
+    eventBus.subscribe<VolumeChangedEvent> { volumeChangeEvent ->
+        speaker.setVolume(volumeChangeEvent.volumePercentage)
+    }
 
-    volumeExample(grovePi, eventBus)
-//
-//    val dht111Filter: EventFilter<TemperatureEvent> = { e -> e.sensorDescription == "DHT111" }
-//
-//    eventBus.subscribe()
-//    { e: Dht111TemperatureEvent -> storeTemperature(e.temperature) }
-//
-////    eventBus.subscribeWithFilter(dht111Filter)
-////    { e: Dht111TemperatureEvent -> storeTemperature(e.temperature) }
-//
-//    eventBus.post(
-//            Dht111TemperatureEvent(
-//                    Temperature.of(200.0, Kelvin)))
-//    eventBus.post(
-//            TemperatureEvent(
-//                    Temperature.of(20.0, Kelvin),
-//                    "SomeOtherTemperatureSensor"))
-//    eventBus.post(SomeOtherEvent())
-}
+    eventBus.subscribe<MuteEvent> {
+        when (it.muteIsOn) {
+            true -> {
+                speaker.mute()
+                muteIndicator.turnOn()
+            }
+            false -> {
+                speaker.unMute()
+                muteIndicator.turnOff()
+            }
+        }
+    }
 
-private fun storeTemperature(temperature: Temperature) {
-    println("Temperature of ${temperature.valueIn(Celsius)} ${Celsius}")
-}
-
-inline class MuteEvent(val muteIsOn: Boolean) : Event
-inline class VolumeChangeEvent(val volumePercentage: Fraction) : Event
-
-
-fun ButtonStatus.toMuteEvent(): MuteEvent {
-    return when (this) {
-        PRESSED -> MuteEvent(true)
-        else -> MuteEvent(false)
+    inputDevices.forEach { device ->
+        device.start()
     }
 }
-
-fun AdjustableBuzzer.handleVolumeChange(volumeChangeEvent: VolumeChangeEvent) {
-    val newVolume = volumeChangeEvent.volumePercentage
-
-    println("Het nieuwe volume is: $newVolume")
-    this.turnOn(newVolume)
-}
-
-fun Led.handleVolumeChange(volumeChangeEvent: VolumeChangeEvent) {
-    when {
-        volumeChangeEvent.volumePercentage <= Fraction.of(0.01) -> this.turnOn()
-        else -> this.turnOff()
-    }
-}
-
 
 private val grovePi: GrovePi = GrovePi4J()
-private val eventBus = EventBus()
 
+private val eventBus = EventBus()
 private val volumeChangedListener: RotaryChangedListener = { volumePercentage ->
-    eventBus.post(VolumeChangeEvent(volumePercentage))
+    eventBus.post(VolumeChangedEvent(volumePercentage))
 }
 
 private val volumeRotary: RotarySensor = GroveRotarySensorFactory(grovePi)
         .on(GrovePiBoard.A0, volumeChangedListener)
 
-private val speaker: AdjustableBuzzer = GroveBuzzerFactory(grovePi)
-        .adjustableBuzzerOn(GrovePiBoard.D3)
+private val muteButton: Button = GroveButtonFactory(grovePi)
+        .on(GrovePiBoard.A1, { eventBus.post(it.toMuteEvent()) })
+
+private val speaker: Speaker = Speaker(GroveBuzzerFactory(grovePi)
+        .adjustableBuzzerOn(GrovePiBoard.D3))
 
 private val muteIndicator: Led = GroveLedFactory(grovePi)
         .on(GrovePiBoard.D2)
 
-private val inputDevices: Collection<InputDevice> = listOf(volumeRotary)
-
-private fun volumeExample() {
-    eventBus.subscribe<VolumeChangeEvent> { volumeChangeEvent ->
-        speaker.handleVolumeChange(volumeChangeEvent)
-        muteIndicator.handleVolumeChange(volumeChangeEvent)
-    }
-
-    inputDevices.forEach {
-        device -> device.start()
-    }
-}
+private val inputDevices: Collection<InputDevice> = listOf(volumeRotary, muteButton)
 
 private fun temperature0(sensor: TemperatureSensor) {
     // Temperature in what scale?
@@ -116,6 +78,18 @@ private fun temperature0(sensor: TemperatureSensor) {
 
     persistTemperature(
             TemperatureUtil.kelvinToFahrenheit(roomTemperature))
+}
+
+fun ButtonStatus.toMuteEvent(): MuteEvent {
+    return when (this) {
+        PRESSED -> MuteEvent(true)
+        else -> MuteEvent(false)
+    }
+}
+
+
+private fun storeTemperature(temperature: Temperature) {
+    println("Temperature of ${temperature.valueIn(Celsius)} ${Celsius}")
 }
 
 class TemperatureSensor() {
