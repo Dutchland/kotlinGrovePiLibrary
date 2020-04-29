@@ -27,13 +27,17 @@ import nl.dutchland.grove.grovepiports.GrovePi as GrovePiBoard
 
 fun main() {
     val eventBus = EventBus()
+//
+//    val filter = { e : TemperatureEvent -> e.bla.equals("") }
+//    val handler: EventHandler<TemperatureEvent> = { e : TemperatureEvent-> println(e.bla) }
+//
+//    val temperatureEventFilter = forType(TemperatureEvent::class)
 
-    val filter = { e : TemperatureEvent -> e.bla.equals("") }
-    val handler: EventHandler<TemperatureEvent> = { e : TemperatureEvent-> println(e.bla) }
+    eventBus.subscribe(TemperatureEvent::class)
+    { e: TemperatureEvent -> storeTemperature(e.temperature) }
 
-    val temperatureEventFilter = forType(TemperatureEvent::class)
-
-    eventBus.subscribe(EventListener{ e: TemperatureEvent -> println(e.bla)})
+    eventBus.post(TemperatureEvent(Temperature.of(10.0, Kelvin)))
+    eventBus.post(SomeOtherEvent())
 
 //    eventBus.subscribe(filter, handler)
 //    eventBus.subscribe(handler)
@@ -47,6 +51,10 @@ fun main() {
 //    length()
 //    length2()
 //    address()
+}
+
+private fun storeTemperature(temperature: Temperature) {
+    println("Temperature of ${temperature.valueIn(Celsius)} ${Celsius}")
 }
 
 private fun volumeExample(grovePi: GrovePi) {
@@ -87,15 +95,15 @@ class TemperatureSensor() {
     /**
      * Return temperature in Kelvin
      */
-    fun currentTemperature() : Double {
+    fun currentTemperature(): Double {
         return 4.0
     }
 
-    fun currentTemperatureInCelsius() : Double { // Extreme naming
+    fun currentTemperatureInCelsius(): Double { // Extreme naming
         return 4.0
     }
 
-    fun currentRoomTemperature() : Temperature {
+    fun currentRoomTemperature(): Temperature {
         return Temperature.of(4.0, Celsius)
     }
 }
@@ -414,7 +422,7 @@ class LedIndicator(private val led: Led) : ButtonStatusChangedListener {
 
 class TemperatureUtil {
     companion object {
-        fun kelvinToFahrenheit(value: Double) : Double {
+        fun kelvinToFahrenheit(value: Double): Double {
             return 1.0
         }
     }

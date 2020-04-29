@@ -1,72 +1,54 @@
 package nl.dutchland.grove
 
+import nl.dutchland.grove.utility.temperature.Temperature
 import kotlin.reflect.KClass
 
 typealias EventHandler<T> = (T) -> Unit
-//typealias EventFilter<T> = (T) -> Boolean
+typealias EventFilter<T> = (T) -> Boolean
 
 interface Event {
 
 }
 
-class TemperatureEvent : Event {
-    val bla = 1
-}
+class SomeOtherEvent : Event
+
+class TemperatureEvent(val temperature: Temperature) : Event
 
 class EventBus() {
-    private val listeners = mutableListOf<Any>()
+    private val listeners = mutableListOf<EventListener<*>>()
 
     fun <T : Event> subscribe(eventListener: EventListener<T>) {
         listeners += (eventListener)
     }
 
-//    fun <T : Event> subscribe(eventHandler: EventHandler<T>) {
-//        subscribe<T>(EventListener(eventHandler))
-//    }
+    fun <T : Event> subscribe(eventType: KClass<T>, eventHandler: EventHandler<T>) {
+        val bla = eventHandler
+        subscribe<T>(EventListener(forType(eventType), eventHandler, eventType))
+    }
 
     fun post(event: Event) {
         listeners.forEach { eventListener ->
-            (eventListener as EventListener<*>)
-                    .invoke(event)
+            eventListener.invoke(event)
         }
     }
 }
 
-typealias EventFilter = (Event) -> Boolean
-
-fun <T : Event> forType(eventType: KClass<T>): EventFilter {
+fun <T : Event> forType(eventType: KClass<T>): EventFilter<T> {
     return { event -> event::class == eventType }
 }
 
 
-//class EventFilter(filter: (Event) -> Boolean) : (Event) -> Boolean {
-//    private val filter: (Event) -> Boolean
-//
-//    init {
-//        this.filter = filter
-//    }
-//
-//    companion object {
-//        fun <T : Event> forType(eventType: KClass<T>) : EventFilter {
-//            val filter: (Event) -> Boolean = { event -> event::class == eventType }
-//            return EventFilter(filter)
-//        }
-//    }
-//
-//    override fun invoke(p1: Event): Boolean {
-//        return filter.invoke(p1)
-//    }
-//}
-
 class EventListener<T : Event>(
-        private val eventFilter: EventFilter,
-        private val eventHandler: EventHandler<T>) {
+        private val eventFilter: EventFilter<T>,
+        private val eventHandler: EventHandler<T>,
+        private val clazz: KClass<T>) {
 
-    constructor(eventHandler: EventHandler<T>) : this({ e: Event -> true }, eventHandler)
+//    constructor(eventHandler: EventHandler<T>) : this({ e: Event -> true }, eventHandler)
 
     fun invoke(event: Event) {
-        if (eventFilter.invoke(event)) {
-            eventHandler.invoke(event as T)
+        val isCorrectType = clazz == event::class
+        if (isCorrectType && eventFilter.invoke(event as T)) {
+            eventHandler.invoke(event)
         }
     }
 }
