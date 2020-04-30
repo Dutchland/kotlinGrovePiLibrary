@@ -11,7 +11,7 @@ import kotlin.concurrent.fixedRateTimer
 
 class TempHumidityDisplay(private val display: GroveLcd, private val tempHumiditySensor: TemperatureHumiditySensor) {
     private var newestValue: TemperatureHumidityMeasurement
-    private lateinit var timer: Timer
+    private var timer: Timer? = null
 
     init {
         tempHumiditySensor.subscribe { s -> onLightChanged(s) }
@@ -40,6 +40,6 @@ class TempHumidityDisplay(private val display: GroveLcd, private val tempHumidit
     }
 
     fun stop() {
-        timer.cancel()
+        timer?.cancel()
     }
 }

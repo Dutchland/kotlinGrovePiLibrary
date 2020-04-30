@@ -33,16 +33,8 @@ fun main() {
     }
 
     eventBus.subscribe<MuteEvent> {
-        when (it.muteIsOn) {
-            true -> {
-                speaker.mute()
-                muteIndicator.turnOn()
-            }
-            false -> {
-                speaker.unMute()
-                muteIndicator.turnOff()
-            }
-        }
+        speaker.handleMuteEvent(it)
+        muteIndicator.handleMuteEvent(it)
     }
 
     inputDevices.forEach { device ->
@@ -53,6 +45,11 @@ fun main() {
 fun Speaker.handleMuteEvent(muteEvent: MuteEvent) {
     if (muteEvent.muteIsOn) this.mute()
     else this.unMute()
+}
+
+fun Led.handleMuteEvent(muteEvent: MuteEvent) {
+    if (muteEvent.muteIsOn) this.turnOn()
+    else this.turnOff()
 }
 
 private val grovePi: GrovePi = GrovePi4J()

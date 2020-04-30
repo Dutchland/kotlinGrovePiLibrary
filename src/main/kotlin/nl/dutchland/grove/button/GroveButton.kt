@@ -6,17 +6,17 @@ import java.util.*
 import kotlin.concurrent.fixedRateTimer
 import kotlin.properties.Delegates.observable
 
-class GroveButton internal constructor(
+internal class GroveButton internal constructor(
         private val digitalIn: GroveDigitalIn,
-        private val listeners: Collection<ButtonStatusChangedListener>) : Button {
+        private val listener: ButtonStatusChangedListener) : Button {
 
     override var status: ButtonStatus
             by observable(pollButton())
             { _, _, newValue ->
-                this.listeners.forEach { l -> l.invoke(newValue) }
+                listener.invoke(newValue)
             }
 
-    private lateinit var pollButtonTimer: Timer
+    private var pollButtonTimer: Timer? = null
 
     override fun start() {
         this.pollButtonTimer = fixedRateTimer("Polling button task", false, 0, 100)
@@ -24,7 +24,7 @@ class GroveButton internal constructor(
     }
 
     override fun stop() {
-        this.pollButtonTimer.cancel()
+        this.pollButtonTimer?.cancel()
     }
 
     private fun pollButton(): ButtonStatus {

@@ -9,23 +9,18 @@ import kotlin.concurrent.fixedRateTimer
 
 private const val MAX_SENSOR_VALUE = 1023.0
 
-internal class GroveLightSensor(private val sensor: GroveAnalogIn) : LightSensor {
-    private lateinit var timer: Timer
-    private var listeners: List<LightSensorValueListener> = emptyList()
-    private var mostRecentValue: LightSensorMeasurement = transform(sensor.get())
+internal class GroveLightSensor(private val sensor: GroveAnalogIn,
+                                private val listener: LightSensorValueListener) : LightSensor {
+    override var mostRecentValue: LightSensorMeasurement = sensor.get().toLightMeasurement()
+    private var timer: Timer? = null
 
     init {
         sensor.setListener { ba -> onSensorChanged(ba) }
     }
 
-    private fun onSensorChanged(ba: ByteArray) {
-        mostRecentValue = transform(ba)
-        this.listeners.forEach { l -> l.invoke(mostRecentValue) }
-    }
-
-    override fun subscribe(listener: LightSensorValueListener) {
-        this.listeners += listener
-        listener.invoke(mostRecentValue)
+    private fun onSensorChanged(byteArray: ByteArray) {
+        mostRecentValue = byteArray.toLightMeasurement()
+        this.listener.invoke(mostRecentValue)
     }
 
     override fun start() {
@@ -34,11 +29,11 @@ internal class GroveLightSensor(private val sensor: GroveAnalogIn) : LightSensor
     }
 
     override fun stop() {
-        timer.cancel()
+        timer?.cancel()
     }
 
-    private fun transform(bytes: ByteArray): LightSensorMeasurement {
-        val unsignedBytes: IntArray = GroveUtil.unsign(bytes)
+    private fun ByteArray.toLightMeasurement() : LightSensorMeasurement {
+        val unsignedBytes: IntArray = GroveUtil.unsign(this)
         var value = (unsignedBytes[1] * 256).toDouble() + unsignedBytes[2].toDouble()
         value = value.coerceIn(0.0, MAX_SENSOR_VALUE)
         return LightSensorMeasurement(Fraction.of(value / MAX_SENSOR_VALUE), TimeStamp.now())
