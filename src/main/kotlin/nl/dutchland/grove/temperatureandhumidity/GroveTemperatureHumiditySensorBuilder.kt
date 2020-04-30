@@ -10,16 +10,19 @@ enum class GroveTemperatureHumiditySensors(val type: GroveTemperatureAndHumidity
     DHT22(GroveTemperatureAndHumiditySensor.Type.DHT22)
 }
 
-
 class GroveTemperatureHumiditySensorBuilder(private val grovePi: GrovePi) {
-    fun on(port: DigitalPort, type: GroveTemperatureHumiditySensors, listener: TemperatureHumidityListener): TemperatureHumiditySensor {
-        val sensor = GroveTemperatureAndHumiditySensor(grovePi, port.digitalPin, type.type)
-        return GroveTemperatureHumiditySensor(sensor, listener)
+    private lateinit var port: DigitalPort
+    private lateinit var listener: TemperatureHumidityListener
+    private lateinit var type: GroveTemperatureHumiditySensors
+
+    fun onPort(port: DigitalPort) : TemperatureHumiditySensorTypeSetter {
+        this.port = port
+        return object : TemperatureHumiditySensorTypeSetter {
+            override fun withType(type: GroveTemperatureHumiditySensors): TemperatureHumiditySensorListenerSetter {
+                return withTypeA(type)
+            }
+        }
     }
-    
-    var port: DigitalPort = nl.dutchland.grove.grovepiports.GrovePi.D5
-    var listener: TemperatureHumidityListener = {}
-    var type: GroveTemperatureHumiditySensors = DHT11
 
     private fun withTypeA(type: GroveTemperatureHumiditySensors) : TemperatureHumiditySensorListenerSetter {
         this.type = type
@@ -38,15 +41,6 @@ class GroveTemperatureHumiditySensorBuilder(private val grovePi: GrovePi) {
         }
     }
 
-    fun onPort(port: DigitalPort) : TemperatureHumiditySensorTypeSetter {
-        this.port = port
-        return object : TemperatureHumiditySensorTypeSetter {
-            override fun withType(type: GroveTemperatureHumiditySensors): TemperatureHumiditySensorListenerSetter {
-                return withTypeA(type)
-            }
-        }
-    }
-
     private fun withListenerA(listener: TemperatureHumidityListener) : TemperatureHumiditySensorBuilder  {
         this.listener = listener
         return object: TemperatureHumiditySensorBuilder {
@@ -60,24 +54,22 @@ class GroveTemperatureHumiditySensorBuilder(private val grovePi: GrovePi) {
         val sensor = GroveTemperatureAndHumiditySensor(grovePi, port.digitalPin, type.type)
         return GroveTemperatureHumiditySensor(sensor, listener)
     }
+
+    interface TemperatureHumiditySensorTypeSetter {
+        fun withType(type: GroveTemperatureHumiditySensors) : TemperatureHumiditySensorListenerSetter
+    }
+
+    interface TemperatureHumiditySensorListenerSetter {
+        fun withListener(listener: TemperatureHumidityListener) : TemperatureHumiditySensorBuilder
+        fun withTemperatureListener(listener: TemperatureListener) : TemperatureHumiditySensorBuilder
+        fun withHumidityListener(listener: HumidityListener) : TemperatureHumiditySensorBuilder
+    }
+
+    interface TemperatureHumiditySensorBuilder {
+        fun build() : TemperatureHumiditySensor
+    }
 }
 
 
 
-interface TemperatureHumiditySensorTypeSetter {
-    fun withType(type: GroveTemperatureHumiditySensors) : TemperatureHumiditySensorListenerSetter
-}
 
-interface TemperatureHumiditySensorListenerSetter {
-    fun withListener(listener: TemperatureHumidityListener) : TemperatureHumiditySensorBuilder
-    fun withTemperatureListener(listener: TemperatureListener) : TemperatureHumiditySensorBuilder
-    fun withHumidityListener(listener: HumidityListener) : TemperatureHumiditySensorBuilder
-}
-
-//interface TemperatureHumiditySensorPortSetter {
-//    fun withPort(port: DigitalPort) : TemperatureHumiditySensorBuilder
-//}
-
-interface TemperatureHumiditySensorBuilder {
-    fun build() : TemperatureHumiditySensor
-}
