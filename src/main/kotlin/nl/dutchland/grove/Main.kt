@@ -13,6 +13,8 @@ import nl.dutchland.grove.led.Led
 import nl.dutchland.grove.rotary.GroveRotarySensorFactory
 import nl.dutchland.grove.rotary.RotaryChangedListener
 import nl.dutchland.grove.rotary.RotarySensor
+import nl.dutchland.grove.temperatureandhumidity.GroveTemperatureHumiditySensorBuilder
+import nl.dutchland.grove.temperatureandhumidity.GroveTemperatureHumiditySensors.*
 import nl.dutchland.grove.utility.demo.Address
 import nl.dutchland.grove.utility.demo.DutchPostcode
 import nl.dutchland.grove.utility.demo.Housenumber
@@ -28,6 +30,12 @@ import org.iot.raspberry.grovepi.GrovePi
 import nl.dutchland.grove.grovepiports.GrovePi as GrovePiBoard
 
 fun main() {
+    val onPort = GroveTemperatureHumiditySensorBuilder(grovePi)
+            .onPort(GrovePiBoard.D5)
+            .withType(DHT11)
+            .withHumidityListener {}
+            .build()
+
     eventBus.subscribe<VolumeChangedEvent> { volumeChangeEvent ->
         speaker.setVolume(volumeChangeEvent.volumePercentage)
     }

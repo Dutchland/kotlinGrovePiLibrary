@@ -21,7 +21,7 @@ class GroveButtonTest {
         val mockedDigitalIn = mock(GroveDigitalIn::class.java)
         Mockito.`when`(mockedDigitalIn.get())
                 .thenReturn(expectedIsPressed)
-        val groveButton = GroveButton(mockedDigitalIn, emptyList())
+        val groveButton = GroveButton(mockedDigitalIn) {}
 
         // Act
         val actualIsPressed = groveButton.status

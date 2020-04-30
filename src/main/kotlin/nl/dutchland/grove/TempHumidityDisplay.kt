@@ -9,7 +9,7 @@ import java.math.BigDecimal
 import java.util.*
 import kotlin.concurrent.fixedRateTimer
 
-class TempHumidityDisplay(private val display: GroveLcd, private val tempHumiditySensor: TemperatureHumiditySensor) {
+class TempHumidityDisplay(private val display: GroveLcd, private val tempHumiditySensor: TemperatureHumiditySensor) : OutputDevice {
     private var newestValue: TemperatureHumidityMeasurement
     private var timer: Timer? = null
 
@@ -39,7 +39,8 @@ class TempHumidityDisplay(private val display: GroveLcd, private val tempHumidit
         }
     }
 
-    fun stop() {
+    override fun stop() {
+        display.stop()
         timer?.cancel()
     }
 }

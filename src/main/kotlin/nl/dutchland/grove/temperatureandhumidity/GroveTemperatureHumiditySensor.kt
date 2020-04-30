@@ -11,13 +11,15 @@ import java.util.*
 import kotlin.concurrent.fixedRateTimer
 import kotlin.properties.Delegates
 
-internal class GroveTemperatureHumiditySensor(private val sensor: GroveTemperatureAndHumiditySensor) : TemperatureHumiditySensor {
+internal class GroveTemperatureHumiditySensor(
+        private val sensor: GroveTemperatureAndHumiditySensor,
+        private val listener: TemperatureHumidityListener) : TemperatureHumiditySensor {
+
     private var timer: Timer? = null
-    private var listeners: Collection<TemperatureHumidityListener> = emptyList()
     private var mostRecentValue: TemperatureHumidityMeasurement
             by Delegates.observable(pollSensor())
             { _, _, newValue ->
-                this.listeners.forEach { l -> l.invoke(newValue) }
+                this.listener.invoke(newValue)
             }
 
     override fun start() {
@@ -27,18 +29,6 @@ internal class GroveTemperatureHumiditySensor(private val sensor: GroveTemperatu
 
     override fun stop() {
         this.timer?.cancel()
-    }
-
-    override fun subscribe(listener: TemperatureHumidityListener) {
-        this.listeners += listener
-    }
-
-    override fun subscribeToTemperature(listener: TemperatureListener) {
-        this.listeners += { th -> listener.invoke(th.toTemperatureMeasurement()) }
-    }
-
-    override fun subscribeToHumidity(listener: HumidityListener) {
-        this.listeners += { th -> listener.invoke(th.toHumidityMeasurement()) }
     }
 
     override fun getTemperatureHumidity(): TemperatureHumidityMeasurement {

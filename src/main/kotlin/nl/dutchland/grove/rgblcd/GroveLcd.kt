@@ -5,8 +5,9 @@ import nl.dutchland.grove.grovepiports.I2cPort
 import nl.dutchland.grove.utility.Fraction
 import org.iot.raspberry.grovepi.devices.GroveRgbLcd
 
+private const val MAX_COLOR_VALUE = 255.0
+
 class GroveLcd private constructor(groveRgbLcd: () -> GroveRgbLcd) : OutputDevice {
-    private val MAX_COLOR_VALUE = 255.0
     private val lcd by lazy { groveRgbLcd.invoke() }
 
     companion object {
@@ -33,7 +34,6 @@ class GroveLcd private constructor(groveRgbLcd: () -> GroveRgbLcd) : OutputDevic
     override fun stop() {
         setBackground(BackgroundColor.NO_BACKLIGHT)
         setText("")
-//        lcd.close()
     }
 }
 
