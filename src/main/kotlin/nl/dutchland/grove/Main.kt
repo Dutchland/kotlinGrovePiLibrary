@@ -50,6 +50,11 @@ fun main() {
     }
 }
 
+fun Speaker.handleMuteEvent(muteEvent: MuteEvent) {
+    if (muteEvent.muteIsOn) this.mute()
+    else this.unMute()
+}
+
 private val grovePi: GrovePi = GrovePi4J()
 
 private val eventBus = EventBus()

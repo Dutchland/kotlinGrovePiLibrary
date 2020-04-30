@@ -11,14 +11,14 @@ class EventBus() {
     }
 
     inline fun <reified T : Event> subscribe(noinline eventHandler: EventHandler<T>) {
-        subscribe(EventListener(
-                clazz = T::class,
-                eventFilter = { true },
-                eventHandler = eventHandler))
+        subscribeWithFilter({ true }, eventHandler)
     }
 
     inline fun <reified T : Event> subscribeWithFilter(noinline filter: EventFilter<T>, noinline eventHandler: EventHandler<T>) {
-        subscribe(EventListener(T::class, filter, eventHandler))
+        subscribe(EventListener(
+                clazz = T::class,
+                eventFilter = filter,
+                eventHandler = eventHandler))
     }
 
     fun post(event: Event) {
