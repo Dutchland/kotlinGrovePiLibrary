@@ -6,15 +6,15 @@ import nl.dutchland.grove.utility.temperature.Celsius
 import nl.dutchland.grove.utility.temperature.Temperature
 import kotlin.properties.Delegates
 
-class BoilerPump(private val eventBus: EventBus) {
+class BoilerWaterStatus(private val eventBus: EventBus) {
     private var currentWaterLevel by Delegates.observable(Fraction.ZERO)
     { _, _, _ ->
-        checkTurningPumpOn()
+        checkWaterReady()
     }
 
     private var currentWaterTemperature by Delegates.observable(Temperature.of(0.0, Celsius))
     { _, _, _ ->
-        checkTurningPumpOn()
+        checkWaterReady()
     }
 
     init {
@@ -26,11 +26,11 @@ class BoilerPump(private val eventBus: EventBus) {
         }
     }
 
-    private fun checkTurningPumpOn() {
+    private fun checkWaterReady() {
         if (!waterIsWarmEnough() || boilerIsEmpty()) {
-            eventBus.post(PumpShouldBeOffEvent())
+            eventBus.post(BoilerWaterIsNotReadyEvent())
         } else {
-            eventBus.post(PumpShouldBeOnEvent())
+            eventBus.post(BoilerWaterIsReadyEvent())
         }
     }
 
