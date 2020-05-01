@@ -2,7 +2,7 @@ package nl.dutchland.grove.events
 
 import kotlin.reflect.KClass
 
-data class EventListener<T : Event>(
+class EventListener<T : Event>(
         private val clazz: KClass<T>,
         private val eventFilter: EventFilter<T>,
         private val eventHandler: EventHandler<T>) {

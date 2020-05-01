@@ -14,7 +14,7 @@ class TempHumidityDisplay(private val display: GroveLcd, private val tempHumidit
     private var timer: Timer? = null
 
     init {
-        tempHumiditySensor.subscribe { s -> onLightChanged(s) }
+//        tempHumiditySensor.subscribe { s -> onLightChanged(s) }
         newestValue = tempHumiditySensor.getTemperatureHumidity()
     }
 

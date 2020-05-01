@@ -3,7 +3,7 @@ package nl.dutchland.grove
 import nl.dutchland.grove.button.Button
 import nl.dutchland.grove.button.ButtonStatus
 import nl.dutchland.grove.button.ButtonStatus.PRESSED
-import nl.dutchland.grove.button.GroveButtonFactory
+import nl.dutchland.grove.button.GroveButtonBuilder
 import nl.dutchland.grove.buzzer.GroveBuzzerFactory
 import nl.dutchland.grove.events.EventBus
 import nl.dutchland.grove.events.MuteEvent
@@ -30,10 +30,10 @@ import org.iot.raspberry.grovepi.GrovePi
 import nl.dutchland.grove.grovepiports.GrovePi as GrovePiBoard
 
 fun main() {
-    val onPort = GroveTemperatureHumiditySensorBuilder(grovePi)
+    val sensor = GroveTemperatureHumiditySensorBuilder(grovePi)
             .onPort(GrovePiBoard.D5)
             .withType(DHT11)
-            .withHumidityListener {}
+            .withListener { }
             .build()
 
     eventBus.subscribe<VolumeChangedEvent> { volumeChangeEvent ->
@@ -70,8 +70,10 @@ private val volumeChangedListener: RotaryChangedListener = { volumePercentage ->
 private val volumeRotary: RotarySensor = GroveRotarySensorFactory(grovePi)
         .on(GrovePiBoard.A0, volumeChangedListener)
 
-private val muteButton: Button = GroveButtonFactory(grovePi)
-        .on(GrovePiBoard.A1, { eventBus.post(it.toMuteEvent()) })
+private val muteButton: Button = GroveButtonBuilder(grovePi)
+        .on(GrovePiBoard.A1)
+        .withListener { eventBus.post(it.toMuteEvent()) }
+        .build()
 
 private val speaker: Speaker = Speaker(GroveBuzzerFactory(grovePi)
         .adjustableBuzzerOn(GrovePiBoard.D3))

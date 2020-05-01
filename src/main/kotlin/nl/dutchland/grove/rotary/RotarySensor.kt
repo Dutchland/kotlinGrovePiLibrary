@@ -8,5 +8,5 @@ import org.iot.raspberry.grovepi.GrovePi
 typealias RotaryChangedListener = (Fraction) -> Unit
 
 interface RotarySensor : InputDevice {
-    fun getStatus() : Fraction
+    fun currentStatus() : Fraction
 }
