@@ -5,46 +5,41 @@ import nl.dutchland.grove.events.EventBus
 import nl.dutchland.grove.led.Led
 import nl.dutchland.grove.temperatureandhumidity.TemperatureListener
 import nl.dutchland.grove.utility.Fraction
-import nl.dutchland.grove.utility.temperature.Celsius
 import nl.dutchland.grove.utility.temperature.Temperature
-import kotlin.properties.Delegates
+
+val eventBus = EventBus()
+
+val boilerWaterTemperatureSensor = TemperatureSensor
+        .withListener { t -> eventBus.post(BoilerWaterTemperatureEvent(t.temperature)) }
+
+val boilerWaterLevelSensor: WaterlevelSensor = WaterlevelSensor
+        .withListener { waterLevel -> eventBus.post(BoilerWaterLevelEvent(waterLevel)) }
+
+val cupHolderTemperatureSensor = TemperatureSensor
+        .withListener { t -> eventBus.post(CupholderTemperatureEvent(t.temperature)) }
+
+val cupHolderWeightSensor: WeightSensor = WeightSensor
+        .withListener { weight -> eventBus.post(CupHolderWeightEvent(weight)) }
 
 fun main() {
-    val eventBus = EventBus()
-
-    val boilerWaterTemperatureSensor = TemperatureSensor
-            .withListener { t -> eventBus.post(BoilerWaterTemperatureEvent(t.temperature)) }
-
-    val cupHolderTemperatureSensor = TemperatureSensor
-            .withListener { t -> eventBus.post(CupholderTemperatureEvent(t.temperature)) }
-
-    val boilerWaterLevelSensor: WaterlevelSensor = WaterlevelSensor
-            .withListener { waterLevel -> eventBus.post(WaterLevelEvent(waterLevel)) }
-
-    val weightOfEmptyCup = 10.0
-    val cupInPlaceSensor: WeightSensor = WeightSensor
-            .withListener { weight ->
-                when {
-                    weight >= weightOfEmptyCup -> eventBus.post(CupInPlaceEvent())
-                    else -> eventBus.post(CupNotInPlaceEvent())
-                }
-            }
+    CupInPlaceStatus(eventBus)
+    CupHolderIsHotStatus(eventBus)
 
     val cupHolderIsHotIndicator: Led = SimpleLed()
-    eventBus.subscribe<CupholderTemperatureEvent> { tm ->
-        when {
-            tm.cupholderTemperature > Temperature.of(50.0, Celsius) -> cupHolderIsHotIndicator.turnOn()
-            else -> cupHolderIsHotIndicator.turnOff()
-        }
-    }
+    eventBus.subscribe<CupHolderIsHotEvent> { cupHolderIsHotIndicator.turnOn() }
+    eventBus.subscribe<CupHolderIsNotHotEvent> { cupHolderIsHotIndicator.turnOff() }
 
-    val boilerPump: BoilerPump = BoilerPump(Pump(), eventBus)
+    val boilerPump = BoilerPump(eventBus)
 
-    val boilerHeater: BoilerHeater = BoilerHeater(HeaterElement(), eventBus)
+    val pump = Pump()
+    eventBus.subscribe<PumpShouldBeOnEvent> { pump.turnOn() }
+    eventBus.subscribe<PumpShouldBeOffEvent> { pump.turnOff() }
 
-    eventBus.subscribe<BoilerWaterTemperatureEvent> { t ->
 
-    }
+    val boilerHeaterElement = HeaterElement()
+    val boilerHeater: BoilerHeater = BoilerHeater(eventBus)
+
+    val coffeemakerStatus = CoffeeMakerStatus(eventBus)
 
 
     //Water heater
@@ -55,53 +50,63 @@ fun main() {
 
     // turn coffee on button
 
-
-    // cup heater weight sensor (dont turn heater on if there is no water in there or cup is not in place
-    // cup is in place sensor (needed icw cup heater weight sensor ??)
     // cup heater
     // cup heater temperature sensor
     // cup heater is hot indicator
 }
 
-class BoilerPump(private val pump: Pump, eventBus: EventBus) {
-    private var currentWaterLevel by Delegates.observable(Fraction.ZERO)
-    { _, _, _ ->
-        checkTurningPumpOn()
-    }
+class CoffeeMakerStatus(eventBus: EventBus) {
+    var waterLevel = Fraction.ZERO
+    var isCupInPlace = false
+    var isTurnedOn = false
 
     init {
-        eventBus.subscribe<WaterLevelEvent> { measurement ->
-            this.currentWaterLevel = measurement.waterLevel
-        }
-    }
-
-    private fun checkTurningPumpOn() {
-        if (currentWaterLevel > Fraction.ZERO) {
-            pump.turnOn()
-        } else {
-            pump.turnOff()
-        }
-    }
-
-    private fun isWaterEmpty(): Boolean {
-        return currentWaterLevel == Fraction.ZERO
+        eventBus.subscribe<BoilerWaterLevelEvent> { waterLevel = it.waterLevel }
+        eventBus.subscribe<CupInPlaceEvent> { isCupInPlace = true }
+        eventBus.subscribe<CupNotInPlaceEvent> { isCupInPlace = false }
+        eventBus.subscribe<CoffeeMakerTurnedOnEvent> { isTurnedOn = true }
+        eventBus.subscribe<CoffeeMakerNotOnEvent> { isTurnedOn = false }
     }
 }
 
-class SimpleLed : Led {
-    override fun turnOn() {
-        TODO("Not yet implemented")
-    }
+class CoffeeMakerTurnedOnEvent : Event
+class CoffeeMakerNotOnEvent : Event
+class CupHolderIsNotHotEvent : Event
+class CupHolderIsHotEvent : Event
+class PumpShouldBeOffEvent : Event
+class PumpShouldBeOnEvent : Event
+class BoilerShouldNotBeHeatedEvent : Event
+class BoilerShouldBeHeatedEvent : Event
+class CupNotInPlaceEvent : Event
+class CupInPlaceEvent : Event
+class CupHolderWeightEvent(val weight: Double) : Event
+class BoilerWaterTemperatureEvent(val temperature: Temperature) : Event
+class BoilerWaterLevelEvent(val waterLevel: Fraction) : Event
+class CupholderTemperatureEvent(val temperature: Temperature) : Event
 
-    override fun turnOff() {
-        TODO("Not yet implemented")
-    }
 
+class WaterlevelSensor private constructor(private val listener: (Fraction) -> Unit) {
+    companion object {
+        fun withListener(listener: (Fraction) -> Unit): WaterlevelSensor {
+            return WaterlevelSensor(listener)
+        }
+    }
 }
 
-class BoilerHeater(private val heaterElement: HeaterElement, eventBus: EventBus) {
-    val boilerWaterTemperature: Temperature = Temperature.of(0.0, Celsius)
+class WeightSensor private constructor(private val listener: (Double) -> Unit) {
+    companion object {
+        fun withListener(listener: (Double) -> Unit): WeightSensor {
+            return WeightSensor(listener)
+        }
+    }
+}
 
+class TemperatureSensor private constructor(private val listener: TemperatureListener) {
+    companion object {
+        fun withListener(listener: TemperatureListener): TemperatureSensor {
+            return TemperatureSensor(listener)
+        }
+    }
 }
 
 class HeaterElement {
@@ -124,34 +129,13 @@ class Pump {
     }
 }
 
-class CupNotInPlaceEvent : Event
-
-class CupInPlaceEvent : Event
-
-class WeightSensor(val listener: (Double) -> Unit) {
-    companion object {
-        fun withListener(listener: (Double) -> Unit): WeightSensor {
-            return WeightSensor(listener)
-        }
+class SimpleLed : Led {
+    override fun turnOn() {
+        TODO("Not yet implemented")
     }
-}
 
-class WaterlevelSensor(val listener: (Fraction) -> Unit) {
-    companion object {
-        fun withListener(listener: (Fraction) -> Unit): WaterlevelSensor {
-            return WaterlevelSensor(listener)
-        }
+    override fun turnOff() {
+        TODO("Not yet implemented")
     }
-}
 
-class BoilerWaterTemperatureEvent(val waterTemperature: Temperature) : Event
-class WaterLevelEvent(val waterLevel: Fraction) : Event
-class CupholderTemperatureEvent(val cupholderTemperature: Temperature) : Event
-
-class TemperatureSensor private constructor(val listener: TemperatureListener) {
-    companion object {
-        fun withListener(listener: TemperatureListener): TemperatureSensor {
-            return TemperatureSensor(listener)
-        }
-    }
 }

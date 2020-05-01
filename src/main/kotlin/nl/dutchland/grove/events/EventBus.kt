@@ -3,6 +3,7 @@ package nl.dutchland.grove.events
 typealias EventHandler<T> = (T) -> Unit
 typealias EventFilter<T> = (T) -> Boolean
 
+
 class EventBus() {
     private val listeners = mutableListOf<EventListener<*>>()
 
