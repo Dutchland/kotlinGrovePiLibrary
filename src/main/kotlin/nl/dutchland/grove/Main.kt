@@ -30,12 +30,6 @@ import org.iot.raspberry.grovepi.GrovePi
 import nl.dutchland.grove.grovepiports.GrovePi as GrovePiBoard
 
 fun main() {
-    val sensor = GroveTemperatureHumiditySensorBuilder(grovePi)
-            .onPort(GrovePiBoard.D5)
-            .withType(DHT11)
-            .withListener { }
-            .build()
-
     eventBus.subscribe<VolumeChangedEvent> { volumeChangeEvent ->
         speaker.setVolume(volumeChangeEvent.volumePercentage)
     }
@@ -81,7 +75,10 @@ private val speaker: Speaker = Speaker(GroveBuzzerFactory(grovePi)
 private val muteIndicator: Led = GroveLedFactory(grovePi)
         .on(GrovePiBoard.D2)
 
-private val inputDevices: Collection<InputDevice> = listOf(volumeRotary, muteButton)
+private val inputDevices = listOf(
+        volumeRotary,
+        muteButton
+)
 
 private fun temperature0(sensor: TemperatureSensor) {
     // Temperature in what scale?

@@ -1,4 +1,4 @@
-package nl.dutchland.grove.coffeemaker
+package nl.dutchland.grove.coffeemaker.sensors
 
 import nl.dutchland.grove.led.Led
 

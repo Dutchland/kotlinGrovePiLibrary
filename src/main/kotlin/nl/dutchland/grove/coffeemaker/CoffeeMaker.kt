@@ -4,46 +4,43 @@ import nl.dutchland.grove.InputDevice
 import nl.dutchland.grove.OutputDevice
 import nl.dutchland.grove.button.Button
 import nl.dutchland.grove.button.ButtonStatus
+import nl.dutchland.grove.coffeemaker.sensors.*
 import nl.dutchland.grove.events.Event
 import nl.dutchland.grove.events.EventBus
 import nl.dutchland.grove.led.Led
 import nl.dutchland.grove.utility.Fraction
 import nl.dutchland.grove.utility.temperature.Temperature
 
-val eventBus = EventBus()
+private val eventBus = EventBus()
 
-val boilerWaterTemperatureSensor = TemperatureSensor
+private val boilerWaterTemperatureSensor = TemperatureSensor
         .withListener { t -> eventBus.post(BoilerWaterTemperatureEvent(t.temperature)) }
 
-val BOILER_WATER_LEVEL_SENSOR: WaterLevelSensor = WaterLevelSensor
+private val boilerWaterLevelSensor: WaterLevelSensor = WaterLevelSensor
         .withListener { waterLevel -> eventBus.post(BoilerWaterLevelEvent(waterLevel)) }
 
-val cupHolderTemperatureSensor = TemperatureSensor
-        .withListener { t -> eventBus.post(CupholderTemperatureEvent(t.temperature)) }
+private val cupHolderTemperatureSensor = TemperatureSensor
+        .withListener { t -> eventBus.post(CoffeePotholderTemperatureEvent(t.temperature)) }
 
-val cupHolderWeightSensor: WeightSensor = WeightSensor
-        .withListener { weight -> eventBus.post(CupHolderWeightEvent(weight)) }
+private val cupHolderWeightSensor: WeightSensor = WeightSensor
+        .withListener { weight -> eventBus.post(CoffeePotHolderWeightEvent(weight)) }
 
-val turnCoffeeMachineOnButton: Button = SimpleButton.withListener {
-    if (it == ButtonStatus.PRESSED) {
-        eventBus.post(CoffeeMakerTurnedOnEvent())
-    }
-}
+private val turnCoffeeMachineOnButton: Button = SimpleButton
+        .withListener { if (it == ButtonStatus.PRESSED) eventBus.post(TryToTurnOnCoffeeMakerEvent()) }
 
-
-val inputDevices: Collection<InputDevice> = listOf(
+private val inputDevices: Collection<InputDevice> = listOf(
         boilerWaterTemperatureSensor,
-        BOILER_WATER_LEVEL_SENSOR,
+        boilerWaterLevelSensor,
         cupHolderTemperatureSensor,
         cupHolderWeightSensor,
         turnCoffeeMachineOnButton)
 
-val pump = Pump()
-val cupHolderIsHotIndicator: Led = SimpleLed()
-val cupHolderHeaterElement = HeaterElement()
-val boilerHeaterElement = HeaterElement()
+private val pump = Pump()
+private val cupHolderIsHotIndicator: Led = SimpleLed()
+private val cupHolderHeaterElement = HeaterElement()
+private val boilerHeaterElement = HeaterElement()
 
-val outputDevices: Collection<OutputDevice> = listOf(
+private val outputDevices: Collection<OutputDevice> = listOf(
         cupHolderIsHotIndicator,
         pump,
         boilerHeaterElement,
@@ -51,16 +48,16 @@ val outputDevices: Collection<OutputDevice> = listOf(
 
 fun main() {
     CoffeeMakerStatus(eventBus)
-    CupInPlaceStatus(eventBus)
-    CupHolderIsHotStatus(eventBus)
+    CoffeePotInPlaceStatus(eventBus)
+    CoffeePotHolderIsHotStatus(eventBus)
     CoffeeMakerStatus(eventBus)
     BoilerWaterTemperatureStatus(eventBus)
     BoilerWaterStatus(eventBus)
 
-    eventBus.subscribe<CupHolderIsHotEvent> {
+    eventBus.subscribe<CoffeePotHolderIsHotEvent> {
         cupHolderIsHotIndicator.turnOn()
     }
-    eventBus.subscribe<CupHolderIsNotHotEvent> {
+    eventBus.subscribe<CoffeePotHolderIsNotHotEvent> {
         cupHolderIsHotIndicator.turnOff()
     }
 
@@ -78,8 +75,15 @@ fun main() {
         boilerHeaterElement.turnOff()
     }
 
-    startCoffeeMaker()
+    eventBus.subscribe<CoffeePotHolderShouldBeHeatedEvent> {
+        cupHolderHeaterElement.turnOn()
+    }
+    eventBus.subscribe<CoffeePotHolderShouldNotBeHeatedEvent> {
+        cupHolderHeaterElement.turnOff()
+    }
 
+
+    startCoffeeMaker()
     stopCoffeeMaker()
 }
 
@@ -93,10 +97,12 @@ private fun stopCoffeeMaker() {
 }
 
 
+class TryToTurnOnCoffeeMakerEvent : Event
+
 class CoffeeMakerTurnedOnEvent : Event
 
-class CupHolderIsNotHotEvent : Event
-class CupHolderIsHotEvent : Event
+class CoffeePotHolderIsNotHotEvent : Event
+class CoffeePotHolderIsHotEvent : Event
 
 class BoilerWaterIsNotReadyEvent : Event
 class BoilerWaterIsReadyEvent : Event
@@ -104,10 +110,19 @@ class BoilerWaterIsReadyEvent : Event
 class BoilerShouldNotBeHeatedEvent : Event
 class BoilerShouldBeHeatedEvent : Event
 
-class CupNotInPlaceEvent : Event
-class CupInPlaceEvent : Event
+class CoffeePotHolderShouldNotBeHeatedEvent : Event
+class CoffeePotHolderShouldBeHeatedEvent : Event
 
-class CupHolderWeightEvent(val weight: Double) : Event
+class CoffeePotNotInPlaceEvent : Event
+class CoffeePotInPlaceEvent : Event
+
+class CoffeePotHolderWeightEvent(val weight: Double) : Event
 class BoilerWaterTemperatureEvent(val temperature: Temperature) : Event
-class BoilerWaterLevelEvent(val waterLevel: Fraction) : Event
-class CupholderTemperatureEvent(val temperature: Temperature) : Event
+class BoilerWaterLevelEvent(val waterLevel: Fraction) : Event {
+    val isEmpty = waterLevel == Fraction.ZERO
+}
+class CoffeePotholderTemperatureEvent(val temperature: Temperature) : Event
+
+class CoffeeMakerTurnedOffEvent(val reasons: Collection<String>) : Event {
+    val fullMessage = "Turned of coffeemaker because: ${reasons.joinToString()}"
+}

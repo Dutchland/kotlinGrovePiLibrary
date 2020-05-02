@@ -5,7 +5,7 @@ import nl.dutchland.grove.utility.temperature.Celsius
 import nl.dutchland.grove.utility.temperature.Temperature
 import kotlin.properties.Delegates
 
-class BoilerWaterTemperatureStatus(eventBus: EventBus) {
+class BoilerWaterTemperatureStatus(private val eventBus: EventBus) {
     private var boilerWaterTemperature: Temperature by Delegates.observable(Temperature.of(0.0, Celsius))
     { _, _, _ ->
         check()

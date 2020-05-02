@@ -1,8 +1,8 @@
 package nl.dutchland.grove.temperaturerepository
 
 data class DatabaseCredentials(
-        val url: String,
-        val driver: String,
+        private val url: String,
+        private val driver: String,
         val user : String,
         val password: String) {
 }

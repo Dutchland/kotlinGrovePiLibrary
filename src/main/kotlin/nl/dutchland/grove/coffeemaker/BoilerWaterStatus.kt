@@ -7,7 +7,7 @@ import nl.dutchland.grove.utility.temperature.Temperature
 import kotlin.properties.Delegates
 
 class BoilerWaterStatus(private val eventBus: EventBus) {
-    private var currentWaterLevel by Delegates.observable(Fraction.ZERO)
+    private var isBoilerEmpty by Delegates.observable(true)
     { _, _, _ ->
         checkWaterReady()
     }
@@ -19,7 +19,7 @@ class BoilerWaterStatus(private val eventBus: EventBus) {
 
     init {
         eventBus.subscribe<BoilerWaterLevelEvent> {
-            this.currentWaterLevel = it.waterLevel
+            this.isBoilerEmpty = it.isEmpty
         }
         eventBus.subscribe<BoilerWaterTemperatureEvent> {
             this.currentWaterTemperature = it.temperature
@@ -27,15 +27,11 @@ class BoilerWaterStatus(private val eventBus: EventBus) {
     }
 
     private fun checkWaterReady() {
-        if (!waterIsWarmEnough() || boilerIsEmpty()) {
+        if (!waterIsWarmEnough() || isBoilerEmpty) {
             eventBus.post(BoilerWaterIsNotReadyEvent())
         } else {
             eventBus.post(BoilerWaterIsReadyEvent())
         }
-    }
-
-    private fun boilerIsEmpty(): Boolean {
-        return currentWaterLevel == Fraction.ZERO
     }
 
     private fun waterIsWarmEnough() : Boolean {

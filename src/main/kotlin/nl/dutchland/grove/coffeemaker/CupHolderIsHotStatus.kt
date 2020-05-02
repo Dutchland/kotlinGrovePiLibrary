@@ -4,15 +4,15 @@ import nl.dutchland.grove.events.EventBus
 import nl.dutchland.grove.utility.temperature.Celsius
 import nl.dutchland.grove.utility.temperature.Temperature
 
-class CupHolderIsHotStatus(eventBus: EventBus) {
+class CoffeePotHolderIsHotStatus(eventBus: EventBus) {
     init {
-        eventBus.subscribe<CupholderTemperatureEvent> { tm ->
+        eventBus.subscribe<CoffeePotholderTemperatureEvent> { tm ->
             val cupIsHot = tm.temperature > Temperature.of(50.0, Celsius)
 
             if (cupIsHot) {
-                eventBus.post(CupHolderIsHotEvent())
+                eventBus.post(CoffeePotHolderIsHotEvent())
             } else {
-                eventBus.post(CupHolderIsNotHotEvent())
+                eventBus.post(CoffeePotHolderIsNotHotEvent())
             }
         }
     }
