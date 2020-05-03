@@ -5,9 +5,10 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertAll
 import java.util.function.Consumer
 
-internal class EventBusTest {
+class EventBusTest {
 
     @Test
     fun testMultipleSubscribers() {
@@ -63,14 +64,19 @@ internal class EventBusTest {
         eventBus.subscribe<UnrelatedEvent> { unRelatedEventHandler.accept(it) }
 
         // Act
-        eventBus.post(SomeEvent())
-        eventBus.post(SomeChildEvent())
+        val someEvent = SomeEvent()
+        val childEvent = SomeChildEvent()
+        eventBus.post(someEvent)
+        eventBus.post(childEvent)
         eventBus.post(UnrelatedEvent())
 
         // Assert
-        verify(someEventHandler, times(2)).accept(any())
-        verify(childEventHandler).accept(any())
-        verify(unRelatedEventHandler).accept(any())
+        assertAll(
+                { verify(someEventHandler).accept(someEvent) },
+                { verify(someEventHandler).accept(childEvent) },
+                { verify(childEventHandler).accept(any()) },
+                { verify(unRelatedEventHandler).accept(any()) }
+        )
     }
 
     private class UnrelatedEvent : Event

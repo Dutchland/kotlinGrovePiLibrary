@@ -6,31 +6,29 @@ typealias EventHandler<T> = (T) -> Unit
 typealias EventFilter<T> = (T) -> Boolean
 
 class EventBus() {
-    private val listenersMap : MutableMap<KClass<*>, MutableCollection<EventListener<*>>> = mutableMapOf()
+    private val eventTypeToListenersMap: MutableMap<KClass<*>, MutableCollection<EventHandler<*>>> = mutableMapOf()
 
-    fun <T : Event> subscribe(clazz: KClass<T>, eventListener: EventListener<T>) {
-        if (listenersMap.containsKey(clazz)) {
-            listenersMap[clazz]?.add(eventListener)
-        }
-
-        listenersMap.putIfAbsent(clazz, mutableListOf(eventListener))
+    fun <T : Event> subscribe(clazz: KClass<T>, eventHandler: EventHandler<T>) {
+        eventTypeToListenersMap[clazz]?.add(eventHandler)
+        eventTypeToListenersMap.putIfAbsent(clazz, mutableListOf(eventHandler))
     }
 
     inline fun <reified T : Event> subscribe(noinline eventHandler: EventHandler<T>) {
-        subscribeWithFilter({ true }, eventHandler)
+        subscribe(T::class, eventHandler)
     }
 
     inline fun <reified T : Event> subscribeWithFilter(noinline filter: EventFilter<T>, noinline eventHandler: EventHandler<T>) {
-        subscribe(T::class, EventListener(
-                eventFilter = filter,
-                eventHandler = eventHandler))
+        val combinedEventHandler: EventHandler<T> = {
+            if (filter.invoke(it)) eventHandler.invoke(it)
+        }
+        subscribe(T::class, combinedEventHandler)
     }
 
     fun <R : Event> post(event: R) {
-        val listeners = listenersMap[event::class]
-
-        listeners?.forEach { eventListener ->
-            (eventListener as EventListener<R>).onEvent(event)
-        }
+        eventTypeToListenersMap.entries
+                .filter { it.key.java.isInstance(event) }
+                .map { it.value }
+                .flatten()
+                .forEach { (it as EventHandler<R>).invoke(event) }
     }
 }
