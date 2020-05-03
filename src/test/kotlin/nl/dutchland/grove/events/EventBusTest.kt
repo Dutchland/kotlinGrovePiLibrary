@@ -1,5 +1,6 @@
 package nl.dutchland.grove.events
 
+import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
@@ -32,11 +33,10 @@ internal class EventBusTest {
         // Arrange
         val eventBus = EventBus()
         val someEventHandler = mock<Consumer<SomeEvent>>()
-        val filter: EventFilter<SomeEvent> = { e -> e.someProperty.equals("CorrectProperty") }
 
-        eventBus.subscribeWithFilter<SomeEvent> (
-                filter,
-                { someEvent -> someEventHandler.accept(someEvent) })
+        eventBus.subscribeWithFilter<SomeEvent>(
+                { it.someProperty.equals("CorrectProperty") },
+                { someEventHandler.accept(it) })
 
         //Act
         val matchingEvent = SomeEvent("CorrectProperty")
@@ -50,6 +50,31 @@ internal class EventBusTest {
         verify(someEventHandler, times(0)).accept(nonMatchingEvent)
     }
 
-    private class SomeEvent(val someProperty: String = ""): Event
+    @Test
+    fun `Handeling child events and unrelated events`() {
+        // Arrange
+        val eventBus = EventBus()
+        val someEventHandler = mock<Consumer<SomeEvent>>()
+        val childEventHandler = mock<Consumer<SomeChildEvent>>()
+        val unRelatedEventHandler = mock<Consumer<UnrelatedEvent>>()
+
+        eventBus.subscribe<SomeEvent> { someEventHandler.accept(it) }
+        eventBus.subscribe<SomeChildEvent> { childEventHandler.accept(it) }
+        eventBus.subscribe<UnrelatedEvent> { unRelatedEventHandler.accept(it) }
+
+        // Act
+        eventBus.post(SomeEvent())
+        eventBus.post(SomeChildEvent())
+        eventBus.post(UnrelatedEvent())
+
+        // Assert
+        verify(someEventHandler, times(2)).accept(any())
+        verify(childEventHandler).accept(any())
+        verify(unRelatedEventHandler).accept(any())
+    }
+
+    private class UnrelatedEvent : Event
+    private open class SomeEvent(val someProperty: String = "") : Event
+    private class SomeChildEvent() : SomeEvent()
 }
 

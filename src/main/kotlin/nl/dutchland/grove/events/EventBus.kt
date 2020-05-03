@@ -1,14 +1,19 @@
 package nl.dutchland.grove.events
 
+import kotlin.reflect.KClass
+
 typealias EventHandler<T> = (T) -> Unit
 typealias EventFilter<T> = (T) -> Boolean
 
-
 class EventBus() {
-    private val listeners = mutableListOf<EventListener<*>>()
+    private val listenersMap : MutableMap<KClass<*>, MutableCollection<EventListener<*>>> = mutableMapOf()
 
-    fun <T : Event> subscribe(eventListener: EventListener<T>) {
-        listeners += (eventListener)
+    fun <T : Event> subscribe(clazz: KClass<T>, eventListener: EventListener<T>) {
+        if (listenersMap.containsKey(clazz)) {
+            listenersMap[clazz]?.add(eventListener)
+        }
+
+        listenersMap.putIfAbsent(clazz, mutableListOf(eventListener))
     }
 
     inline fun <reified T : Event> subscribe(noinline eventHandler: EventHandler<T>) {
@@ -16,15 +21,16 @@ class EventBus() {
     }
 
     inline fun <reified T : Event> subscribeWithFilter(noinline filter: EventFilter<T>, noinline eventHandler: EventHandler<T>) {
-        subscribe(EventListener(
-                clazz = T::class,
+        subscribe(T::class, EventListener(
                 eventFilter = filter,
                 eventHandler = eventHandler))
     }
 
-    fun post(event: Event) {
-        listeners.forEach { eventListener ->
-            eventListener.onEvent(event)
+    fun <R : Event> post(event: R) {
+        val listeners = listenersMap[event::class]
+
+        listeners?.forEach { eventListener ->
+            (eventListener as EventListener<R>).onEvent(event)
         }
     }
 }

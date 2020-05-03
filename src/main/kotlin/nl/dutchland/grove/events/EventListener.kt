@@ -1,15 +1,11 @@
 package nl.dutchland.grove.events
 
-import kotlin.reflect.KClass
-
 class EventListener<T : Event>(
-        private val clazz: KClass<T>,
         private val eventFilter: EventFilter<T>,
         private val eventHandler: EventHandler<T>) {
 
-    fun onEvent(event: Event) {
-        val isCorrectType = clazz.java.isInstance(event)
-        if (isCorrectType && eventFilter.invoke(event as T)) {
+    fun onEvent(event: T) {
+        if (eventFilter.invoke(event)) {
             eventHandler.invoke(event)
         }
     }

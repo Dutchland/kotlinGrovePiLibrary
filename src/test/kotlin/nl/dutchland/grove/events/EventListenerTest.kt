@@ -14,7 +14,7 @@ internal class EventListenerTest {
         // Arrange
         val someEventHandler = mock<Consumer<SomeEvent>>()
 
-        val eventListener = EventListener(SomeEvent::class, { true }, { someEvent ->
+        val eventListener = EventListener({ true }, { someEvent: SomeEvent ->
             someEventHandler.accept(someEvent)
         })
 
@@ -32,7 +32,7 @@ internal class EventListenerTest {
         val someEventHandler = mock<Consumer<SomeEvent>>()
         val filter: EventFilter<SomeEvent> = { e -> e.someProperty.equals("SomeOtherText") }
 
-        val eventListener = EventListener(SomeEvent::class, filter, { someEvent ->
+        val eventListener = EventListener( filter, { someEvent: SomeEvent ->
             someEventHandler.accept(someEvent)
         })
 
@@ -53,7 +53,7 @@ internal class EventListenerTest {
         // Arrange
         val someEventHandler = mock<Consumer<SomeEvent>>()
 
-        val eventListener = EventListener(SomeEvent::class, { true }, { someEvent ->
+        val eventListener = EventListener({ true }, { someEvent: SomeEvent ->
             someEventHandler.accept(someEvent)
         })
 
@@ -69,25 +69,6 @@ internal class EventListenerTest {
         verify(someEventHandler).accept(event)
     }
 
-    @Test
-    fun unrelatedEventsDontTrigger() {
-        // Arrange
-        val someEventHandler = mock<Consumer<SomeEvent>>()
-
-        val eventListener = EventListener(SomeEvent::class, { true }, { someEvent ->
-            someEventHandler.accept(someEvent)
-        })
-
-        // Act
-        eventListener.onEvent(UnrelatedEvent())
-
-        // Assert
-        verify(someEventHandler, times(0)).accept(any())
-    }
-
     private open class SomeEvent(val someProperty: String = "SomeText") : Event
-
     private class SubclassOfSomeEvent : SomeEvent()
-
-    private class UnrelatedEvent : Event
 }
