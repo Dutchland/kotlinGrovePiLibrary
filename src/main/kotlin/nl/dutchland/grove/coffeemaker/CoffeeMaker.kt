@@ -50,7 +50,6 @@ fun main() {
     CoffeeMakerStatus(eventBus)
     CoffeePotInPlaceStatus(eventBus)
     CoffeePotHolderIsHotStatus(eventBus)
-    CoffeeMakerStatus(eventBus)
     BoilerWaterTemperatureStatus(eventBus)
     BoilerWaterStatus(eventBus)
 
@@ -68,10 +67,10 @@ fun main() {
         pump.turnOff()
     }
 
-    eventBus.subscribe<BoilerShouldBeHeatedEvent> {
+    eventBus.subscribe<WaterIsToColdToMakeCoffee> {
         boilerHeaterElement.turnOn()
     }
-    eventBus.subscribe<BoilerShouldNotBeHeatedEvent> {
+    eventBus.subscribe<WaterTemperatureIsGoodForMakingCoffee> {
         boilerHeaterElement.turnOff()
     }
 
@@ -107,8 +106,8 @@ class CoffeePotHolderIsHotEvent : Event
 class BoilerWaterIsNotReadyEvent : Event
 class BoilerWaterIsReadyEvent : Event
 
-class BoilerShouldNotBeHeatedEvent : Event
-class BoilerShouldBeHeatedEvent : Event
+class WaterTemperatureIsGoodForMakingCoffee : Event
+class WaterIsToColdToMakeCoffee : Event
 
 class CoffeePotHolderShouldNotBeHeatedEvent : Event
 class CoffeePotHolderShouldBeHeatedEvent : Event

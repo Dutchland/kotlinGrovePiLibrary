@@ -8,4 +8,6 @@ object Second : Period.TimeScale {
     override fun fromSeconds(value: Double): Double {
         return value
     }
+
+    override val name = "Second"
 }

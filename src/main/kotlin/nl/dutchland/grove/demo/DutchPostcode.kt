@@ -1,4 +1,4 @@
-package nl.dutchland.grove.utility.demo
+package nl.dutchland.grove.demo
 
 private const val POSTCODE_REGEX = "[1-9][0-9]{3}[A-Z]{2}"
 

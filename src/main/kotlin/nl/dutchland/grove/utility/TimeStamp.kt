@@ -1,9 +1,6 @@
 package nl.dutchland.grove.utility
 
-import java.sql.Time
-import java.time.LocalDateTime
-
-data class TimeStamp internal constructor(val millisecondsSinceEpoch : Long) {
+data class TimeStamp internal constructor(val millisecondsSinceEpoch : Long) : Comparable<TimeStamp> {
     companion object {
         fun fromMillisecondsSinceEpoch(value : Long) : TimeStamp {
             return TimeStamp(value)
@@ -12,5 +9,9 @@ data class TimeStamp internal constructor(val millisecondsSinceEpoch : Long) {
         fun now() : TimeStamp {
             return TimeStamp(System.currentTimeMillis())
         }
+    }
+
+    override fun compareTo(other: TimeStamp): Int {
+        return other.millisecondsSinceEpoch.compareTo(millisecondsSinceEpoch)
     }
 }

@@ -1,4 +1,4 @@
-package nl.dutchland.grove.utility.demo
+package nl.dutchland.grove.demo
 
 fun areaCode(postcode: String): String {
     checkValidPostcode(postcode)

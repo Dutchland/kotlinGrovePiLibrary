@@ -20,6 +20,7 @@ data class Period internal constructor(private val seconds: Double) {
     interface TimeScale {
         fun toSeconds(value: Double): Double
         fun fromSeconds(value: Double): Double
+        val name: String
     }
 }
 

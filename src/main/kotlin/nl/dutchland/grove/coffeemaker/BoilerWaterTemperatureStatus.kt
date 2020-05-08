@@ -17,9 +17,9 @@ class BoilerWaterTemperatureStatus(private val eventBus: EventBus) {
 
     private fun check() {
         if (waterNeedsHeating()) {
-            eventBus.post(BoilerShouldBeHeatedEvent())
+            eventBus.post(WaterIsToColdToMakeCoffee())
         } else {
-            eventBus.post(BoilerShouldNotBeHeatedEvent())
+            eventBus.post(WaterTemperatureIsGoodForMakingCoffee())
         }
     }
 

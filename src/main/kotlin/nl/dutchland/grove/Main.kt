@@ -13,12 +13,11 @@ import nl.dutchland.grove.led.Led
 import nl.dutchland.grove.rotary.GroveRotarySensorFactory
 import nl.dutchland.grove.rotary.RotaryChangedListener
 import nl.dutchland.grove.rotary.RotarySensor
-import nl.dutchland.grove.temperatureandhumidity.GroveTemperatureHumiditySensorBuilder
-import nl.dutchland.grove.temperatureandhumidity.GroveTemperatureHumiditySensors.*
-import nl.dutchland.grove.utility.demo.Address
-import nl.dutchland.grove.utility.demo.DutchPostcode
-import nl.dutchland.grove.utility.demo.Housenumber
-import nl.dutchland.grove.utility.demo.SimpleAddress
+import nl.dutchland.grove.demo.Address
+import nl.dutchland.grove.demo.DutchPostcode
+import nl.dutchland.grove.demo.Housenumber
+import nl.dutchland.grove.demo.SimpleAddress
+import nl.dutchland.grove.demo.TemperatureSensor
 import nl.dutchland.grove.utility.length.Inch
 import nl.dutchland.grove.utility.length.Length
 import nl.dutchland.grove.utility.length.Meter
@@ -66,7 +65,7 @@ private val volumeRotary: RotarySensor = GroveRotarySensorFactory(grovePi)
 
 private val muteButton: Button = GroveButtonBuilder(grovePi)
         .on(GrovePiBoard.A1)
-        .withListener { eventBus.post(it.toMuteEvent()) }
+        .withListener { eventBus.post(nl.dutchland.grove.demo.toMuteEvent()) }
         .build()
 
 private val speaker: Speaker = Speaker(GroveBuzzerFactory(grovePi)
@@ -85,7 +84,7 @@ private fun temperature0(sensor: TemperatureSensor) {
     val roomTemperature: Double = sensor.currentTemperature()
     println("Temperature in Kelvin, Celsius, Fahrenheit or some other scale?????")
 
-    persistTemperature(
+    nl.dutchland.grove.demo.persistTemperature(
             TemperatureUtil.kelvinToFahrenheit(roomTemperature))
 }
 
@@ -151,7 +150,7 @@ private fun temperature(preferredTemperatureScale: Temperature.Scale, sensor: Te
     println("The current room temperature is " +
             "${roomTemperature.valueIn(preferredTemperatureScale)} $preferredTemperatureScale")
 
-    persistTemperature(roomTemperature)
+    nl.dutchland.grove.demo.persistTemperature(roomTemperature)
 }
 
 private fun getCurrentRoomTemperatureFromSensor(): Temperature {

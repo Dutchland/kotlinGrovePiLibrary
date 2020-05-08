@@ -10,4 +10,6 @@ object Millisecond : Period.TimeScale {
     override fun fromSeconds(value: Double): Double {
         return value * MILLI_TO_SECONDS
     }
+
+    override val name = "Millisecond"
 }

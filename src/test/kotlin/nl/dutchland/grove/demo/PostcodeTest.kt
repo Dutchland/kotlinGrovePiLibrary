@@ -1,4 +1,4 @@
-package nl.dutchland.grove.utility.demo
+package nl.dutchland.grove.demo
 
 import org.junit.jupiter.api.Test
 

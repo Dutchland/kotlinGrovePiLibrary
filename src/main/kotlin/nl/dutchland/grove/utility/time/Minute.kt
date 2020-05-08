@@ -7,6 +7,8 @@ object Minute : Period.TimeScale {
         return value / MINUTE_TO_SECOND_FACTOR
     }
 
+    override val name = "Minute"
+
     override fun toSeconds(value: Double): Double {
         return value * MINUTE_TO_SECOND_FACTOR
     }

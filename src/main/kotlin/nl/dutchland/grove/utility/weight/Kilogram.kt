@@ -2,16 +2,16 @@ package nl.dutchland.grove.utility.weight
 
 import nl.dutchland.grove.utility.weight.Weight.Scale
 
-object Stone : Scale() {
-    private const val STONE_TO_GRAMS = 635_000
+object Kilogram : Scale() {
+    private const val KILOGRAM_TO_GRAM_FACTOR = 1_000
 
     override fun fromGrams(valueInGrams: Double): Double {
-        return valueInGrams / STONE_TO_GRAMS
+        return valueInGrams / KILOGRAM_TO_GRAM_FACTOR
     }
 
     override fun toGrams(value: Double): Double {
-        return value * STONE_TO_GRAMS
+        return value * KILOGRAM_TO_GRAM_FACTOR
     }
 
-    override val name = "Stone"
+    override val name = "Kilogram"
 }
