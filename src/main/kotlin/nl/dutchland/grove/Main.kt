@@ -65,7 +65,7 @@ private val volumeRotary: RotarySensor = GroveRotarySensorFactory(grovePi)
 
 private val muteButton: Button = GroveButtonBuilder(grovePi)
         .on(GrovePiBoard.A1)
-        .withListener { eventBus.post(nl.dutchland.grove.demo.toMuteEvent()) }
+        .withListener { eventBus.post(it.toMuteEvent()) }
         .build()
 
 private val speaker: Speaker = Speaker(GroveBuzzerFactory(grovePi)
@@ -79,102 +79,6 @@ private val inputDevices = listOf(
         muteButton
 )
 
-private fun temperature0(sensor: TemperatureSensor) {
-    // Temperature in what scale?
-    val roomTemperature: Double = sensor.currentTemperature()
-    println("Temperature in Kelvin, Celsius, Fahrenheit or some other scale?????")
-
-    nl.dutchland.grove.demo.persistTemperature(
-            TemperatureUtil.kelvinToFahrenheit(roomTemperature))
-}
-
-fun ButtonStatus.toMuteEvent(): MuteEvent {
-    return when (this) {
-        PRESSED -> MuteEvent(true)
-        else -> MuteEvent(false)
-    }
-}
-
-
-private fun storeTemperature(temperature: Temperature) {
-    println("Temperature of ${temperature.valueIn(Celsius)} ${Celsius}")
-}
-
-class TemperatureSensor() {
-    /**
-     * Return temperature in Kelvin
-     */
-    fun currentTemperature(): Double {
-        return 4.0
-    }
-
-    fun currentTemperatureInCelsius(): Double { // Extreme naming
-        return 4.0
-    }
-
-    fun currentRoomTemperature(): Temperature {
-        return Temperature.of(4.0, Celsius)
-    }
-}
-
-/**
- * Temperature in Kelvin
- */
-fun persistTemperature(temperature: Double) {
-    // Persisting
-}
-
-fun persistTemperature2(temperatureInKelvin: Double) {
-    // Persisting
-}
-
-fun persistTemperatureInKelvin(temperature: Double) { // Extreme naming
-    // Persisting
-}
-
-fun persistTemperature(temperature: Temperature) {
-    // Persisting
-}
-
-private fun temperature() {
-    // Mensen maken fouten, maak het moeilijk om fouten te maken
-    val roomTemperature: Temperature = Temperature.of(22.0, Celsius)
-    val temperatureInKelvin: Double = roomTemperature.valueIn(Kelvin)
-
-    println("The current room temperature is $temperatureInKelvin $Kelvin")
-    println("In $Fahrenheit this would be ${roomTemperature.valueIn(Fahrenheit)}")
-}
-
-private fun temperature(preferredTemperatureScale: Temperature.Scale, sensor: TemperatureSensor) {
-    val roomTemperature: Temperature = sensor.currentRoomTemperature()
-    println("The current room temperature is " +
-            "${roomTemperature.valueIn(preferredTemperatureScale)} $preferredTemperatureScale")
-
-    nl.dutchland.grove.demo.persistTemperature(roomTemperature)
-}
-
-private fun getCurrentRoomTemperatureFromSensor(): Temperature {
-    return Temperature.of(22.0, Celsius)
-}
-
-private fun length() {
-    val beamLength: Length = Length.of(1.0, Meter)
-    val otherBeamLength: Length = Length.of(10.0, Inch)
-
-    val totalLength: Length = beamLength + otherBeamLength
-
-    println("The total length is ${totalLength.valueIn(Inch)} $Inch")
-}
-
-private fun length2() {
-    val beamA: Length = Length.of(0.1, Meter)
-    val beamB: Length = Length.of(10.0, Inch)
-
-    when {
-        beamA > beamB -> println("Beam A is longer then beam B")
-        beamB >= beamA -> println("Beam B is longer or equal to beam A")
-    }
-}
 
 private fun address() {
     val simpleAddress = SimpleAddress(
@@ -201,6 +105,13 @@ private fun address() {
 //            "123A"
 //    )
 }
+fun ButtonStatus.toMuteEvent(): MuteEvent {
+    return when (this) {
+        PRESSED -> MuteEvent(true)
+        else -> MuteEvent(false)
+    }
+}
+
 
 
 //class LightDisplay(private val display: GroveLcd, private val lightSensor: LightSensor) {
@@ -429,10 +340,3 @@ private fun address() {
 //    }
 //=======
 
-class TemperatureUtil {
-    companion object {
-        fun kelvinToFahrenheit(value: Double): Double {
-            return 1.0
-        }
-    }
-}

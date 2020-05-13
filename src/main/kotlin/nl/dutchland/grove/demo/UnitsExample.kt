@@ -1,7 +1,5 @@
 package nl.dutchland.grove.demo
 
-import nl.dutchland.grove.TemperatureSensor
-import nl.dutchland.grove.TemperatureUtil
 import nl.dutchland.grove.button.ButtonStatus
 import nl.dutchland.grove.events.MuteEvent
 import nl.dutchland.grove.utility.length.Inch
@@ -12,34 +10,42 @@ import nl.dutchland.grove.utility.temperature.Fahrenheit
 import nl.dutchland.grove.utility.temperature.Kelvin
 import nl.dutchland.grove.utility.temperature.Temperature
 
-fun main() {
-
-}
-
-private fun temperature0(sensor: TemperatureSensor) {
+/**
+ * 'Goede' developers zorgen dat collega's makkelijk fouten kunnen maken zodat zij het kunnen fixen.
+ */
+private fun persistCurrentTemperature(sensor: TemperatureSensor) {
     // Temperature in what scale?
     val roomTemperature: Double = sensor.currentTemperature()
     println("Temperature in Kelvin, Celsius, Fahrenheit or some other scale?????")
 
-    persistTemperature(
-            TemperatureUtil.kelvinToFahrenheit(roomTemperature))
+    TemperatureRepository().persist(
+            TemperatureUtil.celsiusToFahrenheit(roomTemperature))
 }
 
-fun ButtonStatus.toMuteEvent(): MuteEvent {
-    return when (this) {
-        ButtonStatus.PRESSED -> MuteEvent(true)
-        else -> MuteEvent(false)
-    }
+/**
+ * Waarom moet ik dingen weten over temperatuur schalen?
+ */
+private fun persistCurrentTemperature1(sensor: TemperatureSensor) {
+    val roomTemperatureInCelsius: Double = sensor.currentTemperatureInCelsius()
+
+    // Death by Util class syndrome
+    val temperatureInKelvin = TemperatureUtil.kelvinToFahrenheit(roomTemperatureInCelsius)
+    TemperatureRepository()
+            .persistTemperatureInKelvin(temperatureInKelvin)
 }
 
-
-private fun storeTemperature(temperature: Temperature) {
-    println("Temperature of ${temperature.valueIn(Celsius)} $Celsius")
+/**
+ * Functies/classes moeten zo dom mogelijk zijn. Weg met niet weg te mocken Utility methodes!!!!
+ */
+private fun persistCurrentTemperature2(sensor: TemperatureSensor) {
+    val roomTemperature: Temperature = sensor.currentRoomTemperature()
+    TemperatureRepository()
+            .persist(roomTemperature)
 }
 
 class TemperatureSensor() {
     /**
-     * Return temperature in Kelvin
+     * Returns temperature in Kelvin
      */
     fun currentTemperature(): Double {
         return 4.0
@@ -54,44 +60,35 @@ class TemperatureSensor() {
     }
 }
 
-/**
- * Temperature in Kelvin
- */
-fun persistTemperature(temperature: Double) {
-    // Persisting
+class TemperatureRepository {
+    /**
+     * Temperature in Kelvin
+     */
+    fun persist(temperature: Double) {
+        // Persisting
+    }
+
+    fun persistTemperature2(temperatureInKelvin: Double) {
+        // Persisting
+    }
+
+    fun persistTemperatureInKelvin(temperature: Double) { // Extreme naming
+        // Persisting
+    }
+
+    fun persist(temperature: Temperature) {
+        // Persisting
+    }
 }
 
-fun persistTemperature2(temperatureInKelvin: Double) {
-    // Persisting
-}
 
-fun persistTemperatureInKelvin(temperature: Double) { // Extreme naming
-    // Persisting
-}
-
-fun persistTemperature(temperature: Temperature) {
-    // Persisting
-}
-
-private fun temperature() {
+private fun persistCurrentTemperature() {
     // Mensen maken fouten, maak het moeilijk om fouten te maken
     val roomTemperature: Temperature = Temperature.of(22.0, Celsius)
     val temperatureInKelvin: Double = roomTemperature.valueIn(Kelvin)
 
     println("The current room temperature is $temperatureInKelvin $Kelvin")
     println("In $Fahrenheit this would be ${roomTemperature.valueIn(Fahrenheit)}")
-}
-
-private fun temperature(preferredTemperatureScale: Temperature.Scale, sensor: TemperatureSensor) {
-    val roomTemperature: Temperature = sensor.currentRoomTemperature()
-    println("The current room temperature is " +
-            "${roomTemperature.valueIn(preferredTemperatureScale)} $preferredTemperatureScale")
-
-    persistTemperature(roomTemperature)
-}
-
-private fun getCurrentRoomTemperatureFromSensor(): Temperature {
-    return Temperature.of(22.0, Celsius)
 }
 
 private fun length() {
@@ -137,4 +134,23 @@ private fun address() {
 //            "Herculesweg",
 //            "123A"
 //    )
+}
+
+fun ButtonStatus.toMuteEvent(): MuteEvent {
+    return when (this) {
+        ButtonStatus.PRESSED -> MuteEvent(true)
+        else -> MuteEvent(false)
+    }
+}
+
+class TemperatureUtil {
+    companion object {
+        fun kelvinToFahrenheit(value: Double): Double {
+            return 1.0
+        }
+
+        fun celsiusToFahrenheit(value: Double): Double {
+            return 1.0
+        }
+    }
 }

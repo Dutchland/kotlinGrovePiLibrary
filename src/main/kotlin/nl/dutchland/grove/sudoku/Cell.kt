@@ -16,7 +16,7 @@ class Cell(val coordinate: CellCoordinate, private val eventBus: EventBus) {
         eventBus.subscribeWithFilter<CellValueChangedEvent>(
                 { it.coordinate.hasOverlap(coordinate) },
                 {
-                    possibleValues.remove(it.newValue)
+//                    possibleValues.remove(it.newValue)
                     if (possibleValues.size == 1) {
                         value = possibleValues[0]
                     }

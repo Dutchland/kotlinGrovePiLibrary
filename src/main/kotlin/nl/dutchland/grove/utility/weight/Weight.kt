@@ -1,9 +1,16 @@
 package nl.dutchland.grove.utility.weight
 
-data class Weight private constructor(private val weightInGrams: Double) {
+private typealias WeightInGramsProvider = () -> Double
+
+class Weight private constructor(private val weightInGramsProvider: WeightInGramsProvider) {
+    private val weightInGrams: Double by lazy {
+        println("calculating weight in grams")
+        weightInGramsProvider.invoke()
+    }
+
     companion object {
         fun of(value: Double, scale: Scale): Weight {
-            return Weight(scale.toGrams(value))
+            return Weight { scale.toGrams(value) }
         }
     }
 
@@ -16,11 +23,26 @@ data class Weight private constructor(private val weightInGrams: Double) {
     }
 
     operator fun plus(other: Weight): Weight {
-        return Weight(this.weightInGrams + other.weightInGrams)
+        return Weight { other.weightInGrams + weightInGrams }
     }
 
     operator fun minus(other: Weight): Weight {
-        return Weight(this.weightInGrams - other.weightInGrams)
+        return Weight { this.weightInGrams - other.weightInGrams }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Weight
+
+        if (weightInGrams != other.weightInGrams) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return weightInGrams.hashCode()
     }
 
     abstract class Scale {
