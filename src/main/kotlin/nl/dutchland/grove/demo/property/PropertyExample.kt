@@ -22,7 +22,6 @@ fun main() {
     handler.setProperty(LocalDate.now().format(PropertyHandler.DATE_FORMAT), PropertyHandler.CREATED_BY_PROPERTY)
 
     // Invoer is geen valide datum
-
     val someDate = "This is not a date"
     handler.setProperty(CREATED_BY_PROPERTY, someDate)
 
@@ -33,32 +32,22 @@ fun main() {
 
     // Compiler to the rescue!!
     handler.setPropertyTypeSafe(CreatedByProperty, LocalDate.now())
-
 //    handler.setPropertyTypeSafe(CreatedByProperty, "This is not a date")
 //    handler.setPropertyTypeSafe(LocalDate.now(), CreatedByProperty)
 
+    //Voordelen:
+    // - TypeSafe
+    // - Aanroepers hoeven niks te weten van conversies (dus dat kunnen ze ook niet fout doen, geen verkeerd ISO formaat gebruiken)
+    // - PropertyHandler is closed for modification. Extension --> Extra property class toevoegen
 
-    // V2
+
+    // Combineer key en value.
+    // Veel 'constructors' veel flexibiliteit voor de gebruiker
     val property: PropertyV2 = CreatedByPropertyV2.withValue(Date())
+    val property1: PropertyV2 = CreatedByPropertyV2.withValue(LocalDate.now())
     val property2: PropertyV2 = CreatedByPropertyV2.withValue { getDateFromSomewhere() }
-    handler.setProperty(property)
-    handler.setProperty(property2)
+    val property3: PropertyV2 = CreatedByPropertyV2.withValue(RabbitTimeStamp())
 }
-
-fun someMethod() {
-    someMethodToSetProperty("This is not a date")
-}
-
-fun someMethodToSetProperty(someProperty: String) {
-    someMethodToSetProperty2(someProperty)
-}
-
-fun someMethodToSetProperty2(someDate: String) {
-    handler.setProperty(CREATED_BY_PROPERTY, someDate)
-}
-
-
-val handler = PropertyHandler()
 
 object CreatedByProperty : Property<LocalDate> {
     override val propertyName = "createdBy"
@@ -92,18 +81,39 @@ class CreatedByPropertyV2 private constructor(private val dateValue: LocalDate) 
                     .toLocalDate())
         }
 
+        fun withValue(date: LocalDate): CreatedByPropertyV2 {
+            return CreatedByPropertyV2(date)
+        }
+
+        fun withValue(timeStamp: RabbitTimeStamp): CreatedByPropertyV2 {
+            return withValue(timeStamp.toDate())
+        }
+
         fun withValue(provider: () -> LocalDate): CreatedByPropertyV2 {
             return CreatedByPropertyV2(provider.invoke())
         }
     }
 }
 
+
 interface PropertyV2 {
     val key: String
     val value: String
 }
 
+//interface PropertyV2 {
+//    fun getKey(): String
+//    fun getValue(): String
+//}
+
 
 fun getDateFromSomewhere(): LocalDate {
     return LocalDate.now()
 }
+
+class RabbitTimeStamp {
+    fun toDate(): Date {
+        return Date()
+    }
+}
+

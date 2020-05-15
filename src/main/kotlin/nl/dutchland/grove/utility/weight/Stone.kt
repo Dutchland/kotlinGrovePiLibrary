@@ -1,8 +1,6 @@
 package nl.dutchland.grove.utility.weight
 
-import nl.dutchland.grove.utility.weight.Weight.Scale
-
-object Stone : Scale() {
+object Stone : Weight.Unit() {
     private const val STONE_TO_GRAMS = 635_000
 
     override fun fromGrams(valueInGrams: Double): Double {

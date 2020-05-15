@@ -1,8 +1,6 @@
 package nl.dutchland.grove.utility.weight
 
-import nl.dutchland.grove.utility.weight.Weight.Scale
-
-object Kilogram : Scale() {
+object Kilogram : Weight.Unit() {
     private const val KILOGRAM_TO_GRAM_FACTOR = 1_000
 
     override fun fromGrams(valueInGrams: Double): Double {

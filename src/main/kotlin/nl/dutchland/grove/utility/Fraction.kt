@@ -4,9 +4,12 @@ data class Fraction private constructor(val percentage: Double) : Comparable<Fra
     val fraction: Double = this.percentage / 100.0
 
     init {
-        percentage.assertNotLargerThan(100.0)
-        { throw InvalidFractionException("A fractional percentage cannot be larger than 100%: $percentage") }
-        percentage.assertNotNegative { throw InvalidFractionException("A percentage cannot be negative: $percentage") }
+        percentage.assertNotLargerThan(100.0) {
+            throw InvalidFractionException("A fractional percentage cannot be larger than 100%: $percentage")
+        }
+        percentage.assertNotNegative {
+            throw InvalidFractionException("A percentage cannot be negative: $percentage")
+        }
     }
 
     companion object {

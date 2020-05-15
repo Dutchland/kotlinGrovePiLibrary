@@ -1,7 +1,6 @@
 package nl.dutchland.grove.demo
 
-import nl.dutchland.grove.button.ButtonStatus
-import nl.dutchland.grove.events.MuteEvent
+import nl.dutchland.grove.utility.Euro
 import nl.dutchland.grove.utility.length.Inch
 import nl.dutchland.grove.utility.length.Length
 import nl.dutchland.grove.utility.length.Meter
@@ -9,9 +8,12 @@ import nl.dutchland.grove.utility.temperature.Celsius
 import nl.dutchland.grove.utility.temperature.Fahrenheit
 import nl.dutchland.grove.utility.temperature.Kelvin
 import nl.dutchland.grove.utility.temperature.Temperature
+import nl.dutchland.grove.utility.weight.*
+import java.time.DayOfWeek.*
+import java.time.LocalDate
 
 /**
- * 'Goede' developers zorgen dat collega's makkelijk fouten kunnen maken zodat zij het kunnen fixen.
+ * 'Goede' developers zorgen dat collega's ongemerkt fouten kunnen maken zodat zij het kunnen fixen.
  */
 private fun persistCurrentTemperature(sensor: TemperatureSensor) {
     // Temperature in what scale?
@@ -29,18 +31,29 @@ private fun persistCurrentTemperature1(sensor: TemperatureSensor) {
     val roomTemperatureInCelsius: Double = sensor.currentTemperatureInCelsius()
 
     // Death by Util class syndrome
-    val temperatureInKelvin = TemperatureUtil.kelvinToFahrenheit(roomTemperatureInCelsius)
+    val temperatureInKelvin: Double = TemperatureUtil.kelvinToFahrenheit(roomTemperatureInCelsius)
     TemperatureRepository()
             .persistTemperatureInKelvin(temperatureInKelvin)
 }
 
 /**
- * Functies/classes moeten zo dom mogelijk zijn. Weg met niet weg te mocken Utility methodes!!!!
+ * Functies/classes moeten zo min mogelijk weten (--> weinig koppeling). Weg met niet weg te mocken Utility methodes!!!!
+ * Repository weet wel of hij in Kelvin of Celsius wil opslaan
  */
 private fun persistCurrentTemperature2(sensor: TemperatureSensor) {
     val roomTemperature: Temperature = sensor.currentRoomTemperature()
     TemperatureRepository()
             .persist(roomTemperature)
+}
+
+
+private fun temperatureObject() {
+    // Mensen maken fouten, maak het moeilijk om fouten te maken
+    val roomTemperature: Temperature = Temperature.of(22.0, Celsius)
+    val temperatureInKelvin: Double = roomTemperature.valueIn(Kelvin)
+
+    println("The current room temperature is $temperatureInKelvin $Kelvin")
+    println("In $Fahrenheit this would be ${roomTemperature.valueIn(Fahrenheit)}")
 }
 
 class TemperatureSensor() {
@@ -52,6 +65,10 @@ class TemperatureSensor() {
     }
 
     fun currentTemperatureInCelsius(): Double { // Extreme naming
+        return 4.0
+    }
+
+    fun currentTemperatureInKelvin(): Double { // Extreme naming
         return 4.0
     }
 
@@ -68,6 +85,9 @@ class TemperatureRepository {
         // Persisting
     }
 
+    /**
+     * Overloading not possible!!!!
+     */
     fun persistTemperature2(temperatureInKelvin: Double) {
         // Persisting
     }
@@ -81,75 +101,69 @@ class TemperatureRepository {
     }
 }
 
-
-private fun persistCurrentTemperature() {
-    // Mensen maken fouten, maak het moeilijk om fouten te maken
-    val roomTemperature: Temperature = Temperature.of(22.0, Celsius)
-    val temperatureInKelvin: Double = roomTemperature.valueIn(Kelvin)
-
-    println("The current room temperature is $temperatureInKelvin $Kelvin")
-    println("In $Fahrenheit this would be ${roomTemperature.valueIn(Fahrenheit)}")
-}
-
 private fun length() {
     val beamLength: Length = Length.of(1.0, Meter)
     val otherBeamLength: Length = Length.of(10.0, Inch)
 
+    val totalLengthJavaWay: Length = beamLength.plus(otherBeamLength)
     val totalLength: Length = beamLength + otherBeamLength
 
     println("The total length is ${totalLength.valueIn(Inch)} $Inch")
 }
 
-private fun length2() {
-    val beamA: Length = Length.of(0.1, Meter)
-    val beamB: Length = Length.of(10.0, Inch)
-
-    when {
-        beamA > beamB -> println("Beam A is longer then beam B")
-        beamB >= beamA -> println("Beam B is longer or equal to beam A")
-    }
-}
-
-private fun address() {
-    val simpleAddress = SimpleAddress(
-            city = "2624VV",
-            postcode = "Delft",
-            street = "Herculesweg",
-            houseNumber = 123,
-            houseNumberAddition = "A"
+/**
+ * Lazy
+ */
+private fun weight() {
+    val potatoWeights = listOf(
+            Weight.of(10.0, Kilogram),
+            Weight.of(5.0, Stone),
+            Weight.of(1500.0, Gram)
     )
 
-    // Utility vs value objects
-    val address = Address(
-            "Delft",
-            DutchPostcode("2624VV"),
-            "Herculesweg",
-            Housenumber(123, "A")
-    )
+    val totalWeight = potatoWeights
+            .reduce(Weight.of(0.0, Gram))
 
-    // Als alles een string is dan kan de compiler je niet helpen
-//    val address2 = Address(
-//            "2624VV",
-//            "Delft",
-//            "Herculesweg",
-//            "123A"
-//    )
+    val cost = calculatePriceOfPotatoes(totalWeight)
+    println("Price of the potatoes is: $cost")
 }
 
-fun ButtonStatus.toMuteEvent(): MuteEvent {
-    return when (this) {
-        ButtonStatus.PRESSED -> MuteEvent(true)
-        else -> MuteEvent(false)
+private fun calculatePriceOfPotatoes(weight: Weight): Euro {
+    val isFreeDay = LocalDate.now().dayOfWeek == MONDAY
+    if (isFreeDay) {
+        return Euro.fromCents(0)
     }
+
+    val pricePerKg: Euro = Euro.fromCents(101)
+    return pricePerKg * weight.valueIn(Kilogram)
+}
+
+private fun whyNotAnEnum() {
+    val someLength = Length.of(100.1, SomeImperialLengthUnit)
+    println("In meters this would be: ${someLength.valueIn(Meter)}")
+}
+
+private object SomeImperialLengthUnit : Length.Unit() {
+    override fun fromMillimeter(valueInMillimeter: Double): Double {
+        return valueInMillimeter * 99.8
+    }
+
+    override fun toMillimeter(value: Double): Double {
+        return value / 99.8
+    }
+
+    override val name = "Some Imperial Unit"
 }
 
 class TemperatureUtil {
     companion object {
         fun kelvinToFahrenheit(value: Double): Double {
+            // Validate
             return 1.0
         }
 
         fun celsiusToFahrenheit(value: Double): Double {
+            // Validate
             return 1.0
         }
     }

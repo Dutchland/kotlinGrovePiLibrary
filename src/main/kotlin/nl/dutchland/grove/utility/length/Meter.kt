@@ -1,13 +1,15 @@
 package nl.dutchland.grove.utility.length
 
-object Meter : Length.Scale() {
+private const val METER_TO_MILLIMETER = 1_000
+
+object Meter : Length.Unit() {
     override val name: String = "Meter"
 
     override fun fromMillimeter(valueInMillimeter: Double): Double {
-        return valueInMillimeter / 1_000
+        return valueInMillimeter / METER_TO_MILLIMETER
     }
 
     override fun toMillimeter(value: Double): Double {
-        return value * 1_000
+        return value * METER_TO_MILLIMETER
     }
 }

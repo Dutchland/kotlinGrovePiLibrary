@@ -9,13 +9,13 @@ class Weight private constructor(private val weightInGramsProvider: WeightInGram
     }
 
     companion object {
-        fun of(value: Double, scale: Scale): Weight {
-            return Weight { scale.toGrams(value) }
+        fun of(value: Double, unit: Unit): Weight {
+            return Weight { unit.toGrams(value) }
         }
     }
 
-    fun valueIn(scale: Scale): Double {
-        return scale.fromGrams(weightInGrams)
+    fun valueIn(unit: Unit): Double {
+        return unit.fromGrams(weightInGrams)
     }
 
     operator fun compareTo(other: Weight): Int {
@@ -45,7 +45,7 @@ class Weight private constructor(private val weightInGramsProvider: WeightInGram
         return weightInGrams.hashCode()
     }
 
-    abstract class Scale {
+    abstract class Unit {
         abstract fun fromGrams(valueInGrams: Double): Double
         abstract fun toGrams(value: Double): Double
         abstract val name: String
@@ -54,4 +54,8 @@ class Weight private constructor(private val weightInGramsProvider: WeightInGram
             return name
         }
     }
+}
+
+fun Collection<Weight>.reduce(initialValue: Weight): Weight {
+    return this.fold(initialValue) { w1, w2 -> w1 + w2 }
 }

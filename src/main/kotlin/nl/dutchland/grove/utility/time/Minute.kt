@@ -1,6 +1,6 @@
 package nl.dutchland.grove.utility.time
 
-object Minute : Period.TimeScale {
+object Minute : Period.TimeUnit {
     private const val MINUTE_TO_SECOND_FACTOR = 60.0
 
     override fun fromSeconds(value: Double): Double {

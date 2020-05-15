@@ -2,13 +2,13 @@ package nl.dutchland.grove.utility.length
 
 data class Length private constructor(private val lengthInMillimeters: Double) {
     companion object {
-        fun of(value: Double, scale: Scale): Length {
-            return Length(scale.toMillimeter(value))
+        fun of(value: Double, unit: Unit): Length {
+            return Length(unit.toMillimeter(value))
         }
     }
 
-    fun valueIn(scale: Scale): Double {
-        return scale.fromMillimeter(lengthInMillimeters)
+    fun valueIn(unit: Unit): Double {
+        return unit.fromMillimeter(lengthInMillimeters)
     }
 
     operator fun compareTo(other: Length): Int {
@@ -23,7 +23,7 @@ data class Length private constructor(private val lengthInMillimeters: Double) {
         return Length(this.lengthInMillimeters - other.lengthInMillimeters)
     }
 
-    abstract class Scale {
+    abstract class Unit {
         abstract fun fromMillimeter(valueInMillimeter: Double): Double
         abstract fun toMillimeter(value: Double): Double
         abstract val name: String

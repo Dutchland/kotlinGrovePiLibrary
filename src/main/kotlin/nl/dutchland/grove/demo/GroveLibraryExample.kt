@@ -19,22 +19,25 @@ const val A2_ANALOG_PORT = 2
 
 fun main() {
     UnsafeSafeBuzzerFactory(GrovePi4J())
-            .on(A2_DIGITAL_PORT)
+            .on(2)
+
+    UnsafeSafeBuzzerFactory(GrovePi4J())
+            .on(A2_ANALOG_PORT)
 
     val somePort = -10
     UnsafeSafeBuzzerFactory(GrovePi4J())
             .on(somePort)
 
-    // Gevraagde port nummer != mag niet elke integer zijn
+    // Gevraagde port nummer mag niet elke integer zijn
     // --> Eigen type
 
 
     val buzzerFactory = GroveBuzzerFactory(GrovePi4J())
     val buzzer: Buzzer = buzzerFactory
-            .on(GrovePiZero.A2)
+            .on(GrovePi.A2)
 
     val adjustableBuzzer = buzzerFactory
-            .adjustableBuzzerOn(GrovePi.D4)
+            .adjustableBuzzerOn(GrovePi.D5)
 }
 
 

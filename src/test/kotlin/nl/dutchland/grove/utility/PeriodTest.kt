@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 class PeriodTest {
     @Test
     fun testNegativeInterval() {
-        val fakeTimeScale = mock<Period.TimeScale>()
+        val fakeTimeScale = mock<Period.TimeUnit>()
 
         val creatingNegativeDuration: ExceptionThrower = { Period.of(-1.0, fakeTimeScale)}
         ExceptionAssert.assertThrows { creatingNegativeDuration.invoke() }

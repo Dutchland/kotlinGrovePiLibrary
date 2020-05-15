@@ -8,16 +8,16 @@ data class Period internal constructor(private val seconds: Double) {
     }
 
     companion object {
-        fun of(value: Double, scale: TimeScale): Period {
-            return Period(scale.toSeconds(value))
+        fun of(value: Double, unit: TimeUnit): Period {
+            return Period(unit.toSeconds(value))
         }
     }
 
-    fun valueIn(scale: TimeScale): Double {
-        return scale.fromSeconds(this.seconds)
+    fun valueIn(unit: TimeUnit): Double {
+        return unit.fromSeconds(this.seconds)
     }
 
-    interface TimeScale {
+    interface TimeUnit {
         fun toSeconds(value: Double): Double
         fun fromSeconds(value: Double): Double
         val name: String
