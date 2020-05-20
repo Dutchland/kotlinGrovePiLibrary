@@ -5,5 +5,5 @@ data class SimpleAddress(
         val postcode: String,
         val street: String,
         val houseNumber: Int,
-        val houseNumberAddition: String
+        val houseNumberAddition: String? = null
 )

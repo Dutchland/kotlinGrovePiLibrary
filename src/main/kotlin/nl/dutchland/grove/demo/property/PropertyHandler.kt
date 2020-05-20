@@ -7,6 +7,13 @@ class PropertyHandler {
         // Do something
     }
 
+    /**
+     * Geef alleen waardes mee die .toString() overriden
+     */
+    fun setProperty(property: String, value: Any) {
+        // Do something
+    }
+
     fun <T> setPropertyTypeSafe(property: Property<T>, value: T) {
         // Do something
     }

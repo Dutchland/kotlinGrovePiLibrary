@@ -1,4 +1,3 @@
 package nl.dutchland.grove.grovepiports
 
-interface PulseWidthModulationPort : DigitalPort {
-}
+interface PulseWidthModulationPort : DigitalPort

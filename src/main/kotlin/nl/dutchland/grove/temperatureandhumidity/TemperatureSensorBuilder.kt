@@ -9,7 +9,7 @@ enum class GroveTemperatureHumiditySensors(val type: GroveTemperatureAndHumidity
     DHT22(GroveTemperatureAndHumiditySensor.Type.DHT22)
 }
 
-class GroveTemperatureHumiditySensorBuilder(private val grovePi: GrovePi) {
+class TemperatureSensorBuilder(private val grovePi: GrovePi) {
     fun onPort(port: DigitalPort): TypeSetter {
         return object : TypeSetter {
             override fun withType(type: GroveTemperatureHumiditySensors): ListenerSetter {

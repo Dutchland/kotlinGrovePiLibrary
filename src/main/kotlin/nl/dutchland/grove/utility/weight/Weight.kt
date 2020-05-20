@@ -56,6 +56,6 @@ class Weight private constructor(private val weightInGramsProvider: WeightInGram
     }
 }
 
-fun Collection<Weight>.reduce(initialValue: Weight): Weight {
-    return this.fold(initialValue) { w1, w2 -> w1 + w2 }
+fun Collection<Weight>.sum(): Weight {
+    return this.fold(Weight.of(0.0, Gram)) { w1, w2 -> w1 + w2 }
 }

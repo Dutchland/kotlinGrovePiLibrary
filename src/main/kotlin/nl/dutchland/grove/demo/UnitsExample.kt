@@ -13,10 +13,10 @@ import java.time.DayOfWeek.*
 import java.time.LocalDate
 
 /**
- * 'Goede' developers zorgen dat collega's ongemerkt fouten kunnen maken zodat zij het kunnen fixen.
+ * 'Slimme' developers zorgen dat collega's ongemerkt fouten kunnen maken zodat zij het kunnen fixen
  */
 private fun persistCurrentTemperature(sensor: TemperatureSensor) {
-    // Temperature in what scale?
+    // Welke schaal?
     val roomTemperature: Double = sensor.currentTemperature()
     println("Temperature in Kelvin, Celsius, Fahrenheit or some other scale?????")
 
@@ -24,20 +24,20 @@ private fun persistCurrentTemperature(sensor: TemperatureSensor) {
             TemperatureUtil.celsiusToFahrenheit(roomTemperature))
 }
 
-/**
- * Waarom moet ik dingen weten over temperatuur schalen?
- */
 private fun persistCurrentTemperature1(sensor: TemperatureSensor) {
     val roomTemperatureInCelsius: Double = sensor.currentTemperatureInCelsius()
 
-    // Death by Util class syndrome
+    // Death by Util class. Aantal 'domme' utility methodes schaalt met: n * (n-1) --> n^2
     val temperatureInKelvin: Double = TemperatureUtil.kelvinToFahrenheit(roomTemperatureInCelsius)
     TemperatureRepository()
             .persistTemperatureInKelvin(temperatureInKelvin)
 }
 
+
+// Wat is hier het probleem? Temperatuurschaal en waarde zijn niet los te zien maar zijn in de code niet hard aan elkaar gekoppeld
+
 /**
- * Functies/classes moeten zo min mogelijk weten (--> weinig koppeling). Weg met niet weg te mocken Utility methodes!!!!
+ * Waarom moet deze methode dingen weten over temperatuur schalen?. Weg met die slecht weg te mocken Utility methodes!!!!
  * Repository weet wel of hij in Kelvin of Celsius wil opslaan
  */
 private fun persistCurrentTemperature2(sensor: TemperatureSensor) {
@@ -45,7 +45,6 @@ private fun persistCurrentTemperature2(sensor: TemperatureSensor) {
     TemperatureRepository()
             .persist(roomTemperature)
 }
-
 
 private fun temperatureObject() {
     // Mensen maken fouten, maak het moeilijk om fouten te maken
@@ -58,7 +57,7 @@ private fun temperatureObject() {
 
 class TemperatureSensor() {
     /**
-     * Returns temperature in Kelvin
+     * Return in Kelvin
      */
     fun currentTemperature(): Double {
         return 4.0
@@ -86,13 +85,17 @@ class TemperatureRepository {
     }
 
     /**
-     * Overloading not possible!!!!
+     * Overloading niet mogelijk!!!!
      */
     fun persistTemperature2(temperatureInKelvin: Double) {
         // Persisting
     }
 
     fun persistTemperatureInKelvin(temperature: Double) { // Extreme naming
+        // Persisting
+    }
+
+    fun persistTemperatureInCelsius(temperature: Double) { // Extreme naming
         // Persisting
     }
 
@@ -121,8 +124,7 @@ private fun weight() {
             Weight.of(1500.0, Gram)
     )
 
-    val totalWeight = potatoWeights
-            .reduce(Weight.of(0.0, Gram))
+    val totalWeight = potatoWeights.sum()
 
     val cost = calculatePriceOfPotatoes(totalWeight)
     println("Price of the potatoes is: $cost")
@@ -139,11 +141,25 @@ private fun calculatePriceOfPotatoes(weight: Weight): Euro {
 }
 
 private fun whyNotAnEnum() {
+    // Niet closed for modification
+    // Niet uitbreidbaar door derden
+
     val someLength = Length.of(100.1, SomeImperialLengthUnit)
     println("In meters this would be: ${someLength.valueIn(Meter)}")
 }
 
+enum class LengthUnit(
+        val toMeterFunction: (Double) -> Double,
+        val fromMeterFunction: (Double) -> Double,
+        val unitName: String) {
+
+    METER({ it }, { it }, "Meter"),
+    MILLIMETER({ it * 1000.0 }, { it / 1000.0 }, "Millimeter"),
+    INCH({ it * 0.0252 }, { it / 0.0252 }, "Inch")
+}
+
 private object SomeImperialLengthUnit : Length.Unit() {
+
     override fun fromMillimeter(valueInMillimeter: Double): Double {
         return valueInMillimeter * 99.8
     }
@@ -153,10 +169,12 @@ private object SomeImperialLengthUnit : Length.Unit() {
     }
 
     override val name = "Some Imperial Unit"
+
 }
 
 class TemperatureUtil {
     companion object {
+
         fun kelvinToFahrenheit(value: Double): Double {
             // Validate
             return 1.0
@@ -167,4 +185,5 @@ class TemperatureUtil {
             return 1.0
         }
     }
+
 }
