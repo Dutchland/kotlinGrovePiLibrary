@@ -57,5 +57,7 @@ object GrovePi {
     }
 
     object RPISER
-    object SERIAL
+
+    class SERIAL(override val serialPort: String) : SerialPort
+
 }

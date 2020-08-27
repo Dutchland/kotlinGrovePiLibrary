@@ -1,13 +1,14 @@
 package nl.dutchland.grove.utility.length
 
 object Millimeter : Length.Unit() {
-    override val name: String = "Millimeter"
+    private const val MILLI_METER_TO_METER = 0.001
 
-    override fun fromMillimeter(valueInMillimeter: Double): Double {
-        return valueInMillimeter
-    }
+    override val shortName: String = "mm"
+    override val longName: String = "Millimeter"
 
-    override fun toMillimeter(value: Double): Double {
-        return value;
-    }
+    override fun fromMeter(valueInMeter: Double): Double =
+            valueInMeter / MILLI_METER_TO_METER
+
+    override fun toMeter(value: Double): Double =
+            value * MILLI_METER_TO_METER
 }

@@ -2,11 +2,7 @@ package nl.dutchland.grove.utility.temperature
 
 import nl.dutchland.grove.utility.assertLargerOrEquals
 
-data class Temperature private constructor(private val temperatureInKelvin: Double) {
-    init {
-        validate(temperatureInKelvin, Kelvin)
-    }
-
+data class Temperature internal constructor(private val temperatureInKelvin: Double) : Comparable<Temperature> {
     companion object {
         fun of(value: Double, scale: Scale): Temperature {
             validate(value, scale)
@@ -14,8 +10,10 @@ data class Temperature private constructor(private val temperatureInKelvin: Doub
         }
 
         private fun validate(value: Double, scale: Scale) {
-            value.assertLargerOrEquals(scale.absoluteZero)
-            { throw InvalidTemperatureException("Invalid temperature: $value. Minimal value is ${scale.absoluteZero} ${scale.name}") }
+            val absoluteTemperatureInScale = scale.fromKelvin(Kelvin.absoluteZero)
+
+            value.assertLargerOrEquals(absoluteTemperatureInScale)
+            { throw InvalidTemperatureException("Invalid temperature: $value. Minimal value is $absoluteTemperatureInScale ${scale.name}") }
         }
 
         val ABSOLUTE_ZERO: Temperature = Temperature(Kelvin.absoluteZero)
@@ -25,14 +23,13 @@ data class Temperature private constructor(private val temperatureInKelvin: Doub
         return scale.fromKelvin(temperatureInKelvin)
     }
 
-    operator fun compareTo(other: Temperature): Int {
+    override operator fun compareTo(other: Temperature): Int {
         return this.temperatureInKelvin.compareTo(other.temperatureInKelvin)
     }
 
     abstract class Scale {
         abstract fun fromKelvin(valueInKelvin: Double): Double
         abstract fun toKelvin(value: Double): Double
-        abstract val absoluteZero: Double
         abstract val name: String
 
         override fun toString(): String {

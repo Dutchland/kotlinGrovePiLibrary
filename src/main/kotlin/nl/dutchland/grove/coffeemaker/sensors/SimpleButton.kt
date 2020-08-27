@@ -6,7 +6,7 @@ import nl.dutchland.grove.button.ButtonStatusChangedListener
 
 class SimpleButton private constructor(private val listener: ButtonStatusChangedListener) : Button {
     companion object {
-        fun withListener(listener: ButtonStatusChangedListener): Button {
+        fun withStatusChangedListener(listener: ButtonStatusChangedListener): Button {
             return SimpleButton(listener)
         }
     }

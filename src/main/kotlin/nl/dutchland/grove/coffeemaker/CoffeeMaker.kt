@@ -10,30 +10,31 @@ import nl.dutchland.grove.events.EventBus
 import nl.dutchland.grove.led.Led
 import nl.dutchland.grove.utility.Fraction
 import nl.dutchland.grove.utility.temperature.Temperature
+import nl.dutchland.grove.utility.mass.Mass
 
 private val eventBus = EventBus()
 
 private val boilerWaterTemperatureSensor = TemperatureSensor
-        .withListener { t -> eventBus.post(BoilerWaterTemperatureEvent(t.temperature)) }
+        .withListener { measurement -> eventBus.post(BoilerWaterTemperatureEvent(measurement.temperature)) }
 
 private val boilerWaterLevelSensor: WaterLevelSensor = WaterLevelSensor
         .withListener { waterLevel -> eventBus.post(BoilerWaterLevelEvent(waterLevel)) }
 
 private val cupHolderTemperatureSensor = TemperatureSensor
-        .withListener { t -> eventBus.post(CoffeePotholderTemperatureEvent(t.temperature)) }
+        .withListener { measurement -> eventBus.post(CoffeePotholderTemperatureEvent(measurement.temperature)) }
 
 private val cupHolderWeightSensor: WeightSensor = WeightSensor
         .withListener { weight -> eventBus.post(CoffeePotHolderWeightEvent(weight)) }
 
-private val turnCoffeeMachineOnButton: Button = SimpleButton
-        .withListener { if (it == ButtonStatus.PRESSED) eventBus.post(TryToTurnOnCoffeeMakerEvent()) }
+private val coffeeMachineOnButton: Button = SimpleButton
+        .withStatusChangedListener { if (it == ButtonStatus.PRESSED) eventBus.post(TryToTurnOnCoffeeMakerEvent()) }
 
 private val inputDevices: Collection<InputDevice> = listOf(
         boilerWaterTemperatureSensor,
         boilerWaterLevelSensor,
         cupHolderTemperatureSensor,
         cupHolderWeightSensor,
-        turnCoffeeMachineOnButton)
+        coffeeMachineOnButton)
 
 private val pump = Pump()
 private val cupHolderIsHotIndicator: Led = SimpleLed()
@@ -115,7 +116,7 @@ class CoffeePotHolderShouldBeHeatedEvent : Event
 class CoffeePotNotInPlaceEvent : Event
 class CoffeePotInPlaceEvent : Event
 
-class CoffeePotHolderWeightEvent(val weight: Double) : Event
+class CoffeePotHolderWeightEvent(val mass: Mass) : Event
 class BoilerWaterTemperatureEvent(val temperature: Temperature) : Event
 class BoilerWaterLevelEvent(val waterLevel: Fraction) : Event {
     val isEmpty = waterLevel == Fraction.ZERO

@@ -1,15 +1,14 @@
 package nl.dutchland.grove.utility.time
 
-object Millisecond : Period.TimeUnit {
-    private val MILLI_TO_SECONDS = 1_000
+object Millisecond : Period.TimeUnit() {
+    private const val MILLI_TO_SECONDS = 1_000
 
-    override fun toSeconds(value: Double): Double {
-        return value / MILLI_TO_SECONDS
-    }
+    override val longName = "Millisecond"
+    override val shortName = "ms"
 
-    override fun fromSeconds(value: Double): Double {
-        return value * MILLI_TO_SECONDS
-    }
+    override fun toSeconds(value: Double): Double =
+            value / MILLI_TO_SECONDS
 
-    override val name = "Millisecond"
+    override fun fromSeconds(valueInSeconds: Double): Double =
+            valueInSeconds * MILLI_TO_SECONDS
 }

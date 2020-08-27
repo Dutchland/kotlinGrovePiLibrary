@@ -2,7 +2,7 @@ package nl.dutchland.grove.utility.time
 
 import nl.dutchland.grove.utility.assertLargerThanZero
 
-data class Period internal constructor(private val seconds: Double) {
+data class Period internal constructor(private val seconds: Double) : Comparable<Period> {
     init {
         seconds.assertLargerThanZero { throw InvalidIntervalException("Period cannot be negative") }
     }
@@ -17,10 +17,17 @@ data class Period internal constructor(private val seconds: Double) {
         return unit.fromSeconds(this.seconds)
     }
 
-    interface TimeUnit {
-        fun toSeconds(value: Double): Double
-        fun fromSeconds(value: Double): Double
-        val name: String
+    abstract class TimeUnit {
+        abstract fun toSeconds(value: Double): Double
+        abstract fun fromSeconds(valueInSeconds: Double): Double
+        abstract val longName: String
+        abstract val shortName: String
+
+        override fun toString(): String = longName
+    }
+
+    override fun compareTo(other: Period): Int {
+        return this.seconds.compareTo(other.seconds)
     }
 }
 

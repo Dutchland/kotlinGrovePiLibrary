@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.mockito.Mockito
 import testutility.ExceptionAssert
 import org.junit.jupiter.api.Test
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.*
 import testutility.ExceptionAssert.Companion.assertNotThrows
 import testutility.ExceptionAssert.Companion.assertThrows
@@ -19,12 +20,12 @@ class TemperatureTest {
         val mockedTemperatureScale = mock<Temperature.Scale>()
         `when`(mockedTemperatureScale.name)
                 .thenReturn("MockedTemperatureScale")
-        `when`(mockedTemperatureScale.absoluteZero)
-                .thenReturn(-100.0)
+        `when`(mockedTemperatureScale.toKelvin(ArgumentMatchers.any()))
+                .thenReturn(-1.0)
 
-        assertThrows { Temperature.of(-101.0, mockedTemperatureScale) }
+        assertThrows { Temperature.of(-1.0, mockedTemperatureScale) }
                 .assertExactExceptionType(InvalidTemperatureException::class)
-                .assertExceptionMessage("Invalid temperature: -101.0. Minimal value is -100.0 MockedTemperatureScale")
+                .assertExceptionMessage("Invalid temperature: -1.0. Minimal value is -100.0 MockedTemperatureScale")
     }
 
     @Test

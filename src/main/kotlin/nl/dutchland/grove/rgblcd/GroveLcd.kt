@@ -1,6 +1,7 @@
 package nl.dutchland.grove.rgblcd
 
 import nl.dutchland.grove.OutputDevice
+import nl.dutchland.grove.co2.Co2Measurement
 import nl.dutchland.grove.grovepiports.I2cPort
 import nl.dutchland.grove.utility.Fraction
 import org.iot.raspberry.grovepi.devices.GroveRgbLcd
@@ -8,6 +9,12 @@ import org.iot.raspberry.grovepi.devices.GroveRgbLcd
 private const val MAX_COLOR_VALUE = 255.0
 
 class GroveLcd private constructor(groveRgbLcd: () -> GroveRgbLcd) : OutputDevice {
+
+
+
+
+
+
     private val lcd by lazy { groveRgbLcd.invoke() }
 
     companion object {

@@ -1,13 +1,9 @@
 package nl.dutchland.grove.utility.time
 
-object Second : Period.TimeUnit {
-    override fun toSeconds(value: Double): Double {
-        return value
-    }
+object Second : Period.TimeUnit() {
+    override val longName = "Second"
+    override val shortName = "s"
 
-    override fun fromSeconds(value: Double): Double {
-        return value
-    }
-
-    override val name = "Second"
+    override fun toSeconds(value: Double): Double = value
+    override fun fromSeconds(valueInSeconds: Double): Double = valueInSeconds
 }

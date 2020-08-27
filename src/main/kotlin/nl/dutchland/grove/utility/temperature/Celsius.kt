@@ -1,16 +1,15 @@
 package nl.dutchland.grove.utility.temperature
 
 object Celsius : Temperature.Scale() {
+    internal const val absoluteZero = -273.15
+
     override val name = "Celsius"
-    override val absoluteZero = -273.15
 
     override
-    fun fromKelvin(valueInKelvin: Double): Double {
-        return valueInKelvin + absoluteZero
-    }
+    fun fromKelvin(valueInKelvin: Double): Double =
+            valueInKelvin + absoluteZero
 
     override
-    fun toKelvin(value: Double): Double {
-        return value - absoluteZero
-    }
+    fun toKelvin(value: Double): Double =
+            value - absoluteZero
 }

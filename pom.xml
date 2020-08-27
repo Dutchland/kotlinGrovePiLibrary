@@ -7,7 +7,7 @@
     <artifactId>grovepilibrary</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <name>nl.dutchland.grove grovepilibrary</name>
+    <name>grovepilibrary</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -24,6 +24,14 @@
             <artifactId>kotlin-stdlib</artifactId>
             <version>${kotlin.version}</version>
         </dependency>
+
+
+        <dependency>
+            <groupId>io.reactivex.rxjava2</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>2.2.19</version>
+        </dependency>
+
         <!--KOTLIN-->
 
         <!--TESTING-->
