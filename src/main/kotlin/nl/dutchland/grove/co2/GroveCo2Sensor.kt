@@ -1,16 +1,12 @@
 package nl.dutchland.grove.co2
 
 import com.pi4j.io.serial.*
-import com.pi4j.system.SystemInfo.BoardType
-import nl.dutchland.grove.grovepiports.GrovePi
 import nl.dutchland.grove.grovepiports.SerialPort
 import nl.dutchland.grove.utility.TimeStamp
-import nl.dutchland.grove.utility.temperature.Celsius
-import nl.dutchland.grove.utility.temperature.Temperature
-import nl.dutchland.grove.utility.time.Millisecond
-import nl.dutchland.grove.utility.time.Minute
-import nl.dutchland.grove.utility.time.Period
-import nl.dutchland.grove.utility.time.Second
+import nl.dutchland.grove.utility.baseunits.time.Millisecond
+import nl.dutchland.grove.utility.baseunits.time.Minute
+import nl.dutchland.grove.utility.baseunits.time.Period
+import nl.dutchland.grove.utility.baseunits.time.Second
 import java.util.*
 import kotlin.concurrent.fixedRateTimer
 import kotlin.concurrent.timerTask

@@ -9,24 +9,19 @@ import nl.dutchland.grove.events.MuteEvent
 import nl.dutchland.grove.events.VolumeChangedEvent
 import nl.dutchland.grove.led.Led
 import nl.dutchland.grove.rotary.RotaryChangedListener
-import nl.dutchland.grove.utility.area.Area
-import nl.dutchland.grove.utility.area.km2
-import nl.dutchland.grove.utility.area.m2
-import nl.dutchland.grove.utility.density.MassDensity
-import nl.dutchland.grove.utility.energy.EnergyAmount
-import nl.dutchland.grove.utility.energy.Joule
-import nl.dutchland.grove.utility.energy.KiloCalorie
-import nl.dutchland.grove.utility.length.*
-import nl.dutchland.grove.utility.mass.Gram
-import nl.dutchland.grove.utility.speed.KilometerPerHour
-import nl.dutchland.grove.utility.speed.Speed
-import nl.dutchland.grove.utility.time.Hour
-import nl.dutchland.grove.utility.time.Period
-import nl.dutchland.grove.utility.mass.Kilogram
-import nl.dutchland.grove.utility.mass.Mass
-import nl.dutchland.grove.utility.mass.sum
-import nl.dutchland.grove.utility.speed.MeterPerSecond
-import nl.dutchland.grove.utility.time.Second
+import nl.dutchland.grove.utility.baseunits.length.*
+import nl.dutchland.grove.utility.baseunits.mass.Mass
+import nl.dutchland.grove.utility.baseunits.mass.gr
+import nl.dutchland.grove.utility.baseunits.mass.kg
+import nl.dutchland.grove.utility.baseunits.time.Hour
+import nl.dutchland.grove.utility.baseunits.time.Period
+import nl.dutchland.grove.utility.baseunits.time.Second
+import nl.dutchland.grove.utility.baseunits.time.s
+import nl.dutchland.grove.utility.derivedunits.area.*
+import nl.dutchland.grove.utility.derivedunits.massdensity.MassDensity
+import nl.dutchland.grove.utility.derivedunits.massdensity.div
+import nl.dutchland.grove.utility.derivedunits.speed.Speed
+import nl.dutchland.grove.utility.derivedunits.volume.*
 
 class SpeedObservable : ObservableOnSubscribe<Double> {
     override fun subscribe(emitter: ObservableEmitter<Double>) {
@@ -34,34 +29,130 @@ class SpeedObservable : ObservableOnSubscribe<Double> {
     }
 }
 
+fun length() {
+    val length1: Length = Length.of(100.0, m)
+    val length2: Length = Length.of(100.0, Meter)
+
+    val lengthTypealiasses =
+            listOf(
+                    Millimeter, mm,
+                    Centimeter, cm,
+                    Decimeter, dm,
+                    Meter, m,
+                    Hectometer, hm,
+                    Kilometer, km
+            )
+
+    // A typealias of Length is Distance
+    val length3: Distance = Distance.of(50.0, km)
+
+    // Dividing an Area by a Length --> Length
+    val area1: Area = Area.of(20.0, cm2)
+    val length4: Length = area1 / Length.of(8.0, cm)
+
+
+
+}
+
+fun area() {
+    val area1: Area = Area.of(20.0, m2)
+
+    val areaTypealiasses =
+            listOf(
+                    SquaredMillimeter, mm2,
+                    SquaredCentimeter, cm2,
+                    SquaredDecimeter, dm2,
+                    SquaredMeter, m2,
+                    SquaredHectometer, hm2,
+                    SquaredKilometer, km2
+            )
+
+    // Multiplying to Lengths --> Area
+    val area2: Area = Length.of(2.0, Meter) * Length.of(10.0, Meter)
+}
+
 
 fun main() {
-    val mass1 = Mass.of(5.0, Kilogram)
-    val mass2 = Mass.of(500.0, Gram)
+    val massDensityUnit = kg/m3
 
-    val area1 = Area.of(10.0, Area.Unit.ofSquared(Meter))
-    val area2 = Area.of(10.0, m2)
+    val massDensityOfGold = MassDensity.of(19.3, gr/cm3)
+    val massDensityOfGold1 = Mass.of(38.6, gr) / Volume.of(2.0, cm3)
+    val massDensityOfGold2 = Mass.of(19.3, gr) / cm3
 
-    val density = MassDensity.of(10.0, Kilogram).perCubic(Meter)
+    // 1kg goud. Hoeveel cm3?
+    val volumeOfClumbOfGold : Volume = Mass.of(1.0, kg) / massDensityOfGold
+
+    // 20cm3 of gold. How much mass?
+    val massOfClumpOfGold : Mass = massDensityOfGold * Volume.of(20.0, cm3)
+    val massOfClumpOfGold1 : Mass =  Volume.of(20.0, cm3) * massDensityOfGold
 
 
-    val speed2 = Speed.of(1.0, Meter).per(Second)
-    val speed3 = Speed.of(1.0, MeterPerSecond)
-    val speed4 = Speed.of(1.0, Speed.Unit(Meter, Second))
+    val boxLength = Length.of(1.0, Meter)
+    val boxWidth = Length.of(50.0, Centimeter)
+    val boxHeight = Length.of(8.0, Decimeter)
 
-    val speed = Speed.of(20.0, KilometerPerHour)
+    val boxGroundArea = boxLength * boxWidth
+    val boxVolume = boxLength * boxWidth * boxHeight
+
+    println("The box ground area is: ${boxGroundArea.valueIn(m2)} ${m2.shortName}")
+    println("The boxvolume is: ${boxVolume.valueIn(m3)} ${m3.shortName}")
+    println("The boxvolume is: ${boxVolume.valueIn(Liter)} ${Liter.longName}")
+    println("The boxvolume is: ${boxVolume.valueIn(dm3)} ${dm3.shortName}")
+
+    val speed2 = Length.of(100.0, Kilometer) / Hour
+    speed2.valueIn(Speed.Unit(Millimeter, Second))
+    speed2.valueIn(Millimeter / Second)
+
+    val acceleration = speed2 / Second
+    val meterPerSecondSquared = (m / s) / s
+
+    val cmsquared = cm * cm
+
+
+    val speed1 = Speed.of(100.0, Kilometer / Hour)
+
+
+    val speed3 = Length.of(100.0, Kilometer) / Period.of(5.0, Hour)
+
+    val speed = Speed.of(10.0, Meter).per(Second)
     val length = speed * Period.of(1.0, Hour)
-
-    val energyAmount = EnergyAmount.of(100.0, KiloCalorie)
-    println("In ${Joule} this would be: ${energyAmount.valueIn(Joule)}")
+//    println("I traveled a distance of ${length.valueIn(Kilometer)} ${Kilometer.shortName}")
 
 
-    val area = Area.of(10.0, km2)
+    val distanceToTheMoon = Length.of(384_400.0, Kilometer)
+    val speedOfCar = Speed.of(130.0, Kilometer).per(Hour)
+    val travelTime = distanceToTheMoon / speedOfCar
 
-    val length1 = Length.of(3.0, Meter)
+    println("By car it would take me ${travelTime.valueIn(Hour)} $Hour to get to the moon")
 
-    listOf(length1, length1 + Length.of(10.0, Inch))
-            .sorted()
+//
+//    val numberOfBoxedThatFitInACubicMeter = Volume.of(1.0, m3) / boxVolume
+//
+//    println(boxVolume.valueIn(liter))
+
+//    val mass1 = Mass.of(5.0, Kilogram)
+//    val mass2 = Mass.of(500.0, Gram)
+//
+//    val area1 = Area.of(10.0, Area.Unit.ofSquared(Meter))
+//    val area2 = Area.of(10.0, m2)
+//
+//    val density = MassDensity.of(10.0, Kilogram).perCubic(Meter)
+//
+//
+//    val speed2 = Speed.of(1.0, Meter).per(Second)
+//    val speed3 = Speed.of(1.0, MeterPerSecond)
+//    val speed4 = Speed.of(1.0, Speed.Unit(Meter, Second))
+//
+//    val energyAmount = EnergyAmount.of(100.0, KiloCalorie)
+//    println("In ${Joule} this would be: ${energyAmount.valueIn(Joule)}")
+//
+//
+//    val area = Area.of(10.0, km2)
+//
+//    val length1 = Length.of(3.0, Meter)
+//
+//    listOf(length1, length1 + Length.of(10.0, Inch))
+//            .sorted()
 
 
 //    val aKiloGram = Mass.of(1.0, Kilogram)
@@ -74,7 +165,6 @@ fun main() {
 //
 //    val weigthInStone :Mass = Mass.of(2.0, Stone)
 //    val weightInKilogram = weigthInStone.valueIn(Kilogram)
-
 
 
 //
@@ -109,7 +199,6 @@ fun main() {
 
 //    val lentghObservable = observable.com
 //    lentghObservable.subscribe { s -> println(s) }
-
 
 
 //    println("arstarstt")
@@ -175,7 +264,6 @@ fun ButtonStatus.toMuteEvent(): MuteEvent {
         else -> MuteEvent(false)
     }
 }
-
 
 
 //class LightDisplay(private val display: GroveLcd, private val lightSensor: LightSensor) {

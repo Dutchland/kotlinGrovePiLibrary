@@ -1,9 +1,8 @@
 package nl.dutchland.grove.coffeemaker
 
 import nl.dutchland.grove.events.EventBus
-import nl.dutchland.grove.utility.Fraction
-import nl.dutchland.grove.utility.temperature.Celsius
-import nl.dutchland.grove.utility.temperature.Temperature
+import nl.dutchland.grove.utility.baseunits.temperature.Celsius
+import nl.dutchland.grove.utility.baseunits.temperature.Temperature
 import kotlin.properties.Delegates
 
 class BoilerWaterStatus(private val eventBus: EventBus) {

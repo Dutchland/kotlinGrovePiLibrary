@@ -10,8 +10,8 @@
 //import me.liuwj.ktorm.schema.long
 //import nl.dutchland.grove.temperatureandhumidity.TemperatureMeasurement
 //import nl.dutchland.grove.utility.TimeStamp
-//import nl.dutchland.grove.utility.temperature.Kelvin
-//import nl.dutchland.grove.utility.temperature.Temperature
+//import nl.dutchland.grove.utility.baseunits.temperature.Kelvin
+//import nl.dutchland.grove.utility.baseunits.temperature.Temperature
 //
 //class KtormTemperatureRepository(credentials: DatabaseCredentials) : TemperatureRepository {
 //    private val database: Database = Database.connect(

@@ -9,8 +9,8 @@ import nl.dutchland.grove.events.Event
 import nl.dutchland.grove.events.EventBus
 import nl.dutchland.grove.led.Led
 import nl.dutchland.grove.utility.Fraction
-import nl.dutchland.grove.utility.temperature.Temperature
-import nl.dutchland.grove.utility.mass.Mass
+import nl.dutchland.grove.utility.baseunits.temperature.Temperature
+import nl.dutchland.grove.utility.baseunits.mass.Mass
 
 private val eventBus = EventBus()
 

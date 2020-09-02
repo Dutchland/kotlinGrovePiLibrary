@@ -1,8 +1,8 @@
 package nl.dutchland.grove.utility
 
 import com.nhaarman.mockito_kotlin.mock
-import nl.dutchland.grove.utility.time.Period
-import nl.dutchland.grove.utility.time.InvalidIntervalException
+import nl.dutchland.grove.utility.baseunits.time.Period
+import nl.dutchland.grove.utility.baseunits.time.InvalidIntervalException
 import testutility.ExceptionAssert
 import testutility.ExceptionThrower
 import org.junit.jupiter.api.Test

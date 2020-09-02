@@ -1,6 +1,6 @@
 package nl.dutchland.grove.utility
 
-import nl.dutchland.grove.utility.temperature.Kelvin
+import nl.dutchland.grove.utility.baseunits.temperature.Kelvin
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 

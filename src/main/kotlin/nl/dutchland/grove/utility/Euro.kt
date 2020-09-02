@@ -1,6 +1,6 @@
 package nl.dutchland.grove.utility
 
-data class Euro private constructor(private val amountInCentsProvider: () -> Long)
+data class Euro internal constructor(private val amountInCentsProvider: () -> Long)
     : Comparable<Euro> {
 
     val priceInCents: Long = amountInCentsProvider.invoke()
@@ -20,7 +20,7 @@ data class Euro private constructor(private val amountInCentsProvider: () -> Lon
         TODO("Not yet implemented")
     }
 
-    override fun compareTo(other: Euro): Int {
+    override operator fun compareTo(other: Euro): Int {
         return priceInCents.compareTo(other.priceInCents)
     }
 

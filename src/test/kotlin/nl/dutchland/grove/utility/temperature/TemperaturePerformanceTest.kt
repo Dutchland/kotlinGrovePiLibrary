@@ -1,6 +1,8 @@
 package nl.dutchland.grove.utility.temperature
 
-import org.junit.jupiter.api.Assertions.*
+import nl.dutchland.grove.utility.baseunits.temperature.Celsius
+import nl.dutchland.grove.utility.baseunits.temperature.Fahrenheit
+import nl.dutchland.grove.utility.baseunits.temperature.Temperature
 import org.junit.jupiter.api.Test
 
 internal class TemperaturePerformanceTest {

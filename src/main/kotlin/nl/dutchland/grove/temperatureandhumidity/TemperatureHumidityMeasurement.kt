@@ -2,7 +2,7 @@ package nl.dutchland.grove.temperatureandhumidity
 
 import nl.dutchland.grove.utility.RelativeHumidity
 import nl.dutchland.grove.utility.TimeStamp
-import nl.dutchland.grove.utility.temperature.Temperature
+import nl.dutchland.grove.utility.baseunits.temperature.Temperature
 
 data class TemperatureHumidityMeasurement(
         val temperature: Temperature,

@@ -1,8 +1,8 @@
 package nl.dutchland.grove.co2
 
 import nl.dutchland.grove.utility.TimeStamp
-import nl.dutchland.grove.utility.temperature.Celsius
-import nl.dutchland.grove.utility.temperature.Temperature
+import nl.dutchland.grove.utility.baseunits.temperature.Celsius
+import nl.dutchland.grove.utility.baseunits.temperature.Temperature
 
 internal class GroveCo2Measurement(
         data: ByteArray,

@@ -6,7 +6,7 @@
 //import liquibase.resource.FileSystemResourceAccessor
 //import nl.dutchland.grove.temperatureandhumidity.TemperatureMeasurement
 //import nl.dutchland.grove.utility.TimeStamp
-//import nl.dutchland.grove.utility.temperature.Temperature
+//import nl.dutchland.grove.utility.baseunits.temperature.Temperature
 //import java.sql.DriverManager
 //import org.junit.jupiter.api.Test
 //import org.junit.jupiter.api.Assertions.assertEquals

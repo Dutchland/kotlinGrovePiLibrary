@@ -1,7 +1,7 @@
 package nl.dutchland.grove
 
-import nl.dutchland.grove.utility.time.Millisecond
-import nl.dutchland.grove.utility.time.Period
+import nl.dutchland.grove.utility.baseunits.time.Millisecond
+import nl.dutchland.grove.utility.baseunits.time.Period
 import java.util.*
 import kotlin.concurrent.schedule
 

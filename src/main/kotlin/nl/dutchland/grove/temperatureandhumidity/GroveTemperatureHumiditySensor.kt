@@ -3,8 +3,8 @@ package nl.dutchland.grove.temperatureandhumidity
 import nl.dutchland.grove.utility.Fraction
 import nl.dutchland.grove.utility.RelativeHumidity
 import nl.dutchland.grove.utility.TimeStamp
-import nl.dutchland.grove.utility.temperature.Celsius
-import nl.dutchland.grove.utility.temperature.Temperature
+import nl.dutchland.grove.utility.baseunits.temperature.Celsius
+import nl.dutchland.grove.utility.baseunits.temperature.Temperature
 
 import org.iot.raspberry.grovepi.devices.GroveTemperatureAndHumiditySensor
 import java.util.*
