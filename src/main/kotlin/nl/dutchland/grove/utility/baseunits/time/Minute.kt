@@ -1,14 +1,7 @@
 package nl.dutchland.grove.utility.baseunits.time
 
-object Minute : Period.TimeUnit() {
-    private const val MINUTE_TO_SECOND_FACTOR = 60.0
-
-    override val longName = "Minute"
-    override val shortName = "min"
-
-    override fun fromSeconds(valueInSeconds: Double): Double =
-            valueInSeconds / MINUTE_TO_SECOND_FACTOR
-
-    override fun toSeconds(value: Double): Double =
-            value * MINUTE_TO_SECOND_FACTOR
-}
+typealias min = Minute
+object Minute : Time.Unit by FactorizedUnit(
+        toSecondFactor = 60.0,
+        shortName = "min",
+        longName = "Minute")

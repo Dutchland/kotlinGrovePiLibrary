@@ -1,5 +1,6 @@
 package nl.dutchland.grove.utility.baseunits.luminousintensity
 
+typealias cd = Candela
 object Candela : LuminousIntensity.Unit {
     override val shortName: String = "cd"
     override val longName: String = "Candela"

@@ -10,18 +10,27 @@ import nl.dutchland.grove.events.VolumeChangedEvent
 import nl.dutchland.grove.led.Led
 import nl.dutchland.grove.rotary.RotaryChangedListener
 import nl.dutchland.grove.utility.baseunits.length.*
-import nl.dutchland.grove.utility.baseunits.mass.Mass
-import nl.dutchland.grove.utility.baseunits.mass.gr
-import nl.dutchland.grove.utility.baseunits.mass.kg
-import nl.dutchland.grove.utility.baseunits.time.Hour
-import nl.dutchland.grove.utility.baseunits.time.Period
-import nl.dutchland.grove.utility.baseunits.time.Second
-import nl.dutchland.grove.utility.baseunits.time.s
-import nl.dutchland.grove.utility.derivedunits.area.*
-import nl.dutchland.grove.utility.derivedunits.massdensity.MassDensity
-import nl.dutchland.grove.utility.derivedunits.massdensity.div
-import nl.dutchland.grove.utility.derivedunits.speed.Speed
-import nl.dutchland.grove.utility.derivedunits.volume.*
+import nl.dutchland.grove.utility.baseunits.luminousintensity.cd
+import nl.dutchland.grove.utility.baseunits.mass.*
+import nl.dutchland.grove.utility.baseunits.temperature.Celsius
+import nl.dutchland.grove.utility.baseunits.temperature.Kelvin
+import nl.dutchland.grove.utility.baseunits.temperature.Temperature
+import nl.dutchland.grove.utility.baseunits.time.*
+import nl.dutchland.grove.utility.derivedunits.mechanical.area.*
+import nl.dutchland.grove.utility.derivedunits.energy.EnergyAmount
+import nl.dutchland.grove.utility.derivedunits.energy.Joule
+import nl.dutchland.grove.utility.derivedunits.energy.KiloCalorie
+import nl.dutchland.grove.utility.derivedunits.kinematic.pace.Pace
+import nl.dutchland.grove.utility.derivedunits.kinematic.speed.Speed
+import nl.dutchland.grove.utility.derivedunits.kinematic.volumetricflow.VolumetricFlow
+import nl.dutchland.grove.utility.derivedunits.massflow.MassFlow
+import nl.dutchland.grove.utility.derivedunits.mechanical.massdensity.MassDensity
+import nl.dutchland.grove.utility.derivedunits.mechanical.volume.*
+import nl.dutchland.grove.utility.derivedunits.power.Watt
+import nl.dutchland.grove.utility.derivedunits.specificheatcapacity.SpecificHeatCapacity
+import nl.dutchland.grove.utility.derivedunits.volumetricheatcapacity.VolumetricHeatCapacity
+import kotlin.math.PI
+import kotlin.math.pow
 
 class SpeedObservable : ObservableOnSubscribe<Double> {
     override fun subscribe(emitter: ObservableEmitter<Double>) {
@@ -29,7 +38,131 @@ class SpeedObservable : ObservableOnSubscribe<Double> {
     }
 }
 
+
+fun eureka() {
+    // Archimedes was asked to check if the crown from Hiëro II was pure gold.
+    // By submerging the crown in water and checking how far the water level rose, he could calculate the volume of the crown
+    // Lets say the water level rose 2cm when using a cylinder with radius of 1dm.
+    val crownsVolume = Area.of(1.0.pow(2) * PI, dm2) * Length.of(2.0, cm)
+
+    // He could also weigh the crown. With a balance the crown weight the same as a bronze weight with a mass of 1kg.
+    val crownsMass = Mass.of(1.0, kg)
+
+    // Archimedes could do multiple things here:
+    // Option 1: creating an object with the same volume as the crown and comparing the masses.
+    val massOfObjectWithSameVolume = Mass.of(1100.0, gr)
+    val isCrownPureGold = crownsMass == massOfObjectWithSameVolume
+
+    // Option 2: If the mass density of gold would be known he could do without the pure golden object.
+    val massDensityOfGold = MassDensity.of(19.3, gr / cm3)
+    val crownsMassDensity = crownsMass / crownsVolume
+
+    val isCrownPureGold2 = massDensityOfGold == crownsMassDensity
+}
+
+fun warmingUpTheHotTub() {
+    // Lets say you have a hot tub in your garden with very cold water. You also have a camp fire going and a piece of copper pipe.
+    // You get the idea to warm up the copper in the fire and put it in the hot tub to warm up the water. Could it work?
+
+    // Parameters:
+    val campFireTemperature = Temperature.of(750.0, Celsius)
+    val waterTemperature = Temperature.of(277.0, Kelvin)
+    val volumeOfWaterInHotTub = Volume.of(900.0, Liter)
+    val massOfCopperPipe = Mass.of(2.0, Kilogram)
+
+    // The plan is to calculate the total energy in the system and calculate this energy evenly over the water and the copper
+    // For this we need the heatcapacity of the water and the copper pipe.
+    val watersVolumetricHeatCapacity = VolumetricHeatCapacity.of(4.1796, Joule / Kelvin / cm3)
+    val coppersSpecificHeatCapacity = SpecificHeatCapacity.of(0.385, Joule / Kelvin / Gram)
+
+    val hotTubWatersHeatCapacity = watersVolumetricHeatCapacity * volumeOfWaterInHotTub
+    val copperPipesHeatCapacity = coppersSpecificHeatCapacity * massOfCopperPipe
+
+    val totalEnergy =
+            hotTubWatersHeatCapacity * waterTemperature +
+            copperPipesHeatCapacity * campFireTemperature
+
+
+    val totalHeatCapacity = hotTubWatersHeatCapacity + copperPipesHeatCapacity
+    val combinedTemperature = totalEnergy / totalHeatCapacity
+
+}
+
+private object Marathon : Length.Unit by Length.ParameterizedUnit(
+        "Marathon",
+        "Marathon",
+        42_195.0)
+
+fun justKeepRunning() {
+    // Lets say you start to run half a marathon, and want to finish within a 100 minutes.
+    val totalDistance = Distance.of(0.5, Marathon)
+    val totalTime = Period.of(100.0, Minute)
+
+    // After half an hour your activity tracker displays your average pace was 6.0 min/km.
+    val halfHour = Period.of(0.5, Hour)
+    val paceInFirstHalfHour = Pace.of(6.0, min / km)
+
+    // What speed do you need to run the remainder of the run to stay within 80 min?
+    val distanceInFirstHalfHour = halfHour / paceInFirstHalfHour
+    val remainingDistance = totalDistance - distanceInFirstHalfHour
+    val remainingTime = totalTime - halfHour
+
+    val minimalSpeedToFinishWithin80Min = remainingDistance / remainingTime
+}
+
+
+fun mercuryUnderPressure() {
+
+}
+
+fun goingToTheMoon() {
+    // If you could ride your bike to the moon. How long would it take?
+    val distanceToTheMoon = Length.of(384_400_000.0, m)
+    val speedOfBike = Speed.of(20.0, km / h)
+    val travelTimeByCar = distanceToTheMoon / speedOfBike
+
+    println("By car it would take me ${travelTimeByCar.valueIn(Hour)} $Hour to get to the moon")
+
+    // If I would bounce a laser beam on the moon. How long would it take to get back?
+    val distanceToMoonAndBack = distanceToTheMoon * 2.0
+    val timeBeforeTheLightIsBack = distanceToMoonAndBack / Speed.LIGHT_SPEED_THROUGH_VACUUM
+}
+
+fun waterThroughAPipe() {
+    // Given I have water flowing through a pipe, and I know the flow speed. What is the volume flow?
+    val flowSpeed = Speed.of(0.5, m / s)
+    val pipeArea = Area.of(1.0, cm2)
+    val volumetricFlow1: VolumetricFlow = flowSpeed * pipeArea
+    val volumetricFlow2: VolumetricFlow = pipeArea * flowSpeed
+
+    // Given the pipe fills a bucket. How much mass of water is in the bucket after 1 minute
+    val waterDensity = MassDensity.of(997.0, kg / m3)
+
+    // Option 1:
+    val totalWaterVolume = volumetricFlow1 * Period.of(1.0, Minute)
+    val totalWaterMass1 = totalWaterVolume * waterDensity
+
+    // Option 2:
+    val massFlow = volumetricFlow1 * waterDensity
+    val totalWaterMass2 = massFlow * (1.0 * Minute)
+}
+
+
 fun length() {
+    val volumeToDrain = Volume.of(100.0, m3)
+    val volumetricFlow = VolumetricFlow.of(500.0, Liter / Second)
+
+    val timeToDrain = volumeToDrain / volumetricFlow
+
+    val waterDensity = MassDensity.of(997.0, kg / dm3)
+    val massFlow: MassFlow = volumetricFlow * waterDensity
+    val massFlow2: MassFlow = volumetricFlow / waterDensity.toSpecificVolume()
+
+
+    val volFLow: VolumetricFlow = massFlow / waterDensity
+    val volFLow2: VolumetricFlow = massFlow * waterDensity.toSpecificVolume()
+
+
     val length1: Length = Length.of(100.0, m)
     val length2: Length = Length.of(100.0, Meter)
 
@@ -47,11 +180,7 @@ fun length() {
     val length3: Distance = Distance.of(50.0, km)
 
     // Dividing an Area by a Length --> Length
-    val area1: Area = Area.of(20.0, cm2)
-    val length4: Length = area1 / Length.of(8.0, cm)
-
-
-
+    val length4: Length = Area.of(20.0, cm2) / Length.of(8.0, cm)
 }
 
 fun area() {
@@ -73,57 +202,78 @@ fun area() {
 
 
 fun main() {
-    val massDensityUnit = kg/m3
 
-    val massDensityOfGold = MassDensity.of(19.3, gr/cm3)
-    val massDensityOfGold1 = Mass.of(38.6, gr) / Volume.of(2.0, cm3)
-    val massDensityOfGold2 = Mass.of(19.3, gr) / cm3
+    val length = 2.0 * Meter
+    val unit2 = cd / m2
 
-    // 1kg goud. Hoeveel cm3?
-    val volumeOfClumbOfGold : Volume = Mass.of(1.0, kg) / massDensityOfGold
-
-    // 20cm3 of gold. How much mass?
-    val massOfClumpOfGold : Mass = massDensityOfGold * Volume.of(20.0, cm3)
-    val massOfClumpOfGold1 : Mass =  Volume.of(20.0, cm3) * massDensityOfGold
+    val unit = (Meter / Second) / Second
 
 
-    val boxLength = Length.of(1.0, Meter)
-    val boxWidth = Length.of(50.0, Centimeter)
-    val boxHeight = Length.of(8.0, Decimeter)
+    val unit1 = µm / s
+    val energyExpendaturePerDay = EnergyAmount.of(2400.0, KiloCalorie)
+    val power = energyExpendaturePerDay / Period.of(24.0, Hour)
+    println("Average power is ${power.valueIn(Watt)} ")
 
-    val boxGroundArea = boxLength * boxWidth
-    val boxVolume = boxLength * boxWidth * boxHeight
-
-    println("The box ground area is: ${boxGroundArea.valueIn(m2)} ${m2.shortName}")
-    println("The boxvolume is: ${boxVolume.valueIn(m3)} ${m3.shortName}")
-    println("The boxvolume is: ${boxVolume.valueIn(Liter)} ${Liter.longName}")
-    println("The boxvolume is: ${boxVolume.valueIn(dm3)} ${dm3.shortName}")
-
-    val speed2 = Length.of(100.0, Kilometer) / Hour
-    speed2.valueIn(Speed.Unit(Millimeter, Second))
-    speed2.valueIn(Millimeter / Second)
-
-    val acceleration = speed2 / Second
-    val meterPerSecondSquared = (m / s) / s
-
-    val cmsquared = cm * cm
+//    val power = EnergyAmount.of(2400.0, KiloCalorie) / Period.of(24.0, Hour)
 
 
-    val speed1 = Speed.of(100.0, Kilometer / Hour)
+//
+//    val massDensityUnit = kg / m3
+//
+//    val massDensityOfGold = MassDensity.of(19.3, gr / cm3)
+//    val massDensityOfGold1 = Mass.of(38.6, gr) / Volume.of(2.0, cm3)
+//    val massDensityOfGold2 = Mass.of(19.3, gr) / cm3
+//
+//    // 1kg goud. Hoeveel cm3?
+//    val volumeOfClumbOfGold: Volume = Mass.of(1.0, kg) / massDensityOfGold
+//
+//    // 20cm3 of gold. How much mass?
+//    val massOfClumpOfGold: Mass = massDensityOfGold * Volume.of(20.0, cm3)
+//    val massOfClumpOfGold1: Mass = Volume.of(20.0, cm3) * massDensityOfGold
+//
+//    val massOfUnknownObject = Mass.of(22.0, gr)
+//    val volumeOfUnknownObject = Volume.of(1.43, cm3)
+//    val massDensityOfUnknowObject = massOfUnknownObject / volumeOfUnknownObject
+//
+//    val isGold = massDensityOfUnknowObject < (massDensityOfGold * 1.01) &&
+//            massDensityOfUnknowObject > (massDensityOfGold * 0.99)
+//
+//    val boxLength = Length.of(1.0, Meter)
+//    val boxWidth = Length.of(50.0, Centimeter)
+//    val boxHeight = Length.of(8.0, Decimeter)
+//
+//    val boxGroundArea = boxLength * boxWidth
+//    val boxVolume = boxLength * boxWidth * boxHeight
+//
+//    println("The box ground area is: ${boxGroundArea.valueIn(m2)} ${m2.shortName}")
+//    println("The boxvolume is: ${boxVolume.valueIn(m3)} ${m3.shortName}")
+//    println("The boxvolume is: ${boxVolume.valueIn(Liter)} ${Liter.longName}")
+//    println("The boxvolume is: ${boxVolume.valueIn(dm3)} ${dm3.shortName}")
+//
+//    val speed2 = Length.of(100.0, Kilometer) / Hour
+//    speed2.valueIn(Speed.Unit.of(Millimeter).per(Second))
+//    speed2.valueIn(Millimeter / Second)
+//
+//    val acceleration = speed2 / Second
+//    val meterPerSecondSquared = (m / s) / s
+//    val meterPerSecondSquared2 = m / s / s
+//
+//    val cmsquared = cm * cm
+//
+//
+//    val speed1 = Speed.of(100.0, Kilometer / Hour)
+//    val speed8 = Speed.of(100.0, km/h)
+//    val speed9 = Distance.of(100.0, km) / h
+//
+//
+//    val speed3 = Length.of(100.0, Kilometer) / Period.of(5.0, Hour)
+//
+//    val speed = Speed.of(10.0, Meter).per(Second)
+//    val length = speed * Period.of(1.0, Hour)
+////    println("I traveled a distance of ${length.valueIn(Kilometer)} ${Kilometer.shortName}")
+//
+//
 
-
-    val speed3 = Length.of(100.0, Kilometer) / Period.of(5.0, Hour)
-
-    val speed = Speed.of(10.0, Meter).per(Second)
-    val length = speed * Period.of(1.0, Hour)
-//    println("I traveled a distance of ${length.valueIn(Kilometer)} ${Kilometer.shortName}")
-
-
-    val distanceToTheMoon = Length.of(384_400.0, Kilometer)
-    val speedOfCar = Speed.of(130.0, Kilometer).per(Hour)
-    val travelTime = distanceToTheMoon / speedOfCar
-
-    println("By car it would take me ${travelTime.valueIn(Hour)} $Hour to get to the moon")
 
 //
 //    val numberOfBoxedThatFitInACubicMeter = Volume.of(1.0, m3) / boxVolume

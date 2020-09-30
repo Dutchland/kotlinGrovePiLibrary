@@ -1,21 +1,24 @@
 package nl.dutchland.grove.utility.derivedunits.force
 
 import nl.dutchland.grove.utility.baseunits.length.Length
-import nl.dutchland.grove.utility.derivedunits.area.Area
+import nl.dutchland.grove.utility.baseunits.length.m
 import nl.dutchland.grove.utility.baseunits.mass.Mass
-import nl.dutchland.grove.utility.baseunits.time.Period
-import nl.dutchland.grove.utility.derivedunits.acceleration.Acceleration
+import nl.dutchland.grove.utility.derivedunits.kinematic.acceleration.Acceleration
+import nl.dutchland.grove.utility.derivedunits.mechanical.area.Area
+import nl.dutchland.grove.utility.derivedunits.mechanical.area.m2
+import nl.dutchland.grove.utility.derivedunits.energy.EnergyAmount
+import nl.dutchland.grove.utility.derivedunits.pressure.Pressure
 
-typealias EnergyInJouleProvider = () -> Double
+typealias ForceInNewtonProvider = () -> Double
 
-data class Force internal constructor(private val energyInJouleProvider: EnergyInJouleProvider) : Comparable<Force> {
+data class Force internal constructor(private val forceInNewtonProvider: ForceInNewtonProvider) : Comparable<Force> {
     private val forceInNewton: Double by lazy {
-        energyInJouleProvider.invoke()
+        forceInNewtonProvider.invoke()
     }
 
     companion object {
-        fun of(value: Double, unit: Unit): Force {
-            return Force { unit.toNewton(value) }
+        fun of(value: Double, unit: Unit): Pressure {
+            return Pressure { unit.toNewton(value) }
         }
     }
 
@@ -39,8 +42,16 @@ data class Force internal constructor(private val energyInJouleProvider: EnergyI
         return Force { this.forceInNewton / divider }
     }
 
+    operator fun div(area: Area): Pressure {
+        return Pressure.of(this.forceInNewton/area.valueIn(m2), Newton/m2)
+    }
+
     operator fun times(factor: Double): Force {
         return Force { this.forceInNewton * factor }
+    }
+
+    operator fun times(factor: Length): EnergyAmount {
+        return EnergyAmount.of(this.forceInNewton * factor.valueIn(m), N * m)
     }
 
     interface Unit {
@@ -51,6 +62,14 @@ data class Force internal constructor(private val energyInJouleProvider: EnergyI
         fun toNewton(value: Double): Double
 
         override fun toString(): String
+
+        operator fun div(areaUnit: Area.Unit) : Pressure.Unit {
+            return Pressure.Unit.ofParameterized(this, areaUnit)
+        }
+
+        operator fun times(lengthUnit: Length.Unit) : EnergyAmount.Unit {
+            return EnergyAmount.Unit.ofParameterized(this, lengthUnit)
+        }
 
         companion object {
             fun ofParameterized(massUnit: Mass.Unit,accelerationUnit: Acceleration.Unit): Unit {

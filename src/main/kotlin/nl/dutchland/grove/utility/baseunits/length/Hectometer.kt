@@ -1,7 +1,6 @@
 package nl.dutchland.grove.utility.baseunits.length
 
+import nl.dutchland.grove.utility.StandardUnitPrefix.*
+
 typealias hm = Hectometer
-object Hectometer : Length.Unit by Length.Unit.ofParameterized(
-        longName = "Hectometer",
-        shortName = "hm",
-        toMeterFactor = 100.0)
+object Hectometer : Length.Unit by Hecto * Meter

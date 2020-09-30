@@ -1,7 +1,6 @@
 package nl.dutchland.grove.utility.baseunits.length
 
+import nl.dutchland.grove.utility.StandardUnitPrefix.*
+
 typealias km = Kilometer
-object Kilometer : Length.Unit by Length.Unit.ofParameterized(
-        longName = "Kilometer",
-        shortName = "km",
-        toMeterFactor = 1000.0)
+object Kilometer : Length.Unit by Kilo * Meter

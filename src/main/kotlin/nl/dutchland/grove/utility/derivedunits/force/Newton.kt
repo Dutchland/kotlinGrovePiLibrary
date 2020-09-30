@@ -1,6 +1,7 @@
 package nl.dutchland.grove.utility.derivedunits.force
 
-class Newton : Force.Unit {
+typealias N = Newton
+object Newton : Force.Unit {
     override val shortName: String = "N"
     override val longName: String = "Newton"
 

@@ -2,15 +2,15 @@ package nl.dutchland.grove.utility.derivedunits.energy
 
 class Calorie : EnergyAmount.Unit {
     override fun fromJoule(valueInJoule: Double): Double {
-        TODO("Not yet implemented")
+        return valueInJoule / 4.18400
     }
 
     override fun toJoule(value: Double): Double {
-        TODO("Not yet implemented")
+        return value * 4.18400
     }
 
     override fun toString(): String {
-        TODO("Not yet implemented")
+        return "Joule"
     }
 
     override val shortName: String

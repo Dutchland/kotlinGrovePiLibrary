@@ -1,5 +1,10 @@
 package nl.dutchland.grove.utility.baseunits.electriccurrent
 
+import nl.dutchland.grove.utility.baseunits.length.Length
+import nl.dutchland.grove.utility.derivedunits.mechanical.area.Area
+import nl.dutchland.grove.utility.derivedunits.electromagnetic.currentdensity.CurrentDensity
+import nl.dutchland.grove.utility.derivedunits.magneticfieldstrength.MagneticFieldStrength
+
 class ElectricCurrent private constructor(private val value: Double, private val unit: ElectricCurrent.Unit) : Comparable<ElectricCurrent> {
     private val currentInAmpere: Double by lazy {
         unit.toAmpere(value)
@@ -50,6 +55,14 @@ class ElectricCurrent private constructor(private val value: Double, private val
         val longName: String
 
         override fun toString(): String
+
+        operator fun div(areaUnit: Area.Unit): CurrentDensity.Unit {
+            return CurrentDensity.Unit.ofParameterized(this, areaUnit)
+        }
+
+        operator fun div(lengthUnit: Length.Unit): MagneticFieldStrength.Unit {
+            return MagneticFieldStrength.Unit.ofParameterized(this, lengthUnit)
+        }
 
         companion object {
             fun ofParameterized(longName: String, shortName: String, toAmpereFactor: Double): Unit {

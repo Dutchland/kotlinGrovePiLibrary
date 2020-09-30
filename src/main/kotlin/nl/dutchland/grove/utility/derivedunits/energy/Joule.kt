@@ -1,6 +1,6 @@
 package nl.dutchland.grove.utility.derivedunits.energy
 
-import nl.dutchland.grove.utility.derivedunits.area.m2
+import nl.dutchland.grove.utility.derivedunits.mechanical.area.m2
 import nl.dutchland.grove.utility.baseunits.mass.Kilogram
 import nl.dutchland.grove.utility.baseunits.time.Second
 

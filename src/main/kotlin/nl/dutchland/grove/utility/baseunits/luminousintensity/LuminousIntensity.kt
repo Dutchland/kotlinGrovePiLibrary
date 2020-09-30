@@ -1,5 +1,8 @@
 package nl.dutchland.grove.utility.baseunits.luminousintensity
 
+import nl.dutchland.grove.utility.derivedunits.mechanical.area.Area
+import nl.dutchland.grove.utility.derivedunits.photometric.luminance.Luminance
+
 class LuminousIntensity private constructor(private val value: Double, private val unit: LuminousIntensity.Unit) : Comparable<LuminousIntensity> {
     private val intensityInCandela: Double by lazy {
         unit.toCandela(value)
@@ -34,14 +37,12 @@ class LuminousIntensity private constructor(private val value: Double, private v
 
         override fun toString(): String
 
-        companion object {
-            fun ofParameterized(longName: String, shortName: String, toCandelaFactor: Double): Unit {
-                return ParameterizedUnit(longName, shortName, toCandelaFactor)
-            }
+        operator fun div(areaUnit: Area.Unit): Luminance.Unit {
+            return Luminance.ParameterizedUnit(this, areaUnit)
         }
     }
 
-    private class ParameterizedUnit(
+    internal class ParameterizedUnit(
             override val longName: String,
             override val shortName: String,
             private val toCandelaFactor: Double) : LuminousIntensity.Unit {
@@ -54,3 +55,5 @@ class LuminousIntensity private constructor(private val value: Double, private v
         }
     }
 }
+
+

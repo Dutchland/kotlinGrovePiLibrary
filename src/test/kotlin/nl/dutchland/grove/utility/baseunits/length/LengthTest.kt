@@ -1,8 +1,7 @@
 package nl.dutchland.grove.utility.baseunits.length
 
-import com.nhaarman.mockito_kotlin.same
-import nl.dutchland.grove.utility.derivedunits.area.Area
-import nl.dutchland.grove.utility.derivedunits.area.mm2
+import nl.dutchland.grove.utility.derivedunits.mechanical.area.Area
+import nl.dutchland.grove.utility.derivedunits.mechanical.area.mm2
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
